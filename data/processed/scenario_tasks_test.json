@@ -4,6 +4,7 @@
     "seed": 30010000,
     "split": "test",
     "scenario_type": "input_cost_shock",
+    "simulation_start_year": 2007,
     "starting_cash": 137245.62,
     "initial_weather_regime": "dry",
     "dry_bias": 0.1271,
@@ -11,16 +12,16 @@
     "fertiliser_cost_multiplier": 1.6455,
     "irrigation_cost_multiplier": 1.1173,
     "initial_soil_by_plot": [
-      0.4816,
-      0.6772,
-      0.5876,
-      0.5676
+      0.5048,
+      0.6722,
+      0.6354,
+      0.5597
     ],
     "initial_crop_by_plot": [
+      "oilseed_rape",
+      "oilseed_rape",
       "fallow",
-      "oilseed_rape",
-      "oilseed_rape",
-      "fallow"
+      "wheat"
     ]
   },
   {
@@ -28,6 +29,7 @@
     "seed": 30010001,
     "split": "test",
     "scenario_type": "recovery",
+    "simulation_start_year": 2012,
     "starting_cash": 81136.13,
     "initial_weather_regime": "dry",
     "dry_bias": 0.2946,
@@ -35,15 +37,15 @@
     "fertiliser_cost_multiplier": 0.9707,
     "irrigation_cost_multiplier": 1.0,
     "initial_soil_by_plot": [
-      0.3531,
-      0.3599,
-      0.3521,
-      0.2566
+      0.2566,
+      0.3799,
+      0.3319,
+      0.3238
     ],
     "initial_crop_by_plot": [
-      "fallow",
-      "field_beans",
-      "fallow",
+      "barley",
+      "wheat",
+      "barley",
       "barley"
     ]
   },
@@ -52,6 +54,7 @@
     "seed": 30010002,
     "split": "test",
     "scenario_type": "standard",
+    "simulation_start_year": 2010,
     "starting_cash": 171639.93,
     "initial_weather_regime": "normal",
     "dry_bias": 0.0,
@@ -59,16 +62,16 @@
     "fertiliser_cost_multiplier": 1.0852,
     "irrigation_cost_multiplier": 1.0,
     "initial_soil_by_plot": [
-      0.6445,
       0.5584,
       0.647,
-      0.6101
+      0.6101,
+      0.4915
     ],
     "initial_crop_by_plot": [
-      "wheat",
-      "wheat",
       "oilseed_rape",
-      "field_beans"
+      "field_beans",
+      "oilseed_rape",
+      "wheat"
     ]
   },
   {
@@ -76,6 +79,7 @@
     "seed": 30010003,
     "split": "test",
     "scenario_type": "standard",
+    "simulation_start_year": 2011,
     "starting_cash": 123379.78,
     "initial_weather_regime": "normal",
     "dry_bias": 0.0,
@@ -83,16 +87,16 @@
     "fertiliser_cost_multiplier": 1.0002,
     "irrigation_cost_multiplier": 1.0,
     "initial_soil_by_plot": [
-      0.5311,
-      0.546,
-      0.5299,
-      0.6563
+      0.6155,
+      0.5576,
+      0.5123,
+      0.4853
     ],
     "initial_crop_by_plot": [
+      "field_beans",
+      "field_beans",
       "fallow",
-      "field_beans",
-      "field_beans",
-      "fallow"
+      "field_beans"
     ]
   },
   {
@@ -100,6 +104,7 @@
     "seed": 30010004,
     "split": "test",
     "scenario_type": "standard",
+    "simulation_start_year": 2010,
     "starting_cash": 123244.54,
     "initial_weather_regime": "normal",
     "dry_bias": 0.0,
@@ -107,16 +112,16 @@
     "fertiliser_cost_multiplier": 1.0694,
     "irrigation_cost_multiplier": 1.0,
     "initial_soil_by_plot": [
-      0.6441,
-      0.5289,
-      0.65,
-      0.6259
+      0.664,
+      0.5607,
+      0.5372,
+      0.6049
     ],
     "initial_crop_by_plot": [
-      "fallow",
-      "fallow",
       "barley",
-      "barley"
+      "fallow",
+      "field_beans",
+      "fallow"
     ]
   },
   {
@@ -124,6 +129,7 @@
     "seed": 30010005,
     "split": "test",
     "scenario_type": "standard",
+    "simulation_start_year": 2008,
     "starting_cash": 179174.85,
     "initial_weather_regime": "normal",
     "dry_bias": 0.0,
@@ -131,16 +137,16 @@
     "fertiliser_cost_multiplier": 1.0006,
     "irrigation_cost_multiplier": 1.0,
     "initial_soil_by_plot": [
-      0.6527,
       0.5174,
       0.4877,
-      0.5342
+      0.5342,
+      0.5227
     ],
     "initial_crop_by_plot": [
-      "barley",
-      "field_beans",
       "oilseed_rape",
-      "field_beans"
+      "field_beans",
+      "fallow",
+      "fallow"
     ]
   },
   {
@@ -148,6 +154,7 @@
     "seed": 30010006,
     "split": "test",
     "scenario_type": "drought_stressed",
+    "simulation_start_year": 2009,
     "starting_cash": 150568.68,
     "initial_weather_regime": "dry",
     "dry_bias": 0.5555,
@@ -155,16 +162,16 @@
     "fertiliser_cost_multiplier": 1.0425,
     "irrigation_cost_multiplier": 1.0076,
     "initial_soil_by_plot": [
-      0.4008,
-      0.5264,
-      0.4099,
-      0.5379
+      0.5484,
+      0.534,
+      0.537,
+      0.5129
     ],
     "initial_crop_by_plot": [
-      "field_beans",
       "oilseed_rape",
       "wheat",
-      "field_beans"
+      "field_beans",
+      "barley"
     ]
   },
   {
@@ -172,6 +179,7 @@
     "seed": 30010007,
     "split": "test",
     "scenario_type": "drought_stressed",
+    "simulation_start_year": 2010,
     "starting_cash": 163165.29,
     "initial_weather_regime": "dry",
     "dry_bias": 0.5591,
@@ -179,10 +187,10 @@
     "fertiliser_cost_multiplier": 1.0933,
     "irrigation_cost_multiplier": 0.9342,
     "initial_soil_by_plot": [
-      0.4299,
-      0.529,
-      0.4871,
-      0.5316
+      0.4932,
+      0.4649,
+      0.5265,
+      0.5345
     ],
     "initial_crop_by_plot": [
       "fallow",

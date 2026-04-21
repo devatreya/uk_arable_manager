@@ -1,101 +1,136 @@
 """
-Fetch / stub Cambridge NIAB weather data.
+Fetch real historical weather for Cambridge from Open-Meteo Historical Archive API.
+Data source: ERA5 reanalysis aggregated by Open-Meteo (https://open-meteo.com/)
+Location: 52.20°N 0.10°E — Cambridge area, near NIAB trial site
+Period: 2000-2023 (24 years × 4 quarters = 96 quarterly records)
+No API key required.
 
-Real data: Met Office / CEDA MIDAS weather station data for Cambridge NIAB.
-Fallback: synthetic placeholder files so the environment works immediately.
-
-Usage:
-  python scripts/fetch_weather.py          # writes stub files if missing
-  python scripts/fetch_weather.py --real   # attempts real download (not implemented yet)
-
-Data sources:
-  - Met Office Hadobs: https://www.metoffice.gov.uk/hadobs/haduk-grid/
-  - CEDA archive: https://data.ceda.ac.uk/badc/ukmo-midas-open/
-  - Cambridge NIAB station ID: varies by dataset; lat 52.24N lon 0.10E
-
-NOTE: Real download is not implemented.  The placeholder files contain
-      synthetic values calibrated to East Anglia climatology.
+Outputs:
+  data/raw/cambridge_niab_quarterly.csv   — raw quarterly totals + indices
+  data/processed/quarterly_weather.json  — nested {year: {quarter: {...}}} for sim.py
 """
 from __future__ import annotations
 
-import argparse
 import csv
+import json
 import sys
+import urllib.error
+import urllib.request
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from config import DATA_RAW
+from config import DATA_PROCESSED, DATA_RAW, DROUGHT_THRESHOLD
+
+LAT, LON = 52.20, 0.10
+START_DATE = "2000-01-01"
+END_DATE   = "2023-12-31"
+WET_THRESHOLD = 1.35  # rainfall_index above this = wet regime
 
 
-def write_monthly_stub() -> None:
-    path = DATA_RAW / "cambridge_niab_monthly.csv"
-    if path.exists():
-        print(f"  {path} already exists, skipping.")
-        return
+def _fetch_daily() -> dict:
+    url = (
+        "https://archive-api.open-meteo.com/v1/archive"
+        f"?latitude={LAT}&longitude={LON}"
+        f"&start_date={START_DATE}&end_date={END_DATE}"
+        "&daily=precipitation_sum,temperature_2m_mean"
+        "&timezone=Europe%2FLondon"
+    )
+    req = urllib.request.Request(url, headers={"User-Agent": "uk-arable-manager/1.0"})
+    with urllib.request.urlopen(req, timeout=90) as r:
+        return json.loads(r.read())
 
-    # Synthetic monthly data: year, month, rainfall_mm, temp_mean_c
-    # Calibrated to Cambridge NIAB normals (565mm annual, 10.0°C mean)
-    monthly_normals = {
-        1: (45, 4.0), 2: (32, 4.2), 3: (38, 6.5), 4: (42, 9.2),
-        5: (46, 12.5), 6: (52, 15.8), 7: (48, 17.2), 8: (55, 17.0),
-        9: (52, 14.5), 10: (56, 11.2), 11: (50, 7.0), 12: (49, 4.5),
-    }
 
-    rows = [["year", "month", "rainfall_mm", "temp_mean_c", "source"]]
-    import random
-    rng = random.Random(9999)
-    for year in range(2000, 2024):
-        for month, (r_norm, t_norm) in monthly_normals.items():
-            r = round(r_norm * rng.uniform(0.5, 1.6), 1)
-            t = round(t_norm + rng.gauss(0, 0.8), 2)
-            rows.append([year, month, r, t, "synthetic_placeholder"])
+def _aggregate_to_quarters(data: dict) -> list[dict]:
+    dates = data["daily"]["time"]
+    rain  = data["daily"]["precipitation_sum"]
+    temp  = data["daily"]["temperature_2m_mean"]
 
+    # Accumulate daily → quarterly
+    buckets: dict = {}
+    for d, r, t in zip(dates, rain, temp):
+        y, m = int(d[:4]), int(d[5:7])
+        q = (m - 1) // 3 + 1
+        key = (y, q)
+        buckets.setdefault(key, {"rain": [], "temp": []})
+        if r is not None:
+            buckets[key]["rain"].append(float(r))
+        if t is not None:
+            buckets[key]["temp"].append(float(t))
+
+    records: list[dict] = []
+    for (y, q), v in sorted(buckets.items()):
+        records.append({
+            "year":    y,
+            "quarter": q,
+            "rain_mm": round(sum(v["rain"]), 1)              if v["rain"] else 0.0,
+            "temp_c":  round(sum(v["temp"]) / len(v["temp"]), 2) if v["temp"] else 10.0,
+        })
+
+    # Normalise: mean over the full period = 1.0
+    rm = sum(r["rain_mm"] for r in records) / len(records)
+    tm = sum(r["temp_c"]  for r in records) / len(records)
+    for r in records:
+        ri = round(r["rain_mm"] / rm, 4) if rm > 0 else 1.0
+        ti = round(r["temp_c"]  / tm, 4) if tm != 0 else 1.0
+        r["rainfall_index"]    = ri
+        r["temperature_index"] = ti
+        r["regime"] = (
+            "dry"    if ri < DROUGHT_THRESHOLD else
+            "wet"    if ri > WET_THRESHOLD     else
+            "normal"
+        )
+
+    return records
+
+
+def _save_raw_csv(records: list[dict]) -> None:
+    path = DATA_RAW / "cambridge_niab_quarterly.csv"
     path.parent.mkdir(parents=True, exist_ok=True)
+    fields = ["year", "quarter", "rain_mm", "temp_c",
+              "rainfall_index", "temperature_index", "regime"]
     with open(path, "w", newline="") as f:
-        csv.writer(f).writerows(rows)
-    print(f"  Wrote stub → {path}")
+        w = csv.DictWriter(f, fieldnames=fields, extrasaction="ignore")
+        w.writeheader()
+        w.writerows(records)
+    print(f"  Raw CSV → {path}  ({len(records)} rows)")
 
 
-def write_normals_stub() -> None:
-    path = DATA_RAW / "cambridge_niab_normals.csv"
-    if path.exists():
-        print(f"  {path} already exists, skipping.")
-        return
+def _save_processed_json(records: list[dict]) -> None:
+    nested: dict = {}
+    for r in records:
+        nested.setdefault(str(r["year"]), {})[str(r["quarter"])] = {
+            "rainfall_index":    r["rainfall_index"],
+            "temperature_index": r["temperature_index"],
+            "regime":            r["regime"],
+        }
 
-    rows = [
-        ["month", "rainfall_mm_normal", "temp_mean_c_normal", "source"],
-        [1,  45, 4.0, "Met Office 1991-2020 normals (synthetic)"],
-        [2,  32, 4.2, ""],
-        [3,  38, 6.5, ""],
-        [4,  42, 9.2, ""],
-        [5,  46, 12.5, ""],
-        [6,  52, 15.8, ""],
-        [7,  48, 17.2, ""],
-        [8,  55, 17.0, ""],
-        [9,  52, 14.5, ""],
-        [10, 56, 11.2, ""],
-        [11, 50, 7.0, ""],
-        [12, 49, 4.5, ""],
-    ]
-
+    path = DATA_PROCESSED / "quarterly_weather.json"
     path.parent.mkdir(parents=True, exist_ok=True)
-    with open(path, "w", newline="") as f:
-        csv.writer(f).writerows(rows)
-    print(f"  Wrote stub → {path}")
+    with open(path, "w") as f:
+        json.dump(nested, f, indent=2)
+
+    reg = [r["regime"] for r in records]
+    n   = len(records)
+    rain_mean = sum(r["rain_mm"] for r in records) / n
+    print(f"  Processed JSON → {path}")
+    print(f"  {n} quarters | mean rainfall {rain_mean:.0f} mm/quarter")
+    print(f"  Regime split: dry={reg.count('dry')} "
+          f"normal={reg.count('normal')} wet={reg.count('wet')}")
 
 
-def main(real: bool = False) -> None:
-    DATA_RAW.mkdir(parents=True, exist_ok=True)
-    if real:
-        print("Real download not yet implemented.  Writing stubs instead.")
-    write_monthly_stub()
-    write_normals_stub()
+def main() -> None:
+    print(f"Fetching Cambridge weather from Open-Meteo ({START_DATE} → {END_DATE}) …")
+    try:
+        data = _fetch_daily()
+    except urllib.error.URLError as e:
+        print(f"ERROR: Could not reach Open-Meteo API: {e}")
+        sys.exit(1)
+    records = _aggregate_to_quarters(data)
+    _save_raw_csv(records)
+    _save_processed_json(records)
     print("Weather data ready.")
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--real", action="store_true", help="Attempt real data download")
-    args = parser.parse_args()
-    main(real=args.real)
+    main()

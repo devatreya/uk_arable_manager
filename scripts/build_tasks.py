@@ -24,11 +24,26 @@ from config import (
     CROPS,
     DATA_PROCESSED,
     DEFAULT_SCALE,
+    REAL_DATA_START_YEAR,
     SCENARIO_MIX,
+    SIM_MAX_START_YEAR,
     SPLIT_SCALES,
     STARTING_CASH_DEFAULT,
     WEATHER_REGIMES,
 )
+
+# Restrict to 2007-2013: avoids very low pre-reform wheat prices (2000-2006)
+# while covering the 2007-08 price spike, 2009 crash, 2012 drought, and moderate years.
+# Each window is 10 years, so 2013+10 = 2023 = last data year.
+_STABLE_START_YEARS     = list(range(2007, SIM_MAX_START_YEAR + 1))   # 2007-2014
+_DROUGHT_PREFERRED_START_YEARS = [2009, 2010, 2011, 2012, 2013]       # drier windows
+_ALL_START_YEARS = _STABLE_START_YEARS
+
+
+def _pick_start_year(scenario: str, seed_rng: random.Random) -> int:
+    if scenario == "drought_stressed":
+        return seed_rng.choice(_DROUGHT_PREFERRED_START_YEARS)
+    return seed_rng.choice(_ALL_START_YEARS)
 
 
 def _scenario_params(scenario: str, seed_rng: random.Random) -> Dict[str, Any]:
@@ -117,6 +132,7 @@ def build_tasks_for_split(
             "seed": task_seed,
             "split": split,
             "scenario_type": scenario,
+            "simulation_start_year": _pick_start_year(scenario, seed_rng),
             "starting_cash": round(params["starting_cash"], 2),
             "initial_weather_regime": params["initial_weather_regime"],
             "dry_bias": round(params["dry_bias"], 4),

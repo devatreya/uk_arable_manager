@@ -5,7 +5,9 @@ All randomness flows through a seeded numpy RNG.  No live network calls.
 from __future__ import annotations
 
 import copy
+import json
 from dataclasses import dataclass, field
+from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 import numpy as np
@@ -49,10 +51,29 @@ from config import (
     STARTING_CASH_DEFAULT,
     TERMINAL_SOIL_MAX,
     TERMINAL_SOIL_MIN,
+    QUARTERLY_PRICES_PATH,
+    QUARTERLY_WEATHER_PATH,
     TOTAL_QUARTERS,
     WEATHER_PARAMS,
     WEATHER_TRANSITION,
 )
+
+# Maps crop name → key used in quarterly_prices.json multiplier dict
+_CROP_MULT_KEY: Dict[str, str] = {
+    "wheat":        "wheat",
+    "barley":       "barley",
+    "oilseed_rape": "osr",
+    "field_beans":  "field_beans",
+}
+
+
+def _load_json_safe(path: Path) -> Dict:
+    """Load JSON file; return empty dict if missing or malformed."""
+    try:
+        with open(path) as f:
+            return json.load(f)
+    except (FileNotFoundError, json.JSONDecodeError):
+        return {}
 
 
 # ── Plot state ────────────────────────────────────────────────────────────────
@@ -270,6 +291,11 @@ class FarmSimulator:
         self.task_spec = task_spec
         seed = int(task_spec.get("seed", 42))
         self.rng = np.random.default_rng(seed)
+
+        # Real data — empty dicts when files don't exist (tests still pass)
+        self._price_data:   Dict = _load_json_safe(QUARTERLY_PRICES_PATH)
+        self._weather_data: Dict = _load_json_safe(QUARTERLY_WEATHER_PATH)
+
         self.state = self._build_initial_state(task_spec)
         self._resample_prices()
 
@@ -299,26 +325,62 @@ class FarmSimulator:
 
         return fs
 
+    # ── Real-data helpers ─────────────────────────────────────────────────────
+
+    def _real_quarter_key(self) -> tuple[str, str] | None:
+        """Return (year_str, quarter_str) for the current simulation quarter, or None."""
+        start_year = int(self.task_spec.get("simulation_start_year", 0))
+        if not start_year:
+            return None
+        sim_year = self.state.quarter // 4
+        sim_q    = self.state.quarter % 4 + 1
+        return str(start_year + sim_year), str(sim_q)
+
+    def _get_real_price_mults(self) -> Dict[str, float]:
+        """Return price multipliers from quarterly_prices.json, or {} for synthetic fallback."""
+        key = self._real_quarter_key()
+        if key is None or not self._price_data:
+            return {}
+        yr, q = key
+        return self._price_data.get("quarterly", {}).get(yr, {}).get(q, {})
+
+    def _get_real_weather(self) -> Optional[Dict[str, Any]]:
+        """Return real weather record for current quarter, or None for synthetic fallback."""
+        key = self._real_quarter_key()
+        if key is None or not self._weather_data:
+            return None
+        yr, q = key
+        return self._weather_data.get(yr, {}).get(q)
+
     # ── Prices ───────────────────────────────────────────────────────────────
 
     def _resample_prices(self) -> None:
-        vol = float(self.task_spec.get("price_volatility", PRICE_VOL_DEFAULT))
-        fert_mult = float(self.task_spec.get("fertiliser_cost_multiplier", 1.0))
-        irr_mult = float(self.task_spec.get("irrigation_cost_multiplier", 1.0))
+        vol            = float(self.task_spec.get("price_volatility", PRICE_VOL_DEFAULT))
+        fert_mult_task = float(self.task_spec.get("fertiliser_cost_multiplier", 1.0))
+        irr_mult       = float(self.task_spec.get("irrigation_cost_multiplier", 1.0))
+
+        # Real historical price multipliers (empty dict → all default to 1.0).
+        # Clamp to [0.75, 1.40]: preserves real year-to-year dynamics while
+        # preventing extreme early-2000s lows and 2022 spikes from dominating.
+        real_raw = self._get_real_price_mults()
+        real = {k: float(np.clip(v, 0.75, 1.40)) for k, v in real_raw.items()}
 
         prices: Dict[str, float] = {}
         for crop in CROPS:
             base = GROSS_REVENUE[crop]
             if base > 0.0:
+                real_factor = real.get(f"{_CROP_MULT_KEY.get(crop, crop)}_mult", 1.0)
                 noise = float(np.clip(self.rng.normal(1.0, vol), 0.60, 1.50))
-                prices[crop] = round(base * noise, 2)
+                prices[crop] = round(base * real_factor * noise, 2)
             else:
                 prices[crop] = 0.0
 
-        prices["fertiliser_low"] = round(20.0 * fert_mult, 2)
-        prices["fertiliser_medium"] = round(45.0 * fert_mult, 2)
-        prices["fertiliser_high"] = round(75.0 * fert_mult, 2)
-        prices["irrigation_cost"] = round(IRRIGATION_ONE_TIME_COST * irr_mult, 2)
+        fert_real  = real.get("fertiliser_mult", 1.0)
+        fert_total = fert_real * fert_mult_task
+        prices["fertiliser_low"]    = round(20.0  * fert_total, 2)
+        prices["fertiliser_medium"] = round(45.0  * fert_total, 2)
+        prices["fertiliser_high"]   = round(75.0  * fert_total, 2)
+        prices["irrigation_cost"]   = round(IRRIGATION_ONE_TIME_COST * irr_mult, 2)
 
         self.state.current_prices = prices
 
@@ -328,26 +390,51 @@ class FarmSimulator:
     # ── Weather ──────────────────────────────────────────────────────────────
 
     def _step_weather(self) -> WeatherRecord:
-        regime = self.state.weather_regime
+        real_w = self._get_real_weather()
+
+        if real_w is not None:
+            # Real historical path: use actual ERA5 rainfall/temperature
+            rainfall    = float(real_w["rainfall_index"])
+            temperature = float(real_w["temperature_index"])
+            regime      = str(real_w["regime"])
+
+            # dry_bias can nudge borderline "normal" quarters into "dry"
+            dry_bias = float(self.task_spec.get("dry_bias", 0.0))
+            if dry_bias > 0.0 and regime == "normal":
+                if float(self.rng.random()) < dry_bias * 0.45:
+                    regime = "dry"
+
+            self.state.weather_regime = regime
+            rec = WeatherRecord(
+                quarter=self.state.quarter,
+                regime=regime,
+                rainfall_index=round(rainfall, 3),
+                temperature_index=round(temperature, 3),
+            )
+            self.state.weather_history.append(rec)
+            return rec
+
+        # Synthetic fallback: Markov chain (used when no real data / no start year)
+        regime   = self.state.weather_regime
         dry_bias = float(self.task_spec.get("dry_bias", 0.0))
 
         trans = dict(WEATHER_TRANSITION[regime])
         if dry_bias > 0.0:
             shift = dry_bias * 0.20
-            trans["dry"] = min(0.90, trans["dry"] + shift)
+            trans["dry"]    = min(0.90, trans["dry"]    + shift)
             trans["normal"] = max(0.05, trans["normal"] - shift * 0.70)
-            trans["wet"] = max(0.05, trans["wet"] - shift * 0.30)
+            trans["wet"]    = max(0.05, trans["wet"]    - shift * 0.30)
             total = sum(trans.values())
             trans = {k: v / total for k, v in trans.items()}
 
         states = list(trans.keys())
-        probs = [trans[s] for s in states]
+        probs  = [trans[s] for s in states]
         new_regime = str(self.rng.choice(states, p=probs))
         self.state.weather_regime = new_regime
 
         mu_r, sd_r = WEATHER_PARAMS[new_regime]["rainfall_index"]
         mu_t, sd_t = WEATHER_PARAMS[new_regime]["temperature_index"]
-        rainfall = float(np.clip(self.rng.normal(mu_r, sd_r), 0.10, 2.50))
+        rainfall    = float(np.clip(self.rng.normal(mu_r, sd_r), 0.10, 2.50))
         temperature = float(np.clip(self.rng.normal(mu_t, sd_t), 0.50, 1.80))
 
         rec = WeatherRecord(

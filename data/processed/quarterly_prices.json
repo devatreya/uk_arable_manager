@@ -1,0 +1,732 @@
+{
+  "period_means_gbp_per_tonne": {
+    "wheat": 139.54,
+    "barley": 121.4,
+    "osr": 316.62,
+    "field_beans": 118.61,
+    "an_fertiliser": 267.67
+  },
+  "source": "AHDB Cereals & Oilseeds / DEFRA Agricultural Price Indices (annual averages)",
+  "quarterly": {
+    "2000": {
+      "1": {
+        "wheat_mult": 0.5366,
+        "barley_mult": 0.5315,
+        "osr_mult": 0.4768,
+        "field_beans_mult": 0.5366,
+        "fertiliser_mult": 0.5326
+      },
+      "2": {
+        "wheat_mult": 0.5211,
+        "barley_mult": 0.5211,
+        "osr_mult": 0.4861,
+        "field_beans_mult": 0.516,
+        "fertiliser_mult": 0.4784
+      },
+      "3": {
+        "wheat_mult": 0.4799,
+        "barley_mult": 0.4799,
+        "osr_mult": 0.4347,
+        "field_beans_mult": 0.4799,
+        "fertiliser_mult": 0.429
+      },
+      "4": {
+        "wheat_mult": 0.5263,
+        "barley_mult": 0.5315,
+        "osr_mult": 0.4721,
+        "field_beans_mult": 0.5315,
+        "fertiliser_mult": 0.5326
+      }
+    },
+    "2001": {
+      "1": {
+        "wheat_mult": 0.6111,
+        "barley_mult": 0.6053,
+        "osr_mult": 0.5219,
+        "field_beans_mult": 0.6111,
+        "fertiliser_mult": 0.5447
+      },
+      "2": {
+        "wheat_mult": 0.5935,
+        "barley_mult": 0.5935,
+        "osr_mult": 0.5321,
+        "field_beans_mult": 0.5876,
+        "fertiliser_mult": 0.4892
+      },
+      "3": {
+        "wheat_mult": 0.5465,
+        "barley_mult": 0.5465,
+        "osr_mult": 0.4758,
+        "field_beans_mult": 0.5465,
+        "fertiliser_mult": 0.4388
+      },
+      "4": {
+        "wheat_mult": 0.5994,
+        "barley_mult": 0.6053,
+        "osr_mult": 0.5168,
+        "field_beans_mult": 0.6053,
+        "fertiliser_mult": 0.5447
+      }
+    },
+    "2002": {
+      "1": {
+        "wheat_mult": 0.6559,
+        "barley_mult": 0.6496,
+        "osr_mult": 0.5895,
+        "field_beans_mult": 0.6559,
+        "fertiliser_mult": 0.5931
+      },
+      "2": {
+        "wheat_mult": 0.6369,
+        "barley_mult": 0.6369,
+        "osr_mult": 0.6011,
+        "field_beans_mult": 0.6306,
+        "fertiliser_mult": 0.5327
+      },
+      "3": {
+        "wheat_mult": 0.5865,
+        "barley_mult": 0.5865,
+        "osr_mult": 0.5375,
+        "field_beans_mult": 0.5865,
+        "fertiliser_mult": 0.4778
+      },
+      "4": {
+        "wheat_mult": 0.6432,
+        "barley_mult": 0.6496,
+        "osr_mult": 0.5838,
+        "field_beans_mult": 0.6496,
+        "fertiliser_mult": 0.5931
+      }
+    },
+    "2003": {
+      "1": {
+        "wheat_mult": 0.6857,
+        "barley_mult": 0.6791,
+        "osr_mult": 0.6379,
+        "field_beans_mult": 0.6857,
+        "fertiliser_mult": 0.5326
+      },
+      "2": {
+        "wheat_mult": 0.6659,
+        "barley_mult": 0.6659,
+        "osr_mult": 0.6504,
+        "field_beans_mult": 0.6593,
+        "fertiliser_mult": 0.4784
+      },
+      "3": {
+        "wheat_mult": 0.6132,
+        "barley_mult": 0.6132,
+        "osr_mult": 0.5816,
+        "field_beans_mult": 0.6132,
+        "fertiliser_mult": 0.429
+      },
+      "4": {
+        "wheat_mult": 0.6725,
+        "barley_mult": 0.6791,
+        "osr_mult": 0.6316,
+        "field_beans_mult": 0.6791,
+        "fertiliser_mult": 0.5326
+      }
+    },
+    "2004": {
+      "1": {
+        "wheat_mult": 0.5515,
+        "barley_mult": 0.5462,
+        "osr_mult": 0.5863,
+        "field_beans_mult": 0.5515,
+        "fertiliser_mult": 0.573
+      },
+      "2": {
+        "wheat_mult": 0.5356,
+        "barley_mult": 0.5356,
+        "osr_mult": 0.5978,
+        "field_beans_mult": 0.5303,
+        "fertiliser_mult": 0.5146
+      },
+      "3": {
+        "wheat_mult": 0.4932,
+        "barley_mult": 0.4932,
+        "osr_mult": 0.5346,
+        "field_beans_mult": 0.4932,
+        "fertiliser_mult": 0.4615
+      },
+      "4": {
+        "wheat_mult": 0.5409,
+        "barley_mult": 0.5462,
+        "osr_mult": 0.5806,
+        "field_beans_mult": 0.5462,
+        "fertiliser_mult": 0.573
+      }
+    },
+    "2005": {
+      "1": {
+        "wheat_mult": 0.5813,
+        "barley_mult": 0.5757,
+        "osr_mult": 0.5477,
+        "field_beans_mult": 0.5813,
+        "fertiliser_mult": 0.7182
+      },
+      "2": {
+        "wheat_mult": 0.5646,
+        "barley_mult": 0.5646,
+        "osr_mult": 0.5584,
+        "field_beans_mult": 0.559,
+        "fertiliser_mult": 0.6451
+      },
+      "3": {
+        "wheat_mult": 0.5198,
+        "barley_mult": 0.5198,
+        "osr_mult": 0.4993,
+        "field_beans_mult": 0.5198,
+        "fertiliser_mult": 0.5786
+      },
+      "4": {
+        "wheat_mult": 0.5702,
+        "barley_mult": 0.5757,
+        "osr_mult": 0.5423,
+        "field_beans_mult": 0.5757,
+        "fertiliser_mult": 0.7182
+      }
+    },
+    "2006": {
+      "1": {
+        "wheat_mult": 0.7677,
+        "barley_mult": 0.7603,
+        "osr_mult": 0.654,
+        "field_beans_mult": 0.7677,
+        "fertiliser_mult": 0.7989
+      },
+      "2": {
+        "wheat_mult": 0.7455,
+        "barley_mult": 0.7455,
+        "osr_mult": 0.6668,
+        "field_beans_mult": 0.7381,
+        "fertiliser_mult": 0.7175
+      },
+      "3": {
+        "wheat_mult": 0.6865,
+        "barley_mult": 0.6865,
+        "osr_mult": 0.5963,
+        "field_beans_mult": 0.6865,
+        "fertiliser_mult": 0.6436
+      },
+      "4": {
+        "wheat_mult": 0.7529,
+        "barley_mult": 0.7603,
+        "osr_mult": 0.6475,
+        "field_beans_mult": 0.7603,
+        "fertiliser_mult": 0.7989
+      }
+    },
+    "2007": {
+      "1": {
+        "wheat_mult": 1.0807,
+        "barley_mult": 1.0703,
+        "osr_mult": 0.8795,
+        "field_beans_mult": 1.0807,
+        "fertiliser_mult": 0.7989
+      },
+      "2": {
+        "wheat_mult": 1.0495,
+        "barley_mult": 1.0495,
+        "osr_mult": 0.8967,
+        "field_beans_mult": 1.0391,
+        "fertiliser_mult": 0.7175
+      },
+      "3": {
+        "wheat_mult": 0.9664,
+        "barley_mult": 0.9664,
+        "osr_mult": 0.8019,
+        "field_beans_mult": 0.9664,
+        "fertiliser_mult": 0.6436
+      },
+      "4": {
+        "wheat_mult": 1.0599,
+        "barley_mult": 1.0703,
+        "osr_mult": 0.8708,
+        "field_beans_mult": 1.0703,
+        "fertiliser_mult": 0.7989
+      }
+    },
+    "2008": {
+      "1": {
+        "wheat_mult": 1.3043,
+        "barley_mult": 1.2917,
+        "osr_mult": 1.2177,
+        "field_beans_mult": 1.3043,
+        "fertiliser_mult": 1.3033
+      },
+      "2": {
+        "wheat_mult": 1.2666,
+        "barley_mult": 1.2666,
+        "osr_mult": 1.2416,
+        "field_beans_mult": 1.2541,
+        "fertiliser_mult": 1.1705
+      },
+      "3": {
+        "wheat_mult": 1.1663,
+        "barley_mult": 1.1663,
+        "osr_mult": 1.1103,
+        "field_beans_mult": 1.1663,
+        "fertiliser_mult": 1.0499
+      },
+      "4": {
+        "wheat_mult": 1.2792,
+        "barley_mult": 1.2917,
+        "osr_mult": 1.2058,
+        "field_beans_mult": 1.2917,
+        "fertiliser_mult": 1.3033
+      }
+    },
+    "2009": {
+      "1": {
+        "wheat_mult": 0.7155,
+        "barley_mult": 0.7086,
+        "osr_mult": 0.7989,
+        "field_beans_mult": 0.7155,
+        "fertiliser_mult": 0.7949
+      },
+      "2": {
+        "wheat_mult": 0.6948,
+        "barley_mult": 0.6948,
+        "osr_mult": 0.8146,
+        "field_beans_mult": 0.688,
+        "fertiliser_mult": 0.7139
+      },
+      "3": {
+        "wheat_mult": 0.6398,
+        "barley_mult": 0.6398,
+        "osr_mult": 0.7284,
+        "field_beans_mult": 0.6398,
+        "fertiliser_mult": 0.6403
+      },
+      "4": {
+        "wheat_mult": 0.7017,
+        "barley_mult": 0.7086,
+        "osr_mult": 0.7911,
+        "field_beans_mult": 0.7086,
+        "fertiliser_mult": 0.7949
+      }
+    },
+    "2010": {
+      "1": {
+        "wheat_mult": 0.9912,
+        "barley_mult": 0.9817,
+        "osr_mult": 0.9407,
+        "field_beans_mult": 0.9912,
+        "fertiliser_mult": 1.0773
+      },
+      "2": {
+        "wheat_mult": 0.9627,
+        "barley_mult": 0.9627,
+        "osr_mult": 0.9591,
+        "field_beans_mult": 0.9531,
+        "fertiliser_mult": 0.9676
+      },
+      "3": {
+        "wheat_mult": 0.8864,
+        "barley_mult": 0.8864,
+        "osr_mult": 0.8577,
+        "field_beans_mult": 0.8864,
+        "fertiliser_mult": 0.8678
+      },
+      "4": {
+        "wheat_mult": 0.9722,
+        "barley_mult": 0.9817,
+        "osr_mult": 0.9314,
+        "field_beans_mult": 0.9817,
+        "fertiliser_mult": 1.0773
+      }
+    },
+    "2011": {
+      "1": {
+        "wheat_mult": 1.2372,
+        "barley_mult": 1.2253,
+        "osr_mult": 1.266,
+        "field_beans_mult": 1.2372,
+        "fertiliser_mult": 1.3234
+      },
+      "2": {
+        "wheat_mult": 1.2015,
+        "barley_mult": 1.2015,
+        "osr_mult": 1.2909,
+        "field_beans_mult": 1.1896,
+        "fertiliser_mult": 1.1886
+      },
+      "3": {
+        "wheat_mult": 1.1063,
+        "barley_mult": 1.1063,
+        "osr_mult": 1.1543,
+        "field_beans_mult": 1.1063,
+        "fertiliser_mult": 1.0661
+      },
+      "4": {
+        "wheat_mult": 1.2134,
+        "barley_mult": 1.2253,
+        "osr_mult": 1.2536,
+        "field_beans_mult": 1.2253,
+        "fertiliser_mult": 1.3234
+      }
+    },
+    "2012": {
+      "1": {
+        "wheat_mult": 1.4682,
+        "barley_mult": 1.4541,
+        "osr_mult": 1.4529,
+        "field_beans_mult": 1.4682,
+        "fertiliser_mult": 1.2992
+      },
+      "2": {
+        "wheat_mult": 1.4259,
+        "barley_mult": 1.4259,
+        "osr_mult": 1.4814,
+        "field_beans_mult": 1.4118,
+        "fertiliser_mult": 1.1669
+      },
+      "3": {
+        "wheat_mult": 1.3129,
+        "barley_mult": 1.3129,
+        "osr_mult": 1.3247,
+        "field_beans_mult": 1.3129,
+        "fertiliser_mult": 1.0466
+      },
+      "4": {
+        "wheat_mult": 1.44,
+        "barley_mult": 1.4541,
+        "osr_mult": 1.4386,
+        "field_beans_mult": 1.4541,
+        "fertiliser_mult": 1.2992
+      }
+    },
+    "2013": {
+      "1": {
+        "wheat_mult": 1.1925,
+        "barley_mult": 1.181,
+        "osr_mult": 1.3466,
+        "field_beans_mult": 1.1925,
+        "fertiliser_mult": 1.1822
+      },
+      "2": {
+        "wheat_mult": 1.1581,
+        "barley_mult": 1.1581,
+        "osr_mult": 1.373,
+        "field_beans_mult": 1.1466,
+        "fertiliser_mult": 1.0618
+      },
+      "3": {
+        "wheat_mult": 1.0663,
+        "barley_mult": 1.0663,
+        "osr_mult": 1.2278,
+        "field_beans_mult": 1.0663,
+        "fertiliser_mult": 0.9523
+      },
+      "4": {
+        "wheat_mult": 1.1695,
+        "barley_mult": 1.181,
+        "osr_mult": 1.3334,
+        "field_beans_mult": 1.181,
+        "fertiliser_mult": 1.1822
+      }
+    },
+    "2014": {
+      "1": {
+        "wheat_mult": 0.9018,
+        "barley_mult": 0.8931,
+        "osr_mult": 1.0695,
+        "field_beans_mult": 0.9018,
+        "fertiliser_mult": 1.1378
+      },
+      "2": {
+        "wheat_mult": 0.8758,
+        "barley_mult": 0.8758,
+        "osr_mult": 1.0905,
+        "field_beans_mult": 0.8671,
+        "fertiliser_mult": 1.0219
+      },
+      "3": {
+        "wheat_mult": 0.8064,
+        "barley_mult": 0.8064,
+        "osr_mult": 0.9752,
+        "field_beans_mult": 0.8064,
+        "fertiliser_mult": 0.9166
+      },
+      "4": {
+        "wheat_mult": 0.8845,
+        "barley_mult": 0.8931,
+        "osr_mult": 1.059,
+        "field_beans_mult": 0.8931,
+        "fertiliser_mult": 1.1378
+      }
+    },
+    "2015": {
+      "1": {
+        "wheat_mult": 0.79,
+        "barley_mult": 0.7824,
+        "osr_mult": 0.8634,
+        "field_beans_mult": 0.79,
+        "fertiliser_mult": 0.9926
+      },
+      "2": {
+        "wheat_mult": 0.7672,
+        "barley_mult": 0.7672,
+        "osr_mult": 0.8803,
+        "field_beans_mult": 0.7596,
+        "fertiliser_mult": 0.8915
+      },
+      "3": {
+        "wheat_mult": 0.7065,
+        "barley_mult": 0.7065,
+        "osr_mult": 0.7872,
+        "field_beans_mult": 0.7065,
+        "fertiliser_mult": 0.7996
+      },
+      "4": {
+        "wheat_mult": 0.7748,
+        "barley_mult": 0.7824,
+        "osr_mult": 0.8549,
+        "field_beans_mult": 0.7824,
+        "fertiliser_mult": 0.9926
+      }
+    },
+    "2016": {
+      "1": {
+        "wheat_mult": 0.8795,
+        "barley_mult": 0.871,
+        "osr_mult": 1.0663,
+        "field_beans_mult": 0.8795,
+        "fertiliser_mult": 0.815
+      },
+      "2": {
+        "wheat_mult": 0.8541,
+        "barley_mult": 0.8541,
+        "osr_mult": 1.0872,
+        "field_beans_mult": 0.8456,
+        "fertiliser_mult": 0.732
+      },
+      "3": {
+        "wheat_mult": 0.7864,
+        "barley_mult": 0.7864,
+        "osr_mult": 0.9722,
+        "field_beans_mult": 0.7864,
+        "fertiliser_mult": 0.6566
+      },
+      "4": {
+        "wheat_mult": 0.8625,
+        "barley_mult": 0.871,
+        "osr_mult": 1.0559,
+        "field_beans_mult": 0.871,
+        "fertiliser_mult": 0.815
+      }
+    },
+    "2017": {
+      "1": {
+        "wheat_mult": 1.0956,
+        "barley_mult": 1.0851,
+        "osr_mult": 1.105,
+        "field_beans_mult": 1.0956,
+        "fertiliser_mult": 0.9724
+      },
+      "2": {
+        "wheat_mult": 1.064,
+        "barley_mult": 1.064,
+        "osr_mult": 1.1266,
+        "field_beans_mult": 1.0534,
+        "fertiliser_mult": 0.8734
+      },
+      "3": {
+        "wheat_mult": 0.9797,
+        "barley_mult": 0.9797,
+        "osr_mult": 1.0075,
+        "field_beans_mult": 0.9797,
+        "fertiliser_mult": 0.7833
+      },
+      "4": {
+        "wheat_mult": 1.0745,
+        "barley_mult": 1.0851,
+        "osr_mult": 1.0941,
+        "field_beans_mult": 1.0851,
+        "fertiliser_mult": 0.9724
+      }
+    },
+    "2018": {
+      "1": {
+        "wheat_mult": 1.3192,
+        "barley_mult": 1.3065,
+        "osr_mult": 1.0566,
+        "field_beans_mult": 1.3192,
+        "fertiliser_mult": 1.0571
+      },
+      "2": {
+        "wheat_mult": 1.2811,
+        "barley_mult": 1.2811,
+        "osr_mult": 1.0774,
+        "field_beans_mult": 1.2684,
+        "fertiliser_mult": 0.9495
+      },
+      "3": {
+        "wheat_mult": 1.1796,
+        "barley_mult": 1.1796,
+        "osr_mult": 0.9634,
+        "field_beans_mult": 1.1796,
+        "fertiliser_mult": 0.8516
+      },
+      "4": {
+        "wheat_mult": 1.2938,
+        "barley_mult": 1.3065,
+        "osr_mult": 1.0463,
+        "field_beans_mult": 1.3065,
+        "fertiliser_mult": 1.0571
+      }
+    },
+    "2019": {
+      "1": {
+        "wheat_mult": 1.2297,
+        "barley_mult": 1.2179,
+        "osr_mult": 1.1662,
+        "field_beans_mult": 1.2297,
+        "fertiliser_mult": 1.0087
+      },
+      "2": {
+        "wheat_mult": 1.1943,
+        "barley_mult": 1.1943,
+        "osr_mult": 1.189,
+        "field_beans_mult": 1.1824,
+        "fertiliser_mult": 0.906
+      },
+      "3": {
+        "wheat_mult": 1.0997,
+        "barley_mult": 1.0997,
+        "osr_mult": 1.0633,
+        "field_beans_mult": 1.0997,
+        "fertiliser_mult": 0.8126
+      },
+      "4": {
+        "wheat_mult": 1.2061,
+        "barley_mult": 1.2179,
+        "osr_mult": 1.1547,
+        "field_beans_mult": 1.2179,
+        "fertiliser_mult": 1.0087
+      }
+    },
+    "2020": {
+      "1": {
+        "wheat_mult": 1.2446,
+        "barley_mult": 1.2327,
+        "osr_mult": 1.266,
+        "field_beans_mult": 1.2446,
+        "fertiliser_mult": 0.8877
+      },
+      "2": {
+        "wheat_mult": 1.2087,
+        "barley_mult": 1.2087,
+        "osr_mult": 1.2909,
+        "field_beans_mult": 1.1968,
+        "fertiliser_mult": 0.7973
+      },
+      "3": {
+        "wheat_mult": 1.113,
+        "barley_mult": 1.113,
+        "osr_mult": 1.1543,
+        "field_beans_mult": 1.113,
+        "fertiliser_mult": 0.7151
+      },
+      "4": {
+        "wheat_mult": 1.2207,
+        "barley_mult": 1.2327,
+        "osr_mult": 1.2536,
+        "field_beans_mult": 1.2327,
+        "fertiliser_mult": 0.8877
+      }
+    },
+    "2021": {
+      "1": {
+        "wheat_mult": 1.4682,
+        "barley_mult": 1.4541,
+        "osr_mult": 1.5205,
+        "field_beans_mult": 1.4682,
+        "fertiliser_mult": 1.6503
+      },
+      "2": {
+        "wheat_mult": 1.4259,
+        "barley_mult": 1.4259,
+        "osr_mult": 1.5504,
+        "field_beans_mult": 1.4118,
+        "fertiliser_mult": 1.4822
+      },
+      "3": {
+        "wheat_mult": 1.3129,
+        "barley_mult": 1.3129,
+        "osr_mult": 1.3864,
+        "field_beans_mult": 1.3129,
+        "fertiliser_mult": 1.3294
+      },
+      "4": {
+        "wheat_mult": 1.44,
+        "barley_mult": 1.4541,
+        "osr_mult": 1.5056,
+        "field_beans_mult": 1.4541,
+        "fertiliser_mult": 1.6503
+      }
+    },
+    "2022": {
+      "1": {
+        "wheat_mult": 2.1465,
+        "barley_mult": 2.1258,
+        "osr_mult": 2.0875,
+        "field_beans_mult": 2.1465,
+        "fertiliser_mult": 3.583
+      },
+      "2": {
+        "wheat_mult": 2.0845,
+        "barley_mult": 2.0845,
+        "osr_mult": 2.1284,
+        "field_beans_mult": 2.0639,
+        "fertiliser_mult": 3.218
+      },
+      "3": {
+        "wheat_mult": 1.9194,
+        "barley_mult": 1.9194,
+        "osr_mult": 1.9033,
+        "field_beans_mult": 1.9194,
+        "fertiliser_mult": 2.8863
+      },
+      "4": {
+        "wheat_mult": 2.1052,
+        "barley_mult": 2.1258,
+        "osr_mult": 2.0671,
+        "field_beans_mult": 2.1258,
+        "fertiliser_mult": 3.583
+      }
+    },
+    "2023": {
+      "1": {
+        "wheat_mult": 1.5055,
+        "barley_mult": 1.491,
+        "osr_mult": 1.3627,
+        "field_beans_mult": 1.5055,
+        "fertiliser_mult": 1.7431
+      },
+      "2": {
+        "wheat_mult": 1.4621,
+        "barley_mult": 1.4621,
+        "osr_mult": 1.3894,
+        "field_beans_mult": 1.4476,
+        "fertiliser_mult": 1.5655
+      },
+      "3": {
+        "wheat_mult": 1.3463,
+        "barley_mult": 1.3463,
+        "osr_mult": 1.2424,
+        "field_beans_mult": 1.3463,
+        "fertiliser_mult": 1.4041
+      },
+      "4": {
+        "wheat_mult": 1.4765,
+        "barley_mult": 1.491,
+        "osr_mult": 1.3493,
+        "field_beans_mult": 1.491,
+        "fertiliser_mult": 1.7431
+      }
+    }
+  }
+}

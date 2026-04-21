@@ -182,3 +182,14 @@ TASK_FILES = {
     "validation": DATA_PROCESSED / "scenario_tasks_validation.json",
     "test":       DATA_PROCESSED / "scenario_tasks_test.json",
 }
+
+# Real historical data (written by fetch_weather.py / fetch_prices.py)
+QUARTERLY_WEATHER_PATH = DATA_PROCESSED / "quarterly_weather.json"
+QUARTERLY_PRICES_PATH  = DATA_PROCESSED / "quarterly_prices.json"
+
+# Valid simulation start-year range: 10-year window must fit inside 2000-2023.
+# Effective start range is 2007-2014: avoids very low pre-reform wheat prices
+# (2000-2006) while covering the 2007-08 commodity spike, 2009 crash, 2012 drought.
+REAL_DATA_START_YEAR = 2000
+REAL_DATA_END_YEAR   = 2023
+SIM_MAX_START_YEAR   = REAL_DATA_END_YEAR - 10 + 1  # 2014

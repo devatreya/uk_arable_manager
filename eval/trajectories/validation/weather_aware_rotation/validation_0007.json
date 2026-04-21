@@ -1,0 +1,2376 @@
+{
+  "task_spec": {
+    "task_id": "validation_0007",
+    "seed": 20010007,
+    "split": "validation",
+    "scenario_type": "standard",
+    "starting_cash": 177234.88,
+    "initial_weather_regime": "wet",
+    "dry_bias": 0.0,
+    "price_volatility": 0.0946,
+    "fertiliser_cost_multiplier": 0.9682,
+    "irrigation_cost_multiplier": 1.0,
+    "initial_soil_by_plot": [
+      0.671,
+      0.5476,
+      0.6481,
+      0.6288
+    ],
+    "initial_crop_by_plot": [
+      "wheat",
+      "field_beans",
+      "wheat",
+      "field_beans"
+    ]
+  },
+  "steps": [
+    {
+      "quarter": 0,
+      "action": {
+        "capital_action": "buy_irrigation",
+        "plots": [
+          {
+            "crop": "field_beans",
+            "fertiliser": "medium",
+            "pest_control": "spray"
+          },
+          {
+            "crop": "barley",
+            "fertiliser": "medium",
+            "pest_control": "spray"
+          },
+          {
+            "crop": "field_beans",
+            "fertiliser": "medium",
+            "pest_control": "spray"
+          },
+          {
+            "crop": "cover_crop",
+            "fertiliser": "low",
+            "pest_control": "none"
+          }
+        ]
+      },
+      "reward": -0.311574,
+      "pnl": -3115.74,
+      "observation": "pnl=-3116 weather=dry",
+      "weather": {
+        "quarter": 0,
+        "regime": "dry",
+        "rainfall_index": 0.743,
+        "temperature_index": 1.133
+      },
+      "plot_pnl": [
+        5983.64,
+        -8370.02,
+        5707.04,
+        -6436.4
+      ],
+      "bankrupt": false,
+      "pest_pressure": [
+        true,
+        false,
+        true,
+        false
+      ],
+      "state_snapshot": null
+    },
+    {
+      "quarter": 1,
+      "action": {
+        "capital_action": "none",
+        "plots": [
+          {
+            "crop": "field_beans",
+            "fertiliser": "medium",
+            "pest_control": "ipm"
+          },
+          {
+            "crop": "cover_crop",
+            "fertiliser": "low",
+            "pest_control": "none"
+          },
+          {
+            "crop": "field_beans",
+            "fertiliser": "medium",
+            "pest_control": "ipm"
+          },
+          {
+            "crop": "barley",
+            "fertiliser": "medium",
+            "pest_control": "ipm"
+          }
+        ]
+      },
+      "reward": 2.104029,
+      "pnl": 21040.29,
+      "observation": "pnl=21040 weather=normal",
+      "weather": {
+        "quarter": 1,
+        "regime": "normal",
+        "rainfall_index": 1.154,
+        "temperature_index": 0.873
+      },
+      "plot_pnl": [
+        8508.87,
+        -6436.4,
+        8229.81,
+        10738.01
+      ],
+      "bankrupt": false,
+      "pest_pressure": [
+        false,
+        false,
+        false,
+        false
+      ],
+      "state_snapshot": null
+    },
+    {
+      "quarter": 2,
+      "action": {
+        "capital_action": "none",
+        "plots": [
+          {
+            "crop": "barley",
+            "fertiliser": "medium",
+            "pest_control": "ipm"
+          },
+          {
+            "crop": "wheat",
+            "fertiliser": "medium",
+            "pest_control": "ipm"
+          },
+          {
+            "crop": "cover_crop",
+            "fertiliser": "low",
+            "pest_control": "none"
+          },
+          {
+            "crop": "field_beans",
+            "fertiliser": "medium",
+            "pest_control": "ipm"
+          }
+        ]
+      },
+      "reward": 2.658403,
+      "pnl": 26584.03,
+      "observation": "pnl=26584 weather=normal",
+      "weather": {
+        "quarter": 2,
+        "regime": "normal",
+        "rainfall_index": 1.05,
+        "temperature_index": 1.059
+      },
+      "plot_pnl": [
+        8501.31,
+        10209.35,
+        -6436.4,
+        14309.77
+      ],
+      "bankrupt": false,
+      "pest_pressure": [
+        true,
+        false,
+        true,
+        false
+      ],
+      "state_snapshot": null
+    },
+    {
+      "quarter": 3,
+      "action": {
+        "capital_action": "none",
+        "plots": [
+          {
+            "crop": "cover_crop",
+            "fertiliser": "low",
+            "pest_control": "none"
+          },
+          {
+            "crop": "field_beans",
+            "fertiliser": "medium",
+            "pest_control": "ipm"
+          },
+          {
+            "crop": "barley",
+            "fertiliser": "medium",
+            "pest_control": "ipm"
+          },
+          {
+            "crop": "wheat",
+            "fertiliser": "medium",
+            "pest_control": "ipm"
+          }
+        ]
+      },
+      "reward": 0.49811,
+      "pnl": 4981.1,
+      "observation": "pnl=4981 weather=normal",
+      "weather": {
+        "quarter": 3,
+        "regime": "normal",
+        "rainfall_index": 1.092,
+        "temperature_index": 1.185
+      },
+      "plot_pnl": [
+        -6436.4,
+        10326.52,
+        3275.01,
+        -2184.03
+      ],
+      "bankrupt": false,
+      "pest_pressure": [
+        false,
+        false,
+        false,
+        false
+      ],
+      "state_snapshot": null
+    },
+    {
+      "quarter": 4,
+      "action": {
+        "capital_action": "none",
+        "plots": [
+          {
+            "crop": "wheat",
+            "fertiliser": "medium",
+            "pest_control": "ipm"
+          },
+          {
+            "crop": "barley",
+            "fertiliser": "medium",
+            "pest_control": "ipm"
+          },
+          {
+            "crop": "field_beans",
+            "fertiliser": "medium",
+            "pest_control": "ipm"
+          },
+          {
+            "crop": "cover_crop",
+            "fertiliser": "low",
+            "pest_control": "none"
+          }
+        ]
+      },
+      "reward": 1.200509,
+      "pnl": 12005.09,
+      "observation": "pnl=12005 weather=dry",
+      "weather": {
+        "quarter": 4,
+        "regime": "dry",
+        "rainfall_index": 0.516,
+        "temperature_index": 1.272
+      },
+      "plot_pnl": [
+        2486.91,
+        5480.58,
+        10474.0,
+        -6436.4
+      ],
+      "bankrupt": false,
+      "pest_pressure": [
+        true,
+        false,
+        false,
+        false
+      ],
+      "state_snapshot": null
+    },
+    {
+      "quarter": 5,
+      "action": {
+        "capital_action": "none",
+        "plots": [
+          {
+            "crop": "field_beans",
+            "fertiliser": "medium",
+            "pest_control": "ipm"
+          },
+          {
+            "crop": "cover_crop",
+            "fertiliser": "low",
+            "pest_control": "none"
+          },
+          {
+            "crop": "wheat",
+            "fertiliser": "medium",
+            "pest_control": "ipm"
+          },
+          {
+            "crop": "barley",
+            "fertiliser": "medium",
+            "pest_control": "ipm"
+          }
+        ]
+      },
+      "reward": 0.427854,
+      "pnl": 4278.54,
+      "observation": "pnl=4279 weather=dry",
+      "weather": {
+        "quarter": 5,
+        "regime": "dry",
+        "rainfall_index": 0.715,
+        "temperature_index": 1.189
+      },
+      "plot_pnl": [
+        8172.88,
+        -6436.4,
+        2647.8,
+        -105.74
+      ],
+      "bankrupt": false,
+      "pest_pressure": [
+        false,
+        false,
+        false,
+        false
+      ],
+      "state_snapshot": null
+    },
+    {
+      "quarter": 6,
+      "action": {
+        "capital_action": "none",
+        "plots": [
+          {
+            "crop": "barley",
+            "fertiliser": "medium",
+            "pest_control": "ipm"
+          },
+          {
+            "crop": "wheat",
+            "fertiliser": "medium",
+            "pest_control": "ipm"
+          },
+          {
+            "crop": "cover_crop",
+            "fertiliser": "low",
+            "pest_control": "none"
+          },
+          {
+            "crop": "field_beans",
+            "fertiliser": "medium",
+            "pest_control": "ipm"
+          }
+        ]
+      },
+      "reward": 2.172724,
+      "pnl": 21727.24,
+      "observation": "pnl=21727 weather=dry",
+      "weather": {
+        "quarter": 6,
+        "regime": "dry",
+        "rainfall_index": 0.645,
+        "temperature_index": 1.231
+      },
+      "plot_pnl": [
+        9710.43,
+        9557.79,
+        -6436.4,
+        8895.42
+      ],
+      "bankrupt": false,
+      "pest_pressure": [
+        false,
+        true,
+        false,
+        true
+      ],
+      "state_snapshot": null
+    },
+    {
+      "quarter": 7,
+      "action": {
+        "capital_action": "none",
+        "plots": [
+          {
+            "crop": "cover_crop",
+            "fertiliser": "low",
+            "pest_control": "none"
+          },
+          {
+            "crop": "field_beans",
+            "fertiliser": "medium",
+            "pest_control": "ipm"
+          },
+          {
+            "crop": "barley",
+            "fertiliser": "medium",
+            "pest_control": "ipm"
+          },
+          {
+            "crop": "wheat",
+            "fertiliser": "medium",
+            "pest_control": "ipm"
+          }
+        ]
+      },
+      "reward": 1.814493,
+      "pnl": 18144.93,
+      "observation": "pnl=18145 weather=dry",
+      "weather": {
+        "quarter": 7,
+        "regime": "dry",
+        "rainfall_index": 0.694,
+        "temperature_index": 1.288
+      },
+      "plot_pnl": [
+        -6436.4,
+        3828.64,
+        5231.57,
+        15521.12
+      ],
+      "bankrupt": false,
+      "pest_pressure": [
+        true,
+        false,
+        false,
+        false
+      ],
+      "state_snapshot": null
+    },
+    {
+      "quarter": 8,
+      "action": {
+        "capital_action": "none",
+        "plots": [
+          {
+            "crop": "wheat",
+            "fertiliser": "medium",
+            "pest_control": "ipm"
+          },
+          {
+            "crop": "barley",
+            "fertiliser": "medium",
+            "pest_control": "ipm"
+          },
+          {
+            "crop": "field_beans",
+            "fertiliser": "medium",
+            "pest_control": "ipm"
+          },
+          {
+            "crop": "cover_crop",
+            "fertiliser": "low",
+            "pest_control": "none"
+          }
+        ]
+      },
+      "reward": 2.652646,
+      "pnl": 26526.46,
+      "observation": "pnl=26526 weather=dry",
+      "weather": {
+        "quarter": 8,
+        "regime": "dry",
+        "rainfall_index": 0.432,
+        "temperature_index": 0.958
+      },
+      "plot_pnl": [
+        8392.26,
+        8642.74,
+        15927.86,
+        -6436.4
+      ],
+      "bankrupt": false,
+      "pest_pressure": [
+        false,
+        false,
+        false,
+        false
+      ],
+      "state_snapshot": null
+    },
+    {
+      "quarter": 9,
+      "action": {
+        "capital_action": "none",
+        "plots": [
+          {
+            "crop": "field_beans",
+            "fertiliser": "medium",
+            "pest_control": "ipm"
+          },
+          {
+            "crop": "cover_crop",
+            "fertiliser": "low",
+            "pest_control": "none"
+          },
+          {
+            "crop": "wheat",
+            "fertiliser": "medium",
+            "pest_control": "ipm"
+          },
+          {
+            "crop": "barley",
+            "fertiliser": "medium",
+            "pest_control": "ipm"
+          }
+        ]
+      },
+      "reward": 1.584229,
+      "pnl": 15842.29,
+      "observation": "pnl=15842 weather=dry",
+      "weather": {
+        "quarter": 9,
+        "regime": "dry",
+        "rainfall_index": 0.499,
+        "temperature_index": 1.192
+      },
+      "plot_pnl": [
+        5713.51,
+        -6436.4,
+        6606.02,
+        9959.16
+      ],
+      "bankrupt": false,
+      "pest_pressure": [
+        false,
+        false,
+        false,
+        false
+      ],
+      "state_snapshot": null
+    },
+    {
+      "quarter": 10,
+      "action": {
+        "capital_action": "none",
+        "plots": [
+          {
+            "crop": "barley",
+            "fertiliser": "medium",
+            "pest_control": "ipm"
+          },
+          {
+            "crop": "wheat",
+            "fertiliser": "medium",
+            "pest_control": "ipm"
+          },
+          {
+            "crop": "cover_crop",
+            "fertiliser": "low",
+            "pest_control": "none"
+          },
+          {
+            "crop": "field_beans",
+            "fertiliser": "medium",
+            "pest_control": "ipm"
+          }
+        ]
+      },
+      "reward": 0.909562,
+      "pnl": 9095.62,
+      "observation": "pnl=9096 weather=dry",
+      "weather": {
+        "quarter": 10,
+        "regime": "dry",
+        "rainfall_index": 0.39,
+        "temperature_index": 1.208
+      },
+      "plot_pnl": [
+        -1065.08,
+        9653.27,
+        -6436.4,
+        6943.83
+      ],
+      "bankrupt": false,
+      "pest_pressure": [
+        false,
+        false,
+        false,
+        true
+      ],
+      "state_snapshot": null
+    },
+    {
+      "quarter": 11,
+      "action": {
+        "capital_action": "none",
+        "plots": [
+          {
+            "crop": "cover_crop",
+            "fertiliser": "low",
+            "pest_control": "none"
+          },
+          {
+            "crop": "field_beans",
+            "fertiliser": "medium",
+            "pest_control": "ipm"
+          },
+          {
+            "crop": "barley",
+            "fertiliser": "medium",
+            "pest_control": "ipm"
+          },
+          {
+            "crop": "wheat",
+            "fertiliser": "medium",
+            "pest_control": "ipm"
+          }
+        ]
+      },
+      "reward": 3.080751,
+      "pnl": 30807.51,
+      "observation": "pnl=30808 weather=normal",
+      "weather": {
+        "quarter": 11,
+        "regime": "normal",
+        "rainfall_index": 1.045,
+        "temperature_index": 0.932
+      },
+      "plot_pnl": [
+        -6436.4,
+        12971.91,
+        8461.09,
+        15810.91
+      ],
+      "bankrupt": false,
+      "pest_pressure": [
+        true,
+        false,
+        false,
+        false
+      ],
+      "state_snapshot": null
+    },
+    {
+      "quarter": 12,
+      "action": {
+        "capital_action": "none",
+        "plots": [
+          {
+            "crop": "wheat",
+            "fertiliser": "medium",
+            "pest_control": "ipm"
+          },
+          {
+            "crop": "barley",
+            "fertiliser": "medium",
+            "pest_control": "ipm"
+          },
+          {
+            "crop": "field_beans",
+            "fertiliser": "medium",
+            "pest_control": "ipm"
+          },
+          {
+            "crop": "cover_crop",
+            "fertiliser": "low",
+            "pest_control": "none"
+          }
+        ]
+      },
+      "reward": 1.093234,
+      "pnl": 10932.34,
+      "observation": "pnl=10932 weather=normal",
+      "weather": {
+        "quarter": 12,
+        "regime": "normal",
+        "rainfall_index": 0.818,
+        "temperature_index": 1.056
+      },
+      "plot_pnl": [
+        1556.69,
+        8773.67,
+        7038.38,
+        -6436.4
+      ],
+      "bankrupt": false,
+      "pest_pressure": [
+        true,
+        false,
+        false,
+        false
+      ],
+      "state_snapshot": null
+    },
+    {
+      "quarter": 13,
+      "action": {
+        "capital_action": "none",
+        "plots": [
+          {
+            "crop": "field_beans",
+            "fertiliser": "medium",
+            "pest_control": "ipm"
+          },
+          {
+            "crop": "cover_crop",
+            "fertiliser": "low",
+            "pest_control": "none"
+          },
+          {
+            "crop": "wheat",
+            "fertiliser": "medium",
+            "pest_control": "ipm"
+          },
+          {
+            "crop": "barley",
+            "fertiliser": "medium",
+            "pest_control": "ipm"
+          }
+        ]
+      },
+      "reward": 2.837594,
+      "pnl": 28375.94,
+      "observation": "pnl=28376 weather=wet",
+      "weather": {
+        "quarter": 13,
+        "regime": "wet",
+        "rainfall_index": 1.468,
+        "temperature_index": 0.927
+      },
+      "plot_pnl": [
+        12752.6,
+        -6436.4,
+        12094.3,
+        9965.44
+      ],
+      "bankrupt": false,
+      "pest_pressure": [
+        false,
+        true,
+        false,
+        true
+      ],
+      "state_snapshot": null
+    },
+    {
+      "quarter": 14,
+      "action": {
+        "capital_action": "none",
+        "plots": [
+          {
+            "crop": "barley",
+            "fertiliser": "medium",
+            "pest_control": "ipm"
+          },
+          {
+            "crop": "wheat",
+            "fertiliser": "medium",
+            "pest_control": "ipm"
+          },
+          {
+            "crop": "cover_crop",
+            "fertiliser": "low",
+            "pest_control": "none"
+          },
+          {
+            "crop": "field_beans",
+            "fertiliser": "medium",
+            "pest_control": "ipm"
+          }
+        ]
+      },
+      "reward": 1.6889,
+      "pnl": 16889.0,
+      "observation": "pnl=16889 weather=dry",
+      "weather": {
+        "quarter": 14,
+        "regime": "dry",
+        "rainfall_index": 0.485,
+        "temperature_index": 1.145
+      },
+      "plot_pnl": [
+        7625.77,
+        7031.5,
+        -6436.4,
+        8668.13
+      ],
+      "bankrupt": false,
+      "pest_pressure": [
+        false,
+        false,
+        false,
+        true
+      ],
+      "state_snapshot": null
+    },
+    {
+      "quarter": 15,
+      "action": {
+        "capital_action": "none",
+        "plots": [
+          {
+            "crop": "cover_crop",
+            "fertiliser": "low",
+            "pest_control": "none"
+          },
+          {
+            "crop": "field_beans",
+            "fertiliser": "medium",
+            "pest_control": "ipm"
+          },
+          {
+            "crop": "barley",
+            "fertiliser": "medium",
+            "pest_control": "ipm"
+          },
+          {
+            "crop": "wheat",
+            "fertiliser": "medium",
+            "pest_control": "ipm"
+          }
+        ]
+      },
+      "reward": 1.228101,
+      "pnl": 12281.01,
+      "observation": "pnl=12281 weather=dry",
+      "weather": {
+        "quarter": 15,
+        "regime": "dry",
+        "rainfall_index": 0.523,
+        "temperature_index": 1.027
+      },
+      "plot_pnl": [
+        -6436.4,
+        6320.71,
+        5613.51,
+        6783.19
+      ],
+      "bankrupt": false,
+      "pest_pressure": [
+        false,
+        false,
+        false,
+        true
+      ],
+      "state_snapshot": null
+    },
+    {
+      "quarter": 16,
+      "action": {
+        "capital_action": "none",
+        "plots": [
+          {
+            "crop": "wheat",
+            "fertiliser": "medium",
+            "pest_control": "ipm"
+          },
+          {
+            "crop": "barley",
+            "fertiliser": "medium",
+            "pest_control": "ipm"
+          },
+          {
+            "crop": "field_beans",
+            "fertiliser": "medium",
+            "pest_control": "ipm"
+          },
+          {
+            "crop": "cover_crop",
+            "fertiliser": "low",
+            "pest_control": "none"
+          }
+        ]
+      },
+      "reward": 2.543998,
+      "pnl": 25439.98,
+      "observation": "pnl=25440 weather=normal",
+      "weather": {
+        "quarter": 16,
+        "regime": "normal",
+        "rainfall_index": 1.109,
+        "temperature_index": 0.891
+      },
+      "plot_pnl": [
+        16887.41,
+        3002.36,
+        11986.61,
+        -6436.4
+      ],
+      "bankrupt": false,
+      "pest_pressure": [
+        true,
+        false,
+        false,
+        false
+      ],
+      "state_snapshot": null
+    },
+    {
+      "quarter": 17,
+      "action": {
+        "capital_action": "none",
+        "plots": [
+          {
+            "crop": "field_beans",
+            "fertiliser": "medium",
+            "pest_control": "ipm"
+          },
+          {
+            "crop": "cover_crop",
+            "fertiliser": "low",
+            "pest_control": "none"
+          },
+          {
+            "crop": "wheat",
+            "fertiliser": "medium",
+            "pest_control": "ipm"
+          },
+          {
+            "crop": "barley",
+            "fertiliser": "medium",
+            "pest_control": "ipm"
+          }
+        ]
+      },
+      "reward": 4.002456,
+      "pnl": 40024.56,
+      "observation": "pnl=40025 weather=normal",
+      "weather": {
+        "quarter": 17,
+        "regime": "normal",
+        "rainfall_index": 1.206,
+        "temperature_index": 1.074
+      },
+      "plot_pnl": [
+        11266.66,
+        -6436.4,
+        16444.85,
+        18749.45
+      ],
+      "bankrupt": false,
+      "pest_pressure": [
+        false,
+        false,
+        false,
+        false
+      ],
+      "state_snapshot": null
+    },
+    {
+      "quarter": 18,
+      "action": {
+        "capital_action": "none",
+        "plots": [
+          {
+            "crop": "barley",
+            "fertiliser": "medium",
+            "pest_control": "ipm"
+          },
+          {
+            "crop": "wheat",
+            "fertiliser": "medium",
+            "pest_control": "ipm"
+          },
+          {
+            "crop": "cover_crop",
+            "fertiliser": "low",
+            "pest_control": "none"
+          },
+          {
+            "crop": "field_beans",
+            "fertiliser": "medium",
+            "pest_control": "ipm"
+          }
+        ]
+      },
+      "reward": -0.274113,
+      "pnl": -2741.13,
+      "observation": "pnl=-2741 weather=dry",
+      "weather": {
+        "quarter": 18,
+        "regime": "dry",
+        "rainfall_index": 0.74,
+        "temperature_index": 1.273
+      },
+      "plot_pnl": [
+        -1560.17,
+        4686.27,
+        -6436.4,
+        569.17
+      ],
+      "bankrupt": false,
+      "pest_pressure": [
+        true,
+        false,
+        true,
+        true
+      ],
+      "state_snapshot": null
+    },
+    {
+      "quarter": 19,
+      "action": {
+        "capital_action": "none",
+        "plots": [
+          {
+            "crop": "cover_crop",
+            "fertiliser": "low",
+            "pest_control": "none"
+          },
+          {
+            "crop": "field_beans",
+            "fertiliser": "medium",
+            "pest_control": "ipm"
+          },
+          {
+            "crop": "barley",
+            "fertiliser": "medium",
+            "pest_control": "ipm"
+          },
+          {
+            "crop": "wheat",
+            "fertiliser": "medium",
+            "pest_control": "ipm"
+          }
+        ]
+      },
+      "reward": -0.006998,
+      "pnl": -69.98,
+      "observation": "pnl=-70 weather=dry",
+      "weather": {
+        "quarter": 19,
+        "regime": "dry",
+        "rainfall_index": 0.747,
+        "temperature_index": 0.926
+      },
+      "plot_pnl": [
+        -6436.4,
+        -196.57,
+        781.73,
+        5781.26
+      ],
+      "bankrupt": false,
+      "pest_pressure": [
+        true,
+        false,
+        false,
+        true
+      ],
+      "state_snapshot": null
+    },
+    {
+      "quarter": 20,
+      "action": {
+        "capital_action": "none",
+        "plots": [
+          {
+            "crop": "wheat",
+            "fertiliser": "medium",
+            "pest_control": "ipm"
+          },
+          {
+            "crop": "barley",
+            "fertiliser": "medium",
+            "pest_control": "ipm"
+          },
+          {
+            "crop": "field_beans",
+            "fertiliser": "medium",
+            "pest_control": "ipm"
+          },
+          {
+            "crop": "cover_crop",
+            "fertiliser": "low",
+            "pest_control": "none"
+          }
+        ]
+      },
+      "reward": 1.009388,
+      "pnl": 10093.88,
+      "observation": "pnl=10094 weather=dry",
+      "weather": {
+        "quarter": 20,
+        "regime": "dry",
+        "rainfall_index": 0.459,
+        "temperature_index": 1.039
+      },
+      "plot_pnl": [
+        6191.42,
+        2845.04,
+        7493.82,
+        -6436.4
+      ],
+      "bankrupt": false,
+      "pest_pressure": [
+        false,
+        false,
+        false,
+        true
+      ],
+      "state_snapshot": null
+    },
+    {
+      "quarter": 21,
+      "action": {
+        "capital_action": "none",
+        "plots": [
+          {
+            "crop": "field_beans",
+            "fertiliser": "medium",
+            "pest_control": "ipm"
+          },
+          {
+            "crop": "cover_crop",
+            "fertiliser": "low",
+            "pest_control": "none"
+          },
+          {
+            "crop": "wheat",
+            "fertiliser": "medium",
+            "pest_control": "ipm"
+          },
+          {
+            "crop": "barley",
+            "fertiliser": "medium",
+            "pest_control": "ipm"
+          }
+        ]
+      },
+      "reward": 1.391092,
+      "pnl": 13910.92,
+      "observation": "pnl=13911 weather=dry",
+      "weather": {
+        "quarter": 21,
+        "regime": "dry",
+        "rainfall_index": 0.548,
+        "temperature_index": 1.247
+      },
+      "plot_pnl": [
+        -885.59,
+        -6436.4,
+        21312.18,
+        -79.27
+      ],
+      "bankrupt": false,
+      "pest_pressure": [
+        false,
+        false,
+        false,
+        true
+      ],
+      "state_snapshot": null
+    },
+    {
+      "quarter": 22,
+      "action": {
+        "capital_action": "none",
+        "plots": [
+          {
+            "crop": "barley",
+            "fertiliser": "medium",
+            "pest_control": "ipm"
+          },
+          {
+            "crop": "wheat",
+            "fertiliser": "medium",
+            "pest_control": "ipm"
+          },
+          {
+            "crop": "cover_crop",
+            "fertiliser": "low",
+            "pest_control": "none"
+          },
+          {
+            "crop": "field_beans",
+            "fertiliser": "medium",
+            "pest_control": "ipm"
+          }
+        ]
+      },
+      "reward": -0.593677,
+      "pnl": -5936.77,
+      "observation": "pnl=-5937 weather=dry",
+      "weather": {
+        "quarter": 22,
+        "regime": "dry",
+        "rainfall_index": 0.817,
+        "temperature_index": 1.204
+      },
+      "plot_pnl": [
+        -211.76,
+        -718.86,
+        -6436.4,
+        1430.25
+      ],
+      "bankrupt": false,
+      "pest_pressure": [
+        false,
+        false,
+        true,
+        true
+      ],
+      "state_snapshot": null
+    },
+    {
+      "quarter": 23,
+      "action": {
+        "capital_action": "none",
+        "plots": [
+          {
+            "crop": "cover_crop",
+            "fertiliser": "low",
+            "pest_control": "none"
+          },
+          {
+            "crop": "field_beans",
+            "fertiliser": "medium",
+            "pest_control": "ipm"
+          },
+          {
+            "crop": "barley",
+            "fertiliser": "medium",
+            "pest_control": "ipm"
+          },
+          {
+            "crop": "wheat",
+            "fertiliser": "medium",
+            "pest_control": "ipm"
+          }
+        ]
+      },
+      "reward": -0.829546,
+      "pnl": -8295.46,
+      "observation": "pnl=-8295 weather=dry",
+      "weather": {
+        "quarter": 23,
+        "regime": "dry",
+        "rainfall_index": 0.714,
+        "temperature_index": 1.259
+      },
+      "plot_pnl": [
+        -6436.4,
+        1391.35,
+        3628.27,
+        -6878.68
+      ],
+      "bankrupt": false,
+      "pest_pressure": [
+        false,
+        false,
+        false,
+        true
+      ],
+      "state_snapshot": null
+    },
+    {
+      "quarter": 24,
+      "action": {
+        "capital_action": "none",
+        "plots": [
+          {
+            "crop": "wheat",
+            "fertiliser": "medium",
+            "pest_control": "ipm"
+          },
+          {
+            "crop": "barley",
+            "fertiliser": "medium",
+            "pest_control": "ipm"
+          },
+          {
+            "crop": "field_beans",
+            "fertiliser": "medium",
+            "pest_control": "ipm"
+          },
+          {
+            "crop": "cover_crop",
+            "fertiliser": "low",
+            "pest_control": "none"
+          }
+        ]
+      },
+      "reward": 2.702844,
+      "pnl": 27028.44,
+      "observation": "pnl=27028 weather=dry",
+      "weather": {
+        "quarter": 24,
+        "regime": "dry",
+        "rainfall_index": 0.538,
+        "temperature_index": 0.968
+      },
+      "plot_pnl": [
+        10961.64,
+        8864.14,
+        13639.06,
+        -6436.4
+      ],
+      "bankrupt": false,
+      "pest_pressure": [
+        false,
+        false,
+        true,
+        false
+      ],
+      "state_snapshot": null
+    },
+    {
+      "quarter": 25,
+      "action": {
+        "capital_action": "none",
+        "plots": [
+          {
+            "crop": "field_beans",
+            "fertiliser": "medium",
+            "pest_control": "ipm"
+          },
+          {
+            "crop": "cover_crop",
+            "fertiliser": "low",
+            "pest_control": "none"
+          },
+          {
+            "crop": "wheat",
+            "fertiliser": "medium",
+            "pest_control": "ipm"
+          },
+          {
+            "crop": "barley",
+            "fertiliser": "medium",
+            "pest_control": "ipm"
+          }
+        ]
+      },
+      "reward": 2.542106,
+      "pnl": 25421.06,
+      "observation": "pnl=25421 weather=wet",
+      "weather": {
+        "quarter": 25,
+        "regime": "wet",
+        "rainfall_index": 1.345,
+        "temperature_index": 0.954
+      },
+      "plot_pnl": [
+        19005.57,
+        -6436.4,
+        7139.12,
+        5712.77
+      ],
+      "bankrupt": false,
+      "pest_pressure": [
+        true,
+        true,
+        true,
+        true
+      ],
+      "state_snapshot": null
+    },
+    {
+      "quarter": 26,
+      "action": {
+        "capital_action": "none",
+        "plots": [
+          {
+            "crop": "barley",
+            "fertiliser": "medium",
+            "pest_control": "ipm"
+          },
+          {
+            "crop": "wheat",
+            "fertiliser": "medium",
+            "pest_control": "ipm"
+          },
+          {
+            "crop": "cover_crop",
+            "fertiliser": "low",
+            "pest_control": "none"
+          },
+          {
+            "crop": "field_beans",
+            "fertiliser": "medium",
+            "pest_control": "ipm"
+          }
+        ]
+      },
+      "reward": 2.102588,
+      "pnl": 21025.88,
+      "observation": "pnl=21026 weather=normal",
+      "weather": {
+        "quarter": 26,
+        "regime": "normal",
+        "rainfall_index": 0.87,
+        "temperature_index": 0.94
+      },
+      "plot_pnl": [
+        8614.92,
+        8370.88,
+        -6436.4,
+        10476.48
+      ],
+      "bankrupt": false,
+      "pest_pressure": [
+        false,
+        false,
+        true,
+        false
+      ],
+      "state_snapshot": null
+    },
+    {
+      "quarter": 27,
+      "action": {
+        "capital_action": "none",
+        "plots": [
+          {
+            "crop": "cover_crop",
+            "fertiliser": "low",
+            "pest_control": "none"
+          },
+          {
+            "crop": "field_beans",
+            "fertiliser": "medium",
+            "pest_control": "ipm"
+          },
+          {
+            "crop": "barley",
+            "fertiliser": "medium",
+            "pest_control": "ipm"
+          },
+          {
+            "crop": "wheat",
+            "fertiliser": "medium",
+            "pest_control": "ipm"
+          }
+        ]
+      },
+      "reward": 2.004107,
+      "pnl": 20041.07,
+      "observation": "pnl=20041 weather=wet",
+      "weather": {
+        "quarter": 27,
+        "regime": "wet",
+        "rainfall_index": 1.761,
+        "temperature_index": 0.808
+      },
+      "plot_pnl": [
+        -6436.4,
+        9636.35,
+        3041.25,
+        13799.87
+      ],
+      "bankrupt": false,
+      "pest_pressure": [
+        false,
+        false,
+        false,
+        true
+      ],
+      "state_snapshot": null
+    },
+    {
+      "quarter": 28,
+      "action": {
+        "capital_action": "none",
+        "plots": [
+          {
+            "crop": "wheat",
+            "fertiliser": "medium",
+            "pest_control": "ipm"
+          },
+          {
+            "crop": "barley",
+            "fertiliser": "medium",
+            "pest_control": "ipm"
+          },
+          {
+            "crop": "field_beans",
+            "fertiliser": "medium",
+            "pest_control": "ipm"
+          },
+          {
+            "crop": "cover_crop",
+            "fertiliser": "low",
+            "pest_control": "none"
+          }
+        ]
+      },
+      "reward": 1.858292,
+      "pnl": 18582.92,
+      "observation": "pnl=18583 weather=wet",
+      "weather": {
+        "quarter": 28,
+        "regime": "wet",
+        "rainfall_index": 1.775,
+        "temperature_index": 1.014
+      },
+      "plot_pnl": [
+        7715.11,
+        10898.26,
+        6405.95,
+        -6436.4
+      ],
+      "bankrupt": false,
+      "pest_pressure": [
+        false,
+        false,
+        true,
+        true
+      ],
+      "state_snapshot": null
+    },
+    {
+      "quarter": 29,
+      "action": {
+        "capital_action": "none",
+        "plots": [
+          {
+            "crop": "field_beans",
+            "fertiliser": "medium",
+            "pest_control": "spray"
+          },
+          {
+            "crop": "cover_crop",
+            "fertiliser": "low",
+            "pest_control": "none"
+          },
+          {
+            "crop": "wheat",
+            "fertiliser": "medium",
+            "pest_control": "spray"
+          },
+          {
+            "crop": "barley",
+            "fertiliser": "medium",
+            "pest_control": "spray"
+          }
+        ]
+      },
+      "reward": 3.04412,
+      "pnl": 30441.2,
+      "observation": "pnl=30441 weather=normal",
+      "weather": {
+        "quarter": 29,
+        "regime": "normal",
+        "rainfall_index": 0.952,
+        "temperature_index": 1.026
+      },
+      "plot_pnl": [
+        9989.9,
+        -6436.4,
+        19254.57,
+        7633.13
+      ],
+      "bankrupt": false,
+      "pest_pressure": [
+        false,
+        true,
+        false,
+        false
+      ],
+      "state_snapshot": null
+    },
+    {
+      "quarter": 30,
+      "action": {
+        "capital_action": "none",
+        "plots": [
+          {
+            "crop": "barley",
+            "fertiliser": "medium",
+            "pest_control": "ipm"
+          },
+          {
+            "crop": "wheat",
+            "fertiliser": "medium",
+            "pest_control": "ipm"
+          },
+          {
+            "crop": "cover_crop",
+            "fertiliser": "low",
+            "pest_control": "none"
+          },
+          {
+            "crop": "field_beans",
+            "fertiliser": "medium",
+            "pest_control": "ipm"
+          }
+        ]
+      },
+      "reward": 3.041983,
+      "pnl": 30419.83,
+      "observation": "pnl=30420 weather=normal",
+      "weather": {
+        "quarter": 30,
+        "regime": "normal",
+        "rainfall_index": 0.836,
+        "temperature_index": 1.073
+      },
+      "plot_pnl": [
+        14856.43,
+        18333.17,
+        -6436.4,
+        3666.63
+      ],
+      "bankrupt": false,
+      "pest_pressure": [
+        false,
+        false,
+        false,
+        false
+      ],
+      "state_snapshot": null
+    },
+    {
+      "quarter": 31,
+      "action": {
+        "capital_action": "none",
+        "plots": [
+          {
+            "crop": "cover_crop",
+            "fertiliser": "low",
+            "pest_control": "none"
+          },
+          {
+            "crop": "field_beans",
+            "fertiliser": "medium",
+            "pest_control": "ipm"
+          },
+          {
+            "crop": "barley",
+            "fertiliser": "medium",
+            "pest_control": "ipm"
+          },
+          {
+            "crop": "wheat",
+            "fertiliser": "medium",
+            "pest_control": "ipm"
+          }
+        ]
+      },
+      "reward": 2.606454,
+      "pnl": 26064.54,
+      "observation": "pnl=26065 weather=dry",
+      "weather": {
+        "quarter": 31,
+        "regime": "dry",
+        "rainfall_index": 0.335,
+        "temperature_index": 0.958
+      },
+      "plot_pnl": [
+        -6436.4,
+        5122.54,
+        13919.58,
+        13458.82
+      ],
+      "bankrupt": false,
+      "pest_pressure": [
+        false,
+        false,
+        false,
+        false
+      ],
+      "state_snapshot": null
+    },
+    {
+      "quarter": 32,
+      "action": {
+        "capital_action": "none",
+        "plots": [
+          {
+            "crop": "wheat",
+            "fertiliser": "medium",
+            "pest_control": "ipm"
+          },
+          {
+            "crop": "barley",
+            "fertiliser": "medium",
+            "pest_control": "ipm"
+          },
+          {
+            "crop": "field_beans",
+            "fertiliser": "medium",
+            "pest_control": "ipm"
+          },
+          {
+            "crop": "cover_crop",
+            "fertiliser": "low",
+            "pest_control": "none"
+          }
+        ]
+      },
+      "reward": 3.474008,
+      "pnl": 34740.08,
+      "observation": "pnl=34740 weather=dry",
+      "weather": {
+        "quarter": 32,
+        "regime": "dry",
+        "rainfall_index": 0.586,
+        "temperature_index": 1.115
+      },
+      "plot_pnl": [
+        17774.45,
+        10123.52,
+        13278.51,
+        -6436.4
+      ],
+      "bankrupt": false,
+      "pest_pressure": [
+        true,
+        true,
+        false,
+        true
+      ],
+      "state_snapshot": null
+    },
+    {
+      "quarter": 33,
+      "action": {
+        "capital_action": "none",
+        "plots": [
+          {
+            "crop": "field_beans",
+            "fertiliser": "medium",
+            "pest_control": "ipm"
+          },
+          {
+            "crop": "cover_crop",
+            "fertiliser": "low",
+            "pest_control": "none"
+          },
+          {
+            "crop": "wheat",
+            "fertiliser": "medium",
+            "pest_control": "ipm"
+          },
+          {
+            "crop": "barley",
+            "fertiliser": "medium",
+            "pest_control": "ipm"
+          }
+        ]
+      },
+      "reward": 0.361279,
+      "pnl": 3612.79,
+      "observation": "pnl=3613 weather=dry",
+      "weather": {
+        "quarter": 33,
+        "regime": "dry",
+        "rainfall_index": 0.604,
+        "temperature_index": 1.303
+      },
+      "plot_pnl": [
+        2848.51,
+        -6436.4,
+        10374.17,
+        -3173.49
+      ],
+      "bankrupt": false,
+      "pest_pressure": [
+        false,
+        false,
+        true,
+        true
+      ],
+      "state_snapshot": null
+    },
+    {
+      "quarter": 34,
+      "action": {
+        "capital_action": "none",
+        "plots": [
+          {
+            "crop": "barley",
+            "fertiliser": "medium",
+            "pest_control": "ipm"
+          },
+          {
+            "crop": "wheat",
+            "fertiliser": "medium",
+            "pest_control": "ipm"
+          },
+          {
+            "crop": "cover_crop",
+            "fertiliser": "low",
+            "pest_control": "none"
+          },
+          {
+            "crop": "field_beans",
+            "fertiliser": "medium",
+            "pest_control": "ipm"
+          }
+        ]
+      },
+      "reward": 2.729001,
+      "pnl": 27290.01,
+      "observation": "pnl=27290 weather=normal",
+      "weather": {
+        "quarter": 34,
+        "regime": "normal",
+        "rainfall_index": 1.032,
+        "temperature_index": 0.947
+      },
+      "plot_pnl": [
+        11799.81,
+        14208.82,
+        -6436.4,
+        7717.78
+      ],
+      "bankrupt": false,
+      "pest_pressure": [
+        false,
+        true,
+        true,
+        false
+      ],
+      "state_snapshot": null
+    },
+    {
+      "quarter": 35,
+      "action": {
+        "capital_action": "none",
+        "plots": [
+          {
+            "crop": "cover_crop",
+            "fertiliser": "low",
+            "pest_control": "none"
+          },
+          {
+            "crop": "field_beans",
+            "fertiliser": "medium",
+            "pest_control": "ipm"
+          },
+          {
+            "crop": "barley",
+            "fertiliser": "medium",
+            "pest_control": "ipm"
+          },
+          {
+            "crop": "wheat",
+            "fertiliser": "medium",
+            "pest_control": "ipm"
+          }
+        ]
+      },
+      "reward": -0.587688,
+      "pnl": -5876.88,
+      "observation": "pnl=-5877 weather=normal",
+      "weather": {
+        "quarter": 35,
+        "regime": "normal",
+        "rainfall_index": 0.941,
+        "temperature_index": 1.231
+      },
+      "plot_pnl": [
+        -6436.4,
+        4504.83,
+        -224.5,
+        -3720.81
+      ],
+      "bankrupt": false,
+      "pest_pressure": [
+        true,
+        true,
+        true,
+        false
+      ],
+      "state_snapshot": null
+    },
+    {
+      "quarter": 36,
+      "action": {
+        "capital_action": "none",
+        "plots": [
+          {
+            "crop": "wheat",
+            "fertiliser": "medium",
+            "pest_control": "ipm"
+          },
+          {
+            "crop": "barley",
+            "fertiliser": "medium",
+            "pest_control": "ipm"
+          },
+          {
+            "crop": "field_beans",
+            "fertiliser": "medium",
+            "pest_control": "ipm"
+          },
+          {
+            "crop": "cover_crop",
+            "fertiliser": "low",
+            "pest_control": "none"
+          }
+        ]
+      },
+      "reward": 2.381214,
+      "pnl": 23812.14,
+      "observation": "pnl=23812 weather=normal",
+      "weather": {
+        "quarter": 36,
+        "regime": "normal",
+        "rainfall_index": 0.912,
+        "temperature_index": 0.954
+      },
+      "plot_pnl": [
+        15531.7,
+        4986.68,
+        9730.16,
+        -6436.4
+      ],
+      "bankrupt": false,
+      "pest_pressure": [
+        true,
+        false,
+        false,
+        false
+      ],
+      "state_snapshot": null
+    },
+    {
+      "quarter": 37,
+      "action": {
+        "capital_action": "none",
+        "plots": [
+          {
+            "crop": "field_beans",
+            "fertiliser": "medium",
+            "pest_control": "ipm"
+          },
+          {
+            "crop": "cover_crop",
+            "fertiliser": "low",
+            "pest_control": "none"
+          },
+          {
+            "crop": "wheat",
+            "fertiliser": "medium",
+            "pest_control": "ipm"
+          },
+          {
+            "crop": "barley",
+            "fertiliser": "medium",
+            "pest_control": "ipm"
+          }
+        ]
+      },
+      "reward": 1.140594,
+      "pnl": 11405.94,
+      "observation": "pnl=11406 weather=normal",
+      "weather": {
+        "quarter": 37,
+        "regime": "normal",
+        "rainfall_index": 1.039,
+        "temperature_index": 1.028
+      },
+      "plot_pnl": [
+        5377.27,
+        -6436.4,
+        4632.3,
+        7832.77
+      ],
+      "bankrupt": false,
+      "pest_pressure": [
+        true,
+        false,
+        true,
+        true
+      ],
+      "state_snapshot": null
+    },
+    {
+      "quarter": 38,
+      "action": {
+        "capital_action": "none",
+        "plots": [
+          {
+            "crop": "barley",
+            "fertiliser": "medium",
+            "pest_control": "ipm"
+          },
+          {
+            "crop": "wheat",
+            "fertiliser": "medium",
+            "pest_control": "ipm"
+          },
+          {
+            "crop": "cover_crop",
+            "fertiliser": "low",
+            "pest_control": "none"
+          },
+          {
+            "crop": "field_beans",
+            "fertiliser": "medium",
+            "pest_control": "ipm"
+          }
+        ]
+      },
+      "reward": 1.564578,
+      "pnl": 15645.78,
+      "observation": "pnl=15646 weather=wet",
+      "weather": {
+        "quarter": 38,
+        "regime": "wet",
+        "rainfall_index": 1.581,
+        "temperature_index": 0.976
+      },
+      "plot_pnl": [
+        5656.77,
+        8670.31,
+        -6436.4,
+        7755.1
+      ],
+      "bankrupt": false,
+      "pest_pressure": [
+        false,
+        true,
+        false,
+        true
+      ],
+      "state_snapshot": null
+    },
+    {
+      "quarter": 39,
+      "action": {
+        "capital_action": "none",
+        "plots": [
+          {
+            "crop": "cover_crop",
+            "fertiliser": "low",
+            "pest_control": "none"
+          },
+          {
+            "crop": "field_beans",
+            "fertiliser": "medium",
+            "pest_control": "ipm"
+          },
+          {
+            "crop": "barley",
+            "fertiliser": "medium",
+            "pest_control": "ipm"
+          },
+          {
+            "crop": "wheat",
+            "fertiliser": "medium",
+            "pest_control": "ipm"
+          }
+        ]
+      },
+      "reward": 2.639653,
+      "pnl": 15227.53,
+      "observation": "pnl=15228 weather=wet",
+      "weather": {
+        "quarter": 39,
+        "regime": "wet",
+        "rainfall_index": 1.265,
+        "temperature_index": 0.974
+      },
+      "plot_pnl": [
+        -6436.4,
+        14183.1,
+        4532.1,
+        2948.73
+      ],
+      "bankrupt": false,
+      "pest_pressure": [
+        false,
+        false,
+        true,
+        true
+      ],
+      "state_snapshot": null
+    }
+  ],
+  "final_state": {
+    "quarter": 40,
+    "cash": 795938.86,
+    "starting_cash": 177234.88,
+    "irrigation_owned": true,
+    "ever_bankrupt": false,
+    "weather_regime": "wet",
+    "weather_history": [
+      {
+        "quarter": 0,
+        "regime": "dry",
+        "rainfall_index": 0.743,
+        "temperature_index": 1.133
+      },
+      {
+        "quarter": 1,
+        "regime": "normal",
+        "rainfall_index": 1.154,
+        "temperature_index": 0.873
+      },
+      {
+        "quarter": 2,
+        "regime": "normal",
+        "rainfall_index": 1.05,
+        "temperature_index": 1.059
+      },
+      {
+        "quarter": 3,
+        "regime": "normal",
+        "rainfall_index": 1.092,
+        "temperature_index": 1.185
+      },
+      {
+        "quarter": 4,
+        "regime": "dry",
+        "rainfall_index": 0.516,
+        "temperature_index": 1.272
+      },
+      {
+        "quarter": 5,
+        "regime": "dry",
+        "rainfall_index": 0.715,
+        "temperature_index": 1.189
+      },
+      {
+        "quarter": 6,
+        "regime": "dry",
+        "rainfall_index": 0.645,
+        "temperature_index": 1.231
+      },
+      {
+        "quarter": 7,
+        "regime": "dry",
+        "rainfall_index": 0.694,
+        "temperature_index": 1.288
+      },
+      {
+        "quarter": 8,
+        "regime": "dry",
+        "rainfall_index": 0.432,
+        "temperature_index": 0.958
+      },
+      {
+        "quarter": 9,
+        "regime": "dry",
+        "rainfall_index": 0.499,
+        "temperature_index": 1.192
+      },
+      {
+        "quarter": 10,
+        "regime": "dry",
+        "rainfall_index": 0.39,
+        "temperature_index": 1.208
+      },
+      {
+        "quarter": 11,
+        "regime": "normal",
+        "rainfall_index": 1.045,
+        "temperature_index": 0.932
+      },
+      {
+        "quarter": 12,
+        "regime": "normal",
+        "rainfall_index": 0.818,
+        "temperature_index": 1.056
+      },
+      {
+        "quarter": 13,
+        "regime": "wet",
+        "rainfall_index": 1.468,
+        "temperature_index": 0.927
+      },
+      {
+        "quarter": 14,
+        "regime": "dry",
+        "rainfall_index": 0.485,
+        "temperature_index": 1.145
+      },
+      {
+        "quarter": 15,
+        "regime": "dry",
+        "rainfall_index": 0.523,
+        "temperature_index": 1.027
+      },
+      {
+        "quarter": 16,
+        "regime": "normal",
+        "rainfall_index": 1.109,
+        "temperature_index": 0.891
+      },
+      {
+        "quarter": 17,
+        "regime": "normal",
+        "rainfall_index": 1.206,
+        "temperature_index": 1.074
+      },
+      {
+        "quarter": 18,
+        "regime": "dry",
+        "rainfall_index": 0.74,
+        "temperature_index": 1.273
+      },
+      {
+        "quarter": 19,
+        "regime": "dry",
+        "rainfall_index": 0.747,
+        "temperature_index": 0.926
+      },
+      {
+        "quarter": 20,
+        "regime": "dry",
+        "rainfall_index": 0.459,
+        "temperature_index": 1.039
+      },
+      {
+        "quarter": 21,
+        "regime": "dry",
+        "rainfall_index": 0.548,
+        "temperature_index": 1.247
+      },
+      {
+        "quarter": 22,
+        "regime": "dry",
+        "rainfall_index": 0.817,
+        "temperature_index": 1.204
+      },
+      {
+        "quarter": 23,
+        "regime": "dry",
+        "rainfall_index": 0.714,
+        "temperature_index": 1.259
+      },
+      {
+        "quarter": 24,
+        "regime": "dry",
+        "rainfall_index": 0.538,
+        "temperature_index": 0.968
+      },
+      {
+        "quarter": 25,
+        "regime": "wet",
+        "rainfall_index": 1.345,
+        "temperature_index": 0.954
+      },
+      {
+        "quarter": 26,
+        "regime": "normal",
+        "rainfall_index": 0.87,
+        "temperature_index": 0.94
+      },
+      {
+        "quarter": 27,
+        "regime": "wet",
+        "rainfall_index": 1.761,
+        "temperature_index": 0.808
+      },
+      {
+        "quarter": 28,
+        "regime": "wet",
+        "rainfall_index": 1.775,
+        "temperature_index": 1.014
+      },
+      {
+        "quarter": 29,
+        "regime": "normal",
+        "rainfall_index": 0.952,
+        "temperature_index": 1.026
+      },
+      {
+        "quarter": 30,
+        "regime": "normal",
+        "rainfall_index": 0.836,
+        "temperature_index": 1.073
+      },
+      {
+        "quarter": 31,
+        "regime": "dry",
+        "rainfall_index": 0.335,
+        "temperature_index": 0.958
+      },
+      {
+        "quarter": 32,
+        "regime": "dry",
+        "rainfall_index": 0.586,
+        "temperature_index": 1.115
+      },
+      {
+        "quarter": 33,
+        "regime": "dry",
+        "rainfall_index": 0.604,
+        "temperature_index": 1.303
+      },
+      {
+        "quarter": 34,
+        "regime": "normal",
+        "rainfall_index": 1.032,
+        "temperature_index": 0.947
+      },
+      {
+        "quarter": 35,
+        "regime": "normal",
+        "rainfall_index": 0.941,
+        "temperature_index": 1.231
+      },
+      {
+        "quarter": 36,
+        "regime": "normal",
+        "rainfall_index": 0.912,
+        "temperature_index": 0.954
+      },
+      {
+        "quarter": 37,
+        "regime": "normal",
+        "rainfall_index": 1.039,
+        "temperature_index": 1.028
+      },
+      {
+        "quarter": 38,
+        "regime": "wet",
+        "rainfall_index": 1.581,
+        "temperature_index": 0.976
+      },
+      {
+        "quarter": 39,
+        "regime": "wet",
+        "rainfall_index": 1.265,
+        "temperature_index": 0.974
+      }
+    ],
+    "plots": [
+      {
+        "plot_id": 0,
+        "current_crop": "cover_crop",
+        "previous_crop": "barley",
+        "_organic_matter": 0.6344,
+        "_structure": 0.6182,
+        "_ph": 0.6746,
+        "_nutrient_balance": 0.8333
+      },
+      {
+        "plot_id": 1,
+        "current_crop": "field_beans",
+        "previous_crop": "wheat",
+        "_organic_matter": 0.406,
+        "_structure": 0.4675,
+        "_ph": 0.4923,
+        "_nutrient_balance": 0.652
+      },
+      {
+        "plot_id": 2,
+        "current_crop": "barley",
+        "previous_crop": "cover_crop",
+        "_organic_matter": 0.6334,
+        "_structure": 0.6603,
+        "_ph": 0.5859,
+        "_nutrient_balance": 0.8553
+      },
+      {
+        "plot_id": 3,
+        "current_crop": "wheat",
+        "previous_crop": "field_beans",
+        "_organic_matter": 0.4601,
+        "_structure": 0.5663,
+        "_ph": 0.6077,
+        "_nutrient_balance": 0.7548
+      }
+    ],
+    "current_prices": {
+      "wheat": 602.77,
+      "barley": 557.72,
+      "oilseed_rape": 703.63,
+      "field_beans": 587.67,
+      "cover_crop": 0.0,
+      "fallow": 0.0,
+      "fertiliser_low": 19.36,
+      "fertiliser_medium": 43.57,
+      "fertiliser_high": 72.61,
+      "irrigation_cost": 35000.0
+    }
+  },
+  "terminal_score": 1.1169,
+  "ever_bankrupt": false,
+  "quarters_completed": 40,
+  "total_reward": 66.48729799999998,
+  "total_pnl": 653703.98,
+  "mean_final_soil": 0.5989675,
+  "baseline_name": "weather_aware_rotation",
+  "created_at": 1776783426.567429
+}

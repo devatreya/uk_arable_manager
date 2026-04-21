@@ -1,0 +1,10 @@
+{
+  "source": "synthetic_AHDB_calibrated",
+  "note": "Field bean ex-farm prices are less liquid; using anchor price with modest vol",
+  "anchor_price_per_tonne_gbp": 220.0,
+  "typical_range": [
+    170.0,
+    280.0
+  ],
+  "price_volatility_annual_pct": 18.0
+}

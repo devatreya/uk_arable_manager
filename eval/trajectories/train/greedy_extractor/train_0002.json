@@ -1,0 +1,780 @@
+{
+  "task_spec": {
+    "task_id": "train_0002",
+    "seed": 10010002,
+    "split": "train",
+    "scenario_type": "drought_stressed",
+    "starting_cash": 152756.89,
+    "initial_weather_regime": "dry",
+    "dry_bias": 0.4162,
+    "price_volatility": 0.1158,
+    "fertiliser_cost_multiplier": 1.1495,
+    "irrigation_cost_multiplier": 0.9926,
+    "initial_soil_by_plot": [
+      0.5226,
+      0.4448,
+      0.5055,
+      0.429
+    ],
+    "initial_crop_by_plot": [
+      "barley",
+      "oilseed_rape",
+      "field_beans",
+      "fallow"
+    ]
+  },
+  "steps": [
+    {
+      "quarter": 0,
+      "action": {
+        "capital_action": "none",
+        "plots": [
+          {
+            "crop": "oilseed_rape",
+            "fertiliser": "high",
+            "pest_control": "spray"
+          },
+          {
+            "crop": "wheat",
+            "fertiliser": "high",
+            "pest_control": "spray"
+          },
+          {
+            "crop": "oilseed_rape",
+            "fertiliser": "high",
+            "pest_control": "spray"
+          },
+          {
+            "crop": "wheat",
+            "fertiliser": "high",
+            "pest_control": "spray"
+          }
+        ]
+      },
+      "reward": -6.610007,
+      "pnl": -66100.07,
+      "observation": "pnl=-66100 weather=dry",
+      "weather": {
+        "quarter": 0,
+        "regime": "dry",
+        "rainfall_index": 0.531,
+        "temperature_index": 1.126
+      },
+      "plot_pnl": [
+        -15353.83,
+        -17503.64,
+        -15568.72,
+        -17673.88
+      ],
+      "bankrupt": false,
+      "pest_pressure": [
+        true,
+        false,
+        false,
+        true
+      ],
+      "state_snapshot": null
+    },
+    {
+      "quarter": 1,
+      "action": {
+        "capital_action": "none",
+        "plots": [
+          {
+            "crop": "oilseed_rape",
+            "fertiliser": "high",
+            "pest_control": "spray"
+          },
+          {
+            "crop": "wheat",
+            "fertiliser": "high",
+            "pest_control": "spray"
+          },
+          {
+            "crop": "oilseed_rape",
+            "fertiliser": "high",
+            "pest_control": "spray"
+          },
+          {
+            "crop": "wheat",
+            "fertiliser": "high",
+            "pest_control": "spray"
+          }
+        ]
+      },
+      "reward": 3.745835,
+      "pnl": 37458.35,
+      "observation": "pnl=37458 weather=normal",
+      "weather": {
+        "quarter": 1,
+        "regime": "normal",
+        "rainfall_index": 1.136,
+        "temperature_index": 0.997
+      },
+      "plot_pnl": [
+        295.92,
+        18701.61,
+        33.23,
+        18427.59
+      ],
+      "bankrupt": false,
+      "pest_pressure": [
+        false,
+        false,
+        true,
+        true
+      ],
+      "state_snapshot": null
+    },
+    {
+      "quarter": 2,
+      "action": {
+        "capital_action": "none",
+        "plots": [
+          {
+            "crop": "oilseed_rape",
+            "fertiliser": "high",
+            "pest_control": "spray"
+          },
+          {
+            "crop": "wheat",
+            "fertiliser": "high",
+            "pest_control": "spray"
+          },
+          {
+            "crop": "oilseed_rape",
+            "fertiliser": "high",
+            "pest_control": "spray"
+          },
+          {
+            "crop": "wheat",
+            "fertiliser": "high",
+            "pest_control": "spray"
+          }
+        ]
+      },
+      "reward": -4.805352,
+      "pnl": -48053.52,
+      "observation": "pnl=-48054 weather=dry",
+      "weather": {
+        "quarter": 2,
+        "regime": "dry",
+        "rainfall_index": 0.554,
+        "temperature_index": 1.048
+      },
+      "plot_pnl": [
+        -9739.68,
+        -14079.14,
+        -9974.39,
+        -14260.31
+      ],
+      "bankrupt": false,
+      "pest_pressure": [
+        false,
+        false,
+        false,
+        true
+      ],
+      "state_snapshot": null
+    },
+    {
+      "quarter": 3,
+      "action": {
+        "capital_action": "none",
+        "plots": [
+          {
+            "crop": "oilseed_rape",
+            "fertiliser": "high",
+            "pest_control": "spray"
+          },
+          {
+            "crop": "wheat",
+            "fertiliser": "high",
+            "pest_control": "spray"
+          },
+          {
+            "crop": "oilseed_rape",
+            "fertiliser": "high",
+            "pest_control": "spray"
+          },
+          {
+            "crop": "wheat",
+            "fertiliser": "high",
+            "pest_control": "spray"
+          }
+        ]
+      },
+      "reward": -6.856578,
+      "pnl": -68565.78,
+      "observation": "pnl=-68566 weather=dry",
+      "weather": {
+        "quarter": 3,
+        "regime": "dry",
+        "rainfall_index": 0.684,
+        "temperature_index": 1.176
+      },
+      "plot_pnl": [
+        -22796.5,
+        -11393.95,
+        -22881.28,
+        -11494.05
+      ],
+      "bankrupt": false,
+      "pest_pressure": [
+        false,
+        false,
+        false,
+        false
+      ],
+      "state_snapshot": null
+    },
+    {
+      "quarter": 4,
+      "action": {
+        "capital_action": "none",
+        "plots": [
+          {
+            "crop": "oilseed_rape",
+            "fertiliser": "high",
+            "pest_control": "spray"
+          },
+          {
+            "crop": "wheat",
+            "fertiliser": "high",
+            "pest_control": "spray"
+          },
+          {
+            "crop": "oilseed_rape",
+            "fertiliser": "high",
+            "pest_control": "spray"
+          },
+          {
+            "crop": "wheat",
+            "fertiliser": "high",
+            "pest_control": "spray"
+          }
+        ]
+      },
+      "reward": 3.809356,
+      "pnl": 38093.56,
+      "observation": "pnl=38094 weather=normal",
+      "weather": {
+        "quarter": 4,
+        "regime": "normal",
+        "rainfall_index": 1.001,
+        "temperature_index": 1.013
+      },
+      "plot_pnl": [
+        10714.21,
+        8359.11,
+        10661.13,
+        8359.11
+      ],
+      "bankrupt": false,
+      "pest_pressure": [
+        false,
+        false,
+        false,
+        false
+      ],
+      "state_snapshot": null
+    },
+    {
+      "quarter": 5,
+      "action": {
+        "capital_action": "none",
+        "plots": [
+          {
+            "crop": "oilseed_rape",
+            "fertiliser": "high",
+            "pest_control": "spray"
+          },
+          {
+            "crop": "wheat",
+            "fertiliser": "high",
+            "pest_control": "spray"
+          },
+          {
+            "crop": "oilseed_rape",
+            "fertiliser": "high",
+            "pest_control": "spray"
+          },
+          {
+            "crop": "wheat",
+            "fertiliser": "high",
+            "pest_control": "spray"
+          }
+        ]
+      },
+      "reward": -1.488178,
+      "pnl": -14881.78,
+      "observation": "pnl=-14882 weather=dry",
+      "weather": {
+        "quarter": 5,
+        "regime": "dry",
+        "rainfall_index": 0.767,
+        "temperature_index": 1.12
+      },
+      "plot_pnl": [
+        -4400.03,
+        -3040.86,
+        -4400.03,
+        -3040.86
+      ],
+      "bankrupt": false,
+      "pest_pressure": [
+        false,
+        false,
+        false,
+        false
+      ],
+      "state_snapshot": null
+    },
+    {
+      "quarter": 6,
+      "action": {
+        "capital_action": "none",
+        "plots": [
+          {
+            "crop": "oilseed_rape",
+            "fertiliser": "high",
+            "pest_control": "spray"
+          },
+          {
+            "crop": "wheat",
+            "fertiliser": "high",
+            "pest_control": "spray"
+          },
+          {
+            "crop": "oilseed_rape",
+            "fertiliser": "high",
+            "pest_control": "spray"
+          },
+          {
+            "crop": "wheat",
+            "fertiliser": "high",
+            "pest_control": "spray"
+          }
+        ]
+      },
+      "reward": 3.998778,
+      "pnl": 39987.78,
+      "observation": "pnl=39988 weather=normal",
+      "weather": {
+        "quarter": 6,
+        "regime": "normal",
+        "rainfall_index": 0.924,
+        "temperature_index": 1.046
+      },
+      "plot_pnl": [
+        7045.4,
+        12948.49,
+        7045.4,
+        12948.49
+      ],
+      "bankrupt": false,
+      "pest_pressure": [
+        true,
+        true,
+        false,
+        true
+      ],
+      "state_snapshot": null
+    },
+    {
+      "quarter": 7,
+      "action": {
+        "capital_action": "none",
+        "plots": [
+          {
+            "crop": "oilseed_rape",
+            "fertiliser": "high",
+            "pest_control": "spray"
+          },
+          {
+            "crop": "wheat",
+            "fertiliser": "high",
+            "pest_control": "spray"
+          },
+          {
+            "crop": "oilseed_rape",
+            "fertiliser": "high",
+            "pest_control": "spray"
+          },
+          {
+            "crop": "wheat",
+            "fertiliser": "high",
+            "pest_control": "spray"
+          }
+        ]
+      },
+      "reward": -6.483344,
+      "pnl": -64833.44,
+      "observation": "pnl=-64833 weather=dry",
+      "weather": {
+        "quarter": 7,
+        "regime": "dry",
+        "rainfall_index": 0.381,
+        "temperature_index": 1.094
+      },
+      "plot_pnl": [
+        -20211.65,
+        -12205.07,
+        -20211.65,
+        -12205.07
+      ],
+      "bankrupt": false,
+      "pest_pressure": [
+        false,
+        false,
+        true,
+        false
+      ],
+      "state_snapshot": null
+    },
+    {
+      "quarter": 8,
+      "action": {
+        "capital_action": "none",
+        "plots": [
+          {
+            "crop": "oilseed_rape",
+            "fertiliser": "high",
+            "pest_control": "spray"
+          },
+          {
+            "crop": "wheat",
+            "fertiliser": "high",
+            "pest_control": "spray"
+          },
+          {
+            "crop": "oilseed_rape",
+            "fertiliser": "high",
+            "pest_control": "spray"
+          },
+          {
+            "crop": "wheat",
+            "fertiliser": "high",
+            "pest_control": "spray"
+          }
+        ]
+      },
+      "reward": -3.39046,
+      "pnl": -33904.6,
+      "observation": "pnl=-33905 weather=dry",
+      "weather": {
+        "quarter": 8,
+        "regime": "dry",
+        "rainfall_index": 0.437,
+        "temperature_index": 1.13
+      },
+      "plot_pnl": [
+        -11229.54,
+        -5722.76,
+        -11229.54,
+        -5722.76
+      ],
+      "bankrupt": true,
+      "pest_pressure": [
+        false,
+        true,
+        false,
+        true
+      ],
+      "state_snapshot": null
+    },
+    {
+      "quarter": 9,
+      "action": {
+        "capital_action": "none",
+        "plots": [
+          {
+            "crop": "oilseed_rape",
+            "fertiliser": "high",
+            "pest_control": "spray"
+          },
+          {
+            "crop": "wheat",
+            "fertiliser": "high",
+            "pest_control": "spray"
+          },
+          {
+            "crop": "oilseed_rape",
+            "fertiliser": "high",
+            "pest_control": "spray"
+          },
+          {
+            "crop": "wheat",
+            "fertiliser": "high",
+            "pest_control": "spray"
+          }
+        ]
+      },
+      "reward": -2.802332,
+      "pnl": -28023.32,
+      "observation": "pnl=-28023 weather=dry",
+      "weather": {
+        "quarter": 9,
+        "regime": "dry",
+        "rainfall_index": 0.573,
+        "temperature_index": 1.09
+      },
+      "plot_pnl": [
+        -2744.66,
+        -11267.0,
+        -2744.66,
+        -11267.0
+      ],
+      "bankrupt": true,
+      "pest_pressure": [
+        false,
+        true,
+        false,
+        false
+      ],
+      "state_snapshot": null
+    },
+    {
+      "quarter": 10,
+      "action": {
+        "capital_action": "none",
+        "plots": [
+          {
+            "crop": "oilseed_rape",
+            "fertiliser": "high",
+            "pest_control": "spray"
+          },
+          {
+            "crop": "wheat",
+            "fertiliser": "high",
+            "pest_control": "spray"
+          },
+          {
+            "crop": "oilseed_rape",
+            "fertiliser": "high",
+            "pest_control": "spray"
+          },
+          {
+            "crop": "wheat",
+            "fertiliser": "high",
+            "pest_control": "spray"
+          }
+        ]
+      },
+      "reward": 3.019838,
+      "pnl": 30198.38,
+      "observation": "pnl=30198 weather=dry",
+      "weather": {
+        "quarter": 10,
+        "regime": "dry",
+        "rainfall_index": 0.749,
+        "temperature_index": 1.144
+      },
+      "plot_pnl": [
+        1773.76,
+        13325.43,
+        1773.76,
+        13325.43
+      ],
+      "bankrupt": true,
+      "pest_pressure": [
+        false,
+        false,
+        false,
+        false
+      ],
+      "state_snapshot": null
+    },
+    {
+      "quarter": 11,
+      "action": {
+        "capital_action": "none",
+        "plots": [
+          {
+            "crop": "oilseed_rape",
+            "fertiliser": "high",
+            "pest_control": "spray"
+          },
+          {
+            "crop": "wheat",
+            "fertiliser": "high",
+            "pest_control": "spray"
+          },
+          {
+            "crop": "oilseed_rape",
+            "fertiliser": "high",
+            "pest_control": "spray"
+          },
+          {
+            "crop": "wheat",
+            "fertiliser": "high",
+            "pest_control": "spray"
+          }
+        ]
+      },
+      "reward": -4.46889,
+      "pnl": -44688.9,
+      "observation": "pnl=-44689 weather=dry",
+      "weather": {
+        "quarter": 11,
+        "regime": "dry",
+        "rainfall_index": 0.442,
+        "temperature_index": 0.924
+      },
+      "plot_pnl": [
+        -11753.75,
+        -10590.7,
+        -11753.75,
+        -10590.7
+      ],
+      "bankrupt": true,
+      "pest_pressure": [
+        false,
+        false,
+        true,
+        false
+      ],
+      "state_snapshot": null
+    }
+  ],
+  "final_state": {
+    "quarter": 12,
+    "cash": -70556.45,
+    "starting_cash": 152756.89,
+    "irrigation_owned": false,
+    "ever_bankrupt": true,
+    "weather_regime": "dry",
+    "weather_history": [
+      {
+        "quarter": 0,
+        "regime": "dry",
+        "rainfall_index": 0.531,
+        "temperature_index": 1.126
+      },
+      {
+        "quarter": 1,
+        "regime": "normal",
+        "rainfall_index": 1.136,
+        "temperature_index": 0.997
+      },
+      {
+        "quarter": 2,
+        "regime": "dry",
+        "rainfall_index": 0.554,
+        "temperature_index": 1.048
+      },
+      {
+        "quarter": 3,
+        "regime": "dry",
+        "rainfall_index": 0.684,
+        "temperature_index": 1.176
+      },
+      {
+        "quarter": 4,
+        "regime": "normal",
+        "rainfall_index": 1.001,
+        "temperature_index": 1.013
+      },
+      {
+        "quarter": 5,
+        "regime": "dry",
+        "rainfall_index": 0.767,
+        "temperature_index": 1.12
+      },
+      {
+        "quarter": 6,
+        "regime": "normal",
+        "rainfall_index": 0.924,
+        "temperature_index": 1.046
+      },
+      {
+        "quarter": 7,
+        "regime": "dry",
+        "rainfall_index": 0.381,
+        "temperature_index": 1.094
+      },
+      {
+        "quarter": 8,
+        "regime": "dry",
+        "rainfall_index": 0.437,
+        "temperature_index": 1.13
+      },
+      {
+        "quarter": 9,
+        "regime": "dry",
+        "rainfall_index": 0.573,
+        "temperature_index": 1.09
+      },
+      {
+        "quarter": 10,
+        "regime": "dry",
+        "rainfall_index": 0.749,
+        "temperature_index": 1.144
+      },
+      {
+        "quarter": 11,
+        "regime": "dry",
+        "rainfall_index": 0.442,
+        "temperature_index": 0.924
+      }
+    ],
+    "plots": [
+      {
+        "plot_id": 0,
+        "current_crop": "oilseed_rape",
+        "previous_crop": "oilseed_rape",
+        "_organic_matter": 0.2,
+        "_structure": 0.2,
+        "_ph": 0.2,
+        "_nutrient_balance": 0.2
+      },
+      {
+        "plot_id": 1,
+        "current_crop": "wheat",
+        "previous_crop": "wheat",
+        "_organic_matter": 0.2,
+        "_structure": 0.2,
+        "_ph": 0.2,
+        "_nutrient_balance": 0.2
+      },
+      {
+        "plot_id": 2,
+        "current_crop": "oilseed_rape",
+        "previous_crop": "oilseed_rape",
+        "_organic_matter": 0.2,
+        "_structure": 0.2,
+        "_ph": 0.2,
+        "_nutrient_balance": 0.2
+      },
+      {
+        "plot_id": 3,
+        "current_crop": "wheat",
+        "previous_crop": "wheat",
+        "_organic_matter": 0.2,
+        "_structure": 0.2,
+        "_ph": 0.2,
+        "_nutrient_balance": 0.2
+      }
+    ],
+    "current_prices": {
+      "wheat": 709.18,
+      "barley": 674.44,
+      "oilseed_rape": 770.98,
+      "field_beans": 474.69,
+      "cover_crop": 0.0,
+      "fallow": 0.0,
+      "fertiliser_low": 22.99,
+      "fertiliser_medium": 51.73,
+      "fertiliser_high": 86.21,
+      "irrigation_cost": 34741.0
+    }
+  },
+  "terminal_score": 0.0,
+  "ever_bankrupt": true,
+  "quarters_completed": 12,
+  "total_reward": -22.331334,
+  "total_pnl": -223313.34000000003,
+  "mean_final_soil": 0.2,
+  "baseline_name": "greedy_extractor",
+  "created_at": 1776783399.3987808
+}

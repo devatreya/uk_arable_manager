@@ -1,0 +1,578 @@
+[
+  {
+    "task_id": "train_0000",
+    "seed": 10010000,
+    "split": "train",
+    "scenario_type": "standard",
+    "starting_cash": 188672.28,
+    "initial_weather_regime": "normal",
+    "dry_bias": 0.0,
+    "price_volatility": 0.0954,
+    "fertiliser_cost_multiplier": 1.089,
+    "irrigation_cost_multiplier": 1.0,
+    "initial_soil_by_plot": [
+      0.516,
+      0.5612,
+      0.5314,
+      0.6393
+    ],
+    "initial_crop_by_plot": [
+      "barley",
+      "oilseed_rape",
+      "oilseed_rape",
+      "fallow"
+    ]
+  },
+  {
+    "task_id": "train_0001",
+    "seed": 10010001,
+    "split": "train",
+    "scenario_type": "input_cost_shock",
+    "starting_cash": 143637.58,
+    "initial_weather_regime": "normal",
+    "dry_bias": 0.0479,
+    "price_volatility": 0.1035,
+    "fertiliser_cost_multiplier": 1.567,
+    "irrigation_cost_multiplier": 1.2823,
+    "initial_soil_by_plot": [
+      0.6302,
+      0.5897,
+      0.6254,
+      0.514
+    ],
+    "initial_crop_by_plot": [
+      "fallow",
+      "barley",
+      "field_beans",
+      "field_beans"
+    ]
+  },
+  {
+    "task_id": "train_0002",
+    "seed": 10010002,
+    "split": "train",
+    "scenario_type": "drought_stressed",
+    "starting_cash": 152756.89,
+    "initial_weather_regime": "dry",
+    "dry_bias": 0.4162,
+    "price_volatility": 0.1158,
+    "fertiliser_cost_multiplier": 1.1495,
+    "irrigation_cost_multiplier": 0.9926,
+    "initial_soil_by_plot": [
+      0.5226,
+      0.4448,
+      0.5055,
+      0.429
+    ],
+    "initial_crop_by_plot": [
+      "barley",
+      "oilseed_rape",
+      "field_beans",
+      "fallow"
+    ]
+  },
+  {
+    "task_id": "train_0003",
+    "seed": 10010003,
+    "split": "train",
+    "scenario_type": "recovery",
+    "starting_cash": 99195.02,
+    "initial_weather_regime": "dry",
+    "dry_bias": 0.041,
+    "price_volatility": 0.0796,
+    "fertiliser_cost_multiplier": 0.9929,
+    "irrigation_cost_multiplier": 1.0,
+    "initial_soil_by_plot": [
+      0.2996,
+      0.2544,
+      0.3721,
+      0.275
+    ],
+    "initial_crop_by_plot": [
+      "wheat",
+      "barley",
+      "fallow",
+      "oilseed_rape"
+    ]
+  },
+  {
+    "task_id": "train_0004",
+    "seed": 10010004,
+    "split": "train",
+    "scenario_type": "recovery",
+    "starting_cash": 120507.25,
+    "initial_weather_regime": "dry",
+    "dry_bias": 0.266,
+    "price_volatility": 0.0617,
+    "fertiliser_cost_multiplier": 0.9059,
+    "irrigation_cost_multiplier": 1.0,
+    "initial_soil_by_plot": [
+      0.3156,
+      0.3199,
+      0.2715,
+      0.2805
+    ],
+    "initial_crop_by_plot": [
+      "field_beans",
+      "oilseed_rape",
+      "barley",
+      "field_beans"
+    ]
+  },
+  {
+    "task_id": "train_0005",
+    "seed": 10010005,
+    "split": "train",
+    "scenario_type": "input_cost_shock",
+    "starting_cash": 175771.8,
+    "initial_weather_regime": "normal",
+    "dry_bias": 0.0936,
+    "price_volatility": 0.1527,
+    "fertiliser_cost_multiplier": 1.7426,
+    "irrigation_cost_multiplier": 1.3686,
+    "initial_soil_by_plot": [
+      0.6413,
+      0.5892,
+      0.5655,
+      0.5698
+    ],
+    "initial_crop_by_plot": [
+      "fallow",
+      "wheat",
+      "wheat",
+      "wheat"
+    ]
+  },
+  {
+    "task_id": "train_0006",
+    "seed": 10010006,
+    "split": "train",
+    "scenario_type": "standard",
+    "starting_cash": 161915.17,
+    "initial_weather_regime": "normal",
+    "dry_bias": 0.0,
+    "price_volatility": 0.0758,
+    "fertiliser_cost_multiplier": 1.0181,
+    "irrigation_cost_multiplier": 1.0,
+    "initial_soil_by_plot": [
+      0.5499,
+      0.5618,
+      0.5457,
+      0.5515
+    ],
+    "initial_crop_by_plot": [
+      "barley",
+      "oilseed_rape",
+      "oilseed_rape",
+      "oilseed_rape"
+    ]
+  },
+  {
+    "task_id": "train_0007",
+    "seed": 10010007,
+    "split": "train",
+    "scenario_type": "drought_stressed",
+    "starting_cash": 140574.99,
+    "initial_weather_regime": "dry",
+    "dry_bias": 0.5322,
+    "price_volatility": 0.0874,
+    "fertiliser_cost_multiplier": 1.0971,
+    "irrigation_cost_multiplier": 0.8833,
+    "initial_soil_by_plot": [
+      0.5289,
+      0.4303,
+      0.4277,
+      0.5468
+    ],
+    "initial_crop_by_plot": [
+      "field_beans",
+      "wheat",
+      "wheat",
+      "oilseed_rape"
+    ]
+  },
+  {
+    "task_id": "train_0008",
+    "seed": 10010008,
+    "split": "train",
+    "scenario_type": "standard",
+    "starting_cash": 187496.95,
+    "initial_weather_regime": "normal",
+    "dry_bias": 0.0,
+    "price_volatility": 0.0922,
+    "fertiliser_cost_multiplier": 1.0656,
+    "irrigation_cost_multiplier": 1.0,
+    "initial_soil_by_plot": [
+      0.5379,
+      0.5361,
+      0.6045,
+      0.4815
+    ],
+    "initial_crop_by_plot": [
+      "fallow",
+      "fallow",
+      "oilseed_rape",
+      "field_beans"
+    ]
+  },
+  {
+    "task_id": "train_0009",
+    "seed": 10010009,
+    "split": "train",
+    "scenario_type": "standard",
+    "starting_cash": 159924.91,
+    "initial_weather_regime": "wet",
+    "dry_bias": 0.0,
+    "price_volatility": 0.0768,
+    "fertiliser_cost_multiplier": 1.0184,
+    "irrigation_cost_multiplier": 1.0,
+    "initial_soil_by_plot": [
+      0.6241,
+      0.6461,
+      0.4891,
+      0.6321
+    ],
+    "initial_crop_by_plot": [
+      "fallow",
+      "field_beans",
+      "field_beans",
+      "wheat"
+    ]
+  },
+  {
+    "task_id": "train_0010",
+    "seed": 10010010,
+    "split": "train",
+    "scenario_type": "standard",
+    "starting_cash": 134980.63,
+    "initial_weather_regime": "wet",
+    "dry_bias": 0.0,
+    "price_volatility": 0.068,
+    "fertiliser_cost_multiplier": 0.9525,
+    "irrigation_cost_multiplier": 1.0,
+    "initial_soil_by_plot": [
+      0.5063,
+      0.5948,
+      0.5855,
+      0.555
+    ],
+    "initial_crop_by_plot": [
+      "fallow",
+      "wheat",
+      "fallow",
+      "oilseed_rape"
+    ]
+  },
+  {
+    "task_id": "train_0011",
+    "seed": 10010011,
+    "split": "train",
+    "scenario_type": "input_cost_shock",
+    "starting_cash": 154883.35,
+    "initial_weather_regime": "normal",
+    "dry_bias": 0.0816,
+    "price_volatility": 0.1442,
+    "fertiliser_cost_multiplier": 1.4466,
+    "irrigation_cost_multiplier": 1.306,
+    "initial_soil_by_plot": [
+      0.6548,
+      0.6371,
+      0.4834,
+      0.491
+    ],
+    "initial_crop_by_plot": [
+      "barley",
+      "barley",
+      "fallow",
+      "fallow"
+    ]
+  },
+  {
+    "task_id": "train_0012",
+    "seed": 10010012,
+    "split": "train",
+    "scenario_type": "standard",
+    "starting_cash": 124729.93,
+    "initial_weather_regime": "wet",
+    "dry_bias": 0.0,
+    "price_volatility": 0.0988,
+    "fertiliser_cost_multiplier": 1.0996,
+    "irrigation_cost_multiplier": 1.0,
+    "initial_soil_by_plot": [
+      0.5622,
+      0.6505,
+      0.6175,
+      0.4995
+    ],
+    "initial_crop_by_plot": [
+      "barley",
+      "barley",
+      "barley",
+      "oilseed_rape"
+    ]
+  },
+  {
+    "task_id": "train_0013",
+    "seed": 10010013,
+    "split": "train",
+    "scenario_type": "standard",
+    "starting_cash": 178911.76,
+    "initial_weather_regime": "normal",
+    "dry_bias": 0.0,
+    "price_volatility": 0.0999,
+    "fertiliser_cost_multiplier": 0.9963,
+    "irrigation_cost_multiplier": 1.0,
+    "initial_soil_by_plot": [
+      0.5444,
+      0.6349,
+      0.6594,
+      0.4815
+    ],
+    "initial_crop_by_plot": [
+      "wheat",
+      "barley",
+      "barley",
+      "oilseed_rape"
+    ]
+  },
+  {
+    "task_id": "train_0014",
+    "seed": 10010014,
+    "split": "train",
+    "scenario_type": "drought_stressed",
+    "starting_cash": 170873.17,
+    "initial_weather_regime": "dry",
+    "dry_bias": 0.5741,
+    "price_volatility": 0.0744,
+    "fertiliser_cost_multiplier": 1.1478,
+    "irrigation_cost_multiplier": 1.0241,
+    "initial_soil_by_plot": [
+      0.4225,
+      0.4195,
+      0.5424,
+      0.5496
+    ],
+    "initial_crop_by_plot": [
+      "wheat",
+      "fallow",
+      "oilseed_rape",
+      "barley"
+    ]
+  },
+  {
+    "task_id": "train_0015",
+    "seed": 10010015,
+    "split": "train",
+    "scenario_type": "input_cost_shock",
+    "starting_cash": 151536.07,
+    "initial_weather_regime": "normal",
+    "dry_bias": 0.1154,
+    "price_volatility": 0.1028,
+    "fertiliser_cost_multiplier": 1.4076,
+    "irrigation_cost_multiplier": 1.3802,
+    "initial_soil_by_plot": [
+      0.5353,
+      0.4918,
+      0.4833,
+      0.5502
+    ],
+    "initial_crop_by_plot": [
+      "wheat",
+      "wheat",
+      "wheat",
+      "field_beans"
+    ]
+  },
+  {
+    "task_id": "train_0016",
+    "seed": 10010016,
+    "split": "train",
+    "scenario_type": "standard",
+    "starting_cash": 152238.89,
+    "initial_weather_regime": "normal",
+    "dry_bias": 0.0,
+    "price_volatility": 0.0776,
+    "fertiliser_cost_multiplier": 0.9657,
+    "irrigation_cost_multiplier": 1.0,
+    "initial_soil_by_plot": [
+      0.5943,
+      0.6108,
+      0.6645,
+      0.5835
+    ],
+    "initial_crop_by_plot": [
+      "field_beans",
+      "field_beans",
+      "wheat",
+      "wheat"
+    ]
+  },
+  {
+    "task_id": "train_0017",
+    "seed": 10010017,
+    "split": "train",
+    "scenario_type": "drought_stressed",
+    "starting_cash": 161361.83,
+    "initial_weather_regime": "dry",
+    "dry_bias": 0.4664,
+    "price_volatility": 0.1062,
+    "fertiliser_cost_multiplier": 1.0916,
+    "irrigation_cost_multiplier": 0.9237,
+    "initial_soil_by_plot": [
+      0.418,
+      0.4149,
+      0.4014,
+      0.504
+    ],
+    "initial_crop_by_plot": [
+      "wheat",
+      "fallow",
+      "wheat",
+      "wheat"
+    ]
+  },
+  {
+    "task_id": "train_0018",
+    "seed": 10010018,
+    "split": "train",
+    "scenario_type": "standard",
+    "starting_cash": 184139.46,
+    "initial_weather_regime": "normal",
+    "dry_bias": 0.0,
+    "price_volatility": 0.0781,
+    "fertiliser_cost_multiplier": 1.0922,
+    "irrigation_cost_multiplier": 1.0,
+    "initial_soil_by_plot": [
+      0.6632,
+      0.5169,
+      0.6495,
+      0.5516
+    ],
+    "initial_crop_by_plot": [
+      "field_beans",
+      "oilseed_rape",
+      "oilseed_rape",
+      "wheat"
+    ]
+  },
+  {
+    "task_id": "train_0019",
+    "seed": 10010019,
+    "split": "train",
+    "scenario_type": "drought_stressed",
+    "starting_cash": 177275.97,
+    "initial_weather_regime": "dry",
+    "dry_bias": 0.32,
+    "price_volatility": 0.0753,
+    "fertiliser_cost_multiplier": 1.0043,
+    "irrigation_cost_multiplier": 0.877,
+    "initial_soil_by_plot": [
+      0.4736,
+      0.5288,
+      0.5395,
+      0.5148
+    ],
+    "initial_crop_by_plot": [
+      "fallow",
+      "oilseed_rape",
+      "field_beans",
+      "field_beans"
+    ]
+  },
+  {
+    "task_id": "train_0020",
+    "seed": 10010020,
+    "split": "train",
+    "scenario_type": "drought_stressed",
+    "starting_cash": 178898.02,
+    "initial_weather_regime": "dry",
+    "dry_bias": 0.3937,
+    "price_volatility": 0.0721,
+    "fertiliser_cost_multiplier": 1.1145,
+    "irrigation_cost_multiplier": 0.869,
+    "initial_soil_by_plot": [
+      0.4905,
+      0.5455,
+      0.5366,
+      0.5123
+    ],
+    "initial_crop_by_plot": [
+      "field_beans",
+      "barley",
+      "oilseed_rape",
+      "field_beans"
+    ]
+  },
+  {
+    "task_id": "train_0021",
+    "seed": 10010021,
+    "split": "train",
+    "scenario_type": "standard",
+    "starting_cash": 122002.8,
+    "initial_weather_regime": "normal",
+    "dry_bias": 0.0,
+    "price_volatility": 0.0964,
+    "fertiliser_cost_multiplier": 0.9998,
+    "irrigation_cost_multiplier": 1.0,
+    "initial_soil_by_plot": [
+      0.582,
+      0.6527,
+      0.6236,
+      0.675
+    ],
+    "initial_crop_by_plot": [
+      "field_beans",
+      "field_beans",
+      "barley",
+      "wheat"
+    ]
+  },
+  {
+    "task_id": "train_0022",
+    "seed": 10010022,
+    "split": "train",
+    "scenario_type": "standard",
+    "starting_cash": 125719.45,
+    "initial_weather_regime": "normal",
+    "dry_bias": 0.0,
+    "price_volatility": 0.0933,
+    "fertiliser_cost_multiplier": 0.9819,
+    "irrigation_cost_multiplier": 1.0,
+    "initial_soil_by_plot": [
+      0.6632,
+      0.6776,
+      0.5154,
+      0.6475
+    ],
+    "initial_crop_by_plot": [
+      "field_beans",
+      "wheat",
+      "oilseed_rape",
+      "wheat"
+    ]
+  },
+  {
+    "task_id": "train_0023",
+    "seed": 10010023,
+    "split": "train",
+    "scenario_type": "standard",
+    "starting_cash": 176720.43,
+    "initial_weather_regime": "wet",
+    "dry_bias": 0.0,
+    "price_volatility": 0.0732,
+    "fertiliser_cost_multiplier": 0.989,
+    "irrigation_cost_multiplier": 1.0,
+    "initial_soil_by_plot": [
+      0.6442,
+      0.5636,
+      0.5151,
+      0.5817
+    ],
+    "initial_crop_by_plot": [
+      "field_beans",
+      "field_beans",
+      "oilseed_rape",
+      "fallow"
+    ]
+  }
+]

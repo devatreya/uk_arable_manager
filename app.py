@@ -10,7 +10,7 @@ from __future__ import annotations
 
 import argparse
 
-from ors import Server
+from openreward.environments import Server
 
 from env import UKArableManager
 

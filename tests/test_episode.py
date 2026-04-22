@@ -81,8 +81,8 @@ def test_state_serialisation_roundtrip():
 
 
 def test_ors_environment_tools_return_tool_output():
-    """ORS environment tools must return ToolOutput instances."""
-    from ors import ToolOutput
+    """Environment tools must return ToolOutput instances."""
+    from openreward.environments import ToolOutput
     from env import UKArableManager, ReadSoilInput, ReadWeatherInput
 
     task = {
@@ -104,7 +104,7 @@ def test_ors_environment_tools_return_tool_output():
     result = env.read_farm_state()
     assert isinstance(result, ToolOutput)
     assert result.finished is False
-    assert result.reward is None
+    assert result.reward == 0.0
     assert len(result.blocks) > 0
 
     result2 = env.read_soil_report(ReadSoilInput(plots=[0, 1, 2, 3]))
@@ -142,7 +142,7 @@ def test_ors_list_splits():
     """list_splits must return train/validation/test."""
     from env import UKArableManager
     splits = UKArableManager.list_splits()
-    names = {s.name if hasattr(s, "name") else s for s in splits}
+    names = {s.name for s in splits}
     assert "train" in names
     assert "validation" in names
     assert "test" in names

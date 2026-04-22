@@ -1,6 +1,6 @@
 """
-ORS environment: UKArableManager
-Wraps FarmSimulator and exposes the five required tools via the ORS SDK.
+OpenReward environment: UKArableManager
+Wraps FarmSimulator and exposes the five required tools via the openreward SDK.
 """
 from __future__ import annotations
 
@@ -11,9 +11,10 @@ from typing import Any, Dict, List, Optional, Sequence, Union
 
 from pydantic import BaseModel, Field
 
-from ors import Environment, Split, TextBlock, ToolOutput, tool
+from openreward.environments import Environment, Split, TextBlock, ToolOutput, tool
 
 from config import (
+    CLIMATE_NORMALS_PATH,
     CROPS,
     LOCAL_NORMALS,
     NUM_PLOTS,
@@ -37,6 +38,14 @@ def _load_tasks(split: str) -> List[Dict[str, Any]]:
         return json.load(f)
 
 
+def _load_climate_normals() -> Dict[str, Any]:
+    try:
+        with open(CLIMATE_NORMALS_PATH) as f:
+            return json.load(f)
+    except (FileNotFoundError, json.JSONDecodeError):
+        return {}
+
+
 # ── Tool input schemas ────────────────────────────────────────────────────────
 
 class ReadSoilInput(BaseModel):
@@ -50,8 +59,8 @@ class ReadWeatherInput(BaseModel):
     lookback_quarters: int = Field(
         default=4,
         ge=1,
-        le=8,
-        description="Number of recent quarters to include in history.",
+        le=16,
+        description="Number of recent quarters to include (includes pre-episode context).",
     )
 
 
@@ -74,6 +83,9 @@ class CommitPlanInput(BaseModel):
 
 # ── Environment ───────────────────────────────────────────────────────────────
 
+_CLIMATE_NORMALS: Dict[str, Any] = _load_climate_normals()
+
+
 class UKArableManager(Environment):
     """
     A 400-acre Cambridgeshire arable farm over 10 crop years (40 quarters).
@@ -84,7 +96,7 @@ class UKArableManager(Environment):
         super().__init__(task_spec, secrets)
         self.sim: Optional[FarmSimulator] = None
 
-    # ── ORS lifecycle ─────────────────────────────────────────────────────────
+    # ── OpenReward lifecycle ──────────────────────────────────────────────────
 
     def setup(self) -> None:
         self.sim = FarmSimulator(dict(self.task_spec))
@@ -98,7 +110,7 @@ class UKArableManager(Environment):
         assert self.sim is not None
         return self.sim
 
-    # ── ORS class methods ─────────────────────────────────────────────────────
+    # ── Class methods ─────────────────────────────────────────────────────────
 
     @classmethod
     @cache
@@ -113,58 +125,118 @@ class UKArableManager(Environment):
     def list_tasks(cls, split: str) -> Sequence[Dict[str, Any]]:
         tasks = _load_tasks(split)
         if not tasks:
-            # Fallback: one minimal task so the env is usable before build_tasks.py runs
             tasks = [_minimal_task(split, 0)]
         return tasks
 
     def get_prompt(self) -> List[TextBlock]:
         spec = dict(self.task_spec)
-        task_id = spec.get("task_id", "unknown")
-        starting_cash = float(spec.get("starting_cash", 150_000.0))
-        scenario = spec.get("scenario_type", "standard")
+        sim  = self._ensure_sim()
+        s    = sim.state
 
+        task_id      = spec.get("task_id", "unknown")
+        scenario     = spec.get("scenario_type", "standard")
+        starting_cash = float(spec.get("starting_cash", 150_000.0))
+
+        # ── Recent 2024-2025 weather context ──────────────────────────────────
+        recent_ctx: List[Dict[str, Any]] = spec.get("recent_weather_context", [])
+        ctx_lines: List[str] = []
+        if recent_ctx:
+            ctx_lines.append("RECENT WEATHER CONTEXT  (actual ERA5, 2024-2025)")
+            ctx_lines.append(f"  {'Year':>4}  {'Q':>2}  {'Regime':<7}  {'Rain idx':>8}  {'Temp idx':>8}  {'Rain mm':>8}  {'Temp °C':>8}")
+            for q in recent_ctx:
+                ctx_lines.append(
+                    f"  {q['year']:>4}  {q['quarter']:>2}  {q['regime']:<7}  "
+                    f"{q['rainfall_index']:>8.3f}  {q['temperature_index']:>8.3f}  "
+                    f"{q.get('rain_mm', 0):>8.1f}  {q.get('temp_c', 0):>8.2f}"
+                )
+        else:
+            ctx_lines.append("RECENT WEATHER CONTEXT  (not available)")
+
+        # ── 30-year climate normals ───────────────────────────────────────────
+        normals = _CLIMATE_NORMALS
+        normals_lines: List[str] = []
+        qn = normals.get("quarterly_normals", {})
+        if qn:
+            period = normals.get("period", "1991-2020")
+            annual = normals.get("annual_mean_rain_mm", 632)
+            normals_lines.append(f"30-YEAR CLIMATE NORMALS  ({period}, ERA5, Cambridge 52.2°N 0.1°E)")
+            normals_lines.append(f"  Annual mean rainfall: {annual:.0f} mm")
+            normals_lines.append(f"  {'Season':<8}  {'Mean rain':>9}  {'±':>1}  {'Std':>6}  {'Mean temp':>9}  {'±':>1}  {'Std':>5}")
+            season_names = {"1": "Q1 (Jan-Mar)", "2": "Q2 (Apr-Jun)", "3": "Q3 (Jul-Sep)", "4": "Q4 (Oct-Dec)"}
+            for q_key in ("1", "2", "3", "4"):
+                n = qn.get(q_key, {})
+                normals_lines.append(
+                    f"  {season_names[q_key]:<12}  {n.get('mean_rain_mm', 0):>9.1f}  ±  {n.get('std_rain_mm', 0):>5.1f} mm"
+                    f"  {n.get('mean_temp_c', 0):>9.1f}  ±  {n.get('std_temp_c', 0):>4.1f} °C"
+                )
+            normals_lines.append("  Index = 1.0 means exactly the seasonal average for that quarter.")
+        else:
+            normals_lines.append(f"30-YEAR CLIMATE NORMALS  (Cambridge NIAB, Met Office)")
+            for k, v in LOCAL_NORMALS.items():
+                if k != "source":
+                    normals_lines.append(f"  {k}: {v}")
+
+        # ── Starting farm state ───────────────────────────────────────────────
+        farm_lines = [
+            f"STARTING FARM STATE",
+            f"  Cash: £{starting_cash:,.0f}  |  Irrigation: {'installed' if s.irrigation_owned else 'not installed'}",
+            f"  {'Plot':<8}  {'Crop':<15}  {'Soil score':>10}",
+        ]
+        initial_crops = spec.get("initial_crop_by_plot", [])
+        initial_soil  = spec.get("initial_soil_by_plot", [])
+        for i in range(NUM_PLOTS):
+            crop = initial_crops[i] if i < len(initial_crops) else s.plots[i].current_crop
+            soil = initial_soil[i]  if i < len(initial_soil)  else s.plots[i].soil_score()
+            farm_lines.append(f"  plot_{i+1:<4}  {crop:<15}  {soil:>10.3f}")
+
+        # ── Full prompt ───────────────────────────────────────────────────────
         prompt = f"""You are managing a 400-acre arable farm in Cambridgeshire, East Anglia, over 10 crop years (40 quarterly turns).
 
 FARM LAYOUT
-- 4 plots of 100 acres each (plot_1 through plot_4)
-- Task ID: {task_id}  |  Scenario: {scenario}
-- Starting cash: £{starting_cash:,.0f}
+  4 plots of 100 acres each (plot_1 through plot_4)
+  Task ID: {task_id}  |  Scenario: {scenario}
 
 YOUR GOAL
-Maximise: terminal_score = max(0, ending_cash / starting_cash) × soil_factor × solvency_gate
-  soil_factor   = clip(mean_final_soil, 0.4, 1.2), linearly scaled to [0, 1]
-  solvency_gate = 1.0 if never bankrupt, else 0.2
+  Maximise: terminal_score = max(0, ending_cash / starting_cash) × soil_factor × solvency_gate
+    soil_factor   = clip(mean_final_soil, 0.4, 1.2), linearly scaled → [0, 1]
+    solvency_gate = 1.0 if never bankrupt, else 0.2
+
+{chr(10).join(ctx_lines)}
+
+{chr(10).join(normals_lines)}
+
+{chr(10).join(farm_lines)}
 
 AVAILABLE CROPS
-  wheat          — £700 gross/acre, £420 cost/acre
-  barley         — £620 gross/acre, £380 cost/acre
-  oilseed_rape   — £760 gross/acre, £470 cost/acre
-  field_beans    — £540 gross/acre, £300 cost/acre
-  cover_crop     — £0 revenue,       £45 cost/acre  (restores soil +0.06/quarter)
-  fallow         — £0 revenue,       £10 cost/acre  (restores soil +0.03/quarter)
+  wheat          — £700 gross/acre, £420 direct cost/acre  (soil −0.050/qtr)
+  barley         — £620 gross/acre, £380 direct cost/acre  (soil −0.040/qtr)
+  oilseed_rape   — £760 gross/acre, £470 direct cost/acre  (soil −0.060/qtr)
+  field_beans    — £540 gross/acre, £300 direct cost/acre  (soil +0.020/qtr, fixes nitrogen)
+  cover_crop     — £0 revenue,       £45 cost/acre         (soil +0.060/qtr)
+  fallow         — £0 revenue,       £10 cost/acre         (soil +0.030/qtr)
 
 SOIL HEALTH DYNAMICS
-  Wheat −0.05/qt  Barley −0.04  OSR −0.06  Beans +0.02  Cover +0.06  Fallow +0.03
-  Repeating the same crop on the same plot: −0.03 extra per quarter
-  High fertiliser: yield +12%, soil −0.02/qt
-  Dry weather without irrigation: soil −0.03/qt, yield ×0.78
+  Repeating the same crop on the same plot: −0.030 extra per quarter
+  High fertiliser: yield +12%, soil −0.020/qtr
+  Dry weather without irrigation: soil −0.018/qtr, yield ×0.92
 
-QUARTERLY DECISION
-For each plot choose:
-  crop        — one of the 6 options above
-  fertiliser  — low | medium | high
-  pest_control — none | ipm | spray  (matters when pest pressure is elevated)
+FERTILISER OPTIONS  (add-on cost per acre)
+  low: +£20, yield ×0.88  |  medium: +£45, yield ×1.00  |  high: +£75, yield ×1.12
 
-Capital: buy_irrigation once for £35,000 (boosts yield in dry years by +12%)
+PEST CONTROL OPTIONS  (add-on cost per acre, matters when pest pressure is elevated)
+  none: £0, yield ×0.74 under pressure  |  ipm: £18, ×0.95  |  spray: £40, ×1.00
 
-TOOL SEQUENCE (each quarter):
-1. read_farm_state      — cash, quarter, irrigation status, current crops
-2. read_soil_report     — organic matter, pH, compaction, nutrient balance per plot
-3. read_weather_history — recent rainfall/temperature, local climatology
-4. read_price_board     — current crop prices, fertiliser costs
-5. commit_plan          — submit decisions for all 4 plots → advances time
+CAPITAL ACTION
+  buy_irrigation — one-time £35,000; in dry quarters yield +18% above no-irrigation baseline
 
-Greedy extraction degrades soil; sustainable rotation across different crops wins over 40 quarters."""
+TOOL SEQUENCE  (each quarter)
+  1. read_farm_state      — cash, quarter, irrigation, current crops and soil
+  2. read_soil_report     — organic matter, pH, compaction, nutrient balance per plot
+  3. read_weather_history — realised weather history + climate context
+  4. read_price_board     — current crop prices, fertiliser/irrigation costs
+  5. commit_plan          — submit decisions for all 4 plots → advances time by one quarter
+
+Greedy extraction collapses soil health; diverse rotations with restorative crops win over 40 quarters."""
 
         return [_tb(prompt)]
 
@@ -175,14 +247,6 @@ Greedy extraction degrades soil; sustainable rotation across different crops win
         """Return quarter index, year, cash, irrigation ownership, and current crop per plot."""
         sim = self._ensure_sim()
         s = sim.state
-        plots_summary = {
-            f"plot_{i+1}": {
-                "current_crop": s.plots[i].current_crop,
-                "previous_crop": s.plots[i].previous_crop,
-                "soil_score": s.plots[i].soil_score(),
-            }
-            for i in range(NUM_PLOTS)
-        }
         lines = [
             f"Quarter: {s.quarter + 1}/{TOTAL_QUARTERS}  Year: {s.year + 1}/10  Q-in-year: {s.quarter_in_year + 1}",
             f"Cash: £{s.cash:,.0f}  |  Starting cash: £{s.starting_cash:,.0f}",
@@ -194,7 +258,7 @@ Greedy extraction degrades soil; sustainable rotation across different crops win
             lines.append(
                 f"  plot_{i+1}: crop={p.current_crop}  prev={p.previous_crop}  soil={p.soil_score():.3f}"
             )
-        return ToolOutput(blocks=[_tb("\n".join(lines))], reward=None, finished=False)
+        return ToolOutput(blocks=[_tb("\n".join(lines))], reward=0.0, finished=False)
 
     @tool
     def read_soil_report(self, params: ReadSoilInput) -> ToolOutput:
@@ -213,34 +277,44 @@ Greedy extraction degrades soil; sustainable rotation across different crops win
                 f"nutrients={p.reported_nutrient_balance():.3f}  "
                 f"soil_score={p.soil_score():.3f}"
             )
-        return ToolOutput(blocks=[_tb("\n".join(lines))], reward=None, finished=False)
+        return ToolOutput(blocks=[_tb("\n".join(lines))], reward=0.0, finished=False)
 
     @tool
     def read_weather_history(self, params: ReadWeatherInput) -> ToolOutput:
-        """Return recent realised weather and fixed local climatology."""
+        """Return recent realised weather (including pre-episode context) and 30-year climate normals."""
         sim = self._ensure_sim()
         history = sim.state.weather_history
         lookback = params.lookback_quarters
         recent = history[-lookback:] if history else []
 
-        lines = [f"WEATHER HISTORY (last {lookback} quarters)"]
+        lines = [f"WEATHER HISTORY (last {lookback} entries, negative quarters = pre-episode context)"]
         if not recent:
             lines.append("  No history yet (first quarter).")
         else:
             for w in recent:
+                tag = "ctx" if w.quarter < 0 else f"Q{w.quarter + 1:02d}"
                 lines.append(
-                    f"  Q{w.quarter+1}: regime={w.regime}  rainfall_idx={w.rainfall_index:.3f}  "
-                    f"temp_idx={w.temperature_index:.3f}"
+                    f"  [{tag}] regime={w.regime:<7}  rain_idx={w.rainfall_index:.3f}  temp_idx={w.temperature_index:.3f}"
                 )
 
         lines.append("")
-        lines.append("LOCAL CLIMATOLOGY (Cambridge NIAB normals)")
-        for k, v in LOCAL_NORMALS.items():
-            if k != "source":
-                lines.append(f"  {k}: {v}")
-        lines.append(f"  (source: {LOCAL_NORMALS['source']})")
+        qn = _CLIMATE_NORMALS.get("quarterly_normals", {})
+        if qn:
+            lines.append("30-YEAR SEASONAL NORMALS  (1991-2020 ERA5 Cambridge)")
+            season_names = {"1": "Q1 Jan-Mar", "2": "Q2 Apr-Jun", "3": "Q3 Jul-Sep", "4": "Q4 Oct-Dec"}
+            for q_key in ("1", "2", "3", "4"):
+                n = qn.get(q_key, {})
+                lines.append(
+                    f"  {season_names[q_key]}: rain {n.get('mean_rain_mm',0):.0f}±{n.get('std_rain_mm',0):.0f}mm  "
+                    f"temp {n.get('mean_temp_c',0):.1f}±{n.get('std_temp_c',0):.1f}°C"
+                )
+        else:
+            lines.append("LOCAL CLIMATOLOGY (Cambridge NIAB normals)")
+            for k, v in LOCAL_NORMALS.items():
+                if k != "source":
+                    lines.append(f"  {k}: {v}")
 
-        return ToolOutput(blocks=[_tb("\n".join(lines))], reward=None, finished=False)
+        return ToolOutput(blocks=[_tb("\n".join(lines))], reward=0.0, finished=False)
 
     @tool
     def read_price_board(self) -> ToolOutput:
@@ -248,7 +322,7 @@ Greedy extraction degrades soil; sustainable rotation across different crops win
         sim = self._ensure_sim()
         prices = sim.get_current_prices()
         lines = ["PRICE BOARD (current quarter)"]
-        lines.append("  Crop prices (£/acre gross):")
+        lines.append("  Crop prices (£/acre gross revenue):")
         for crop in CROPS:
             if prices.get(crop, 0) > 0:
                 lines.append(f"    {crop}: £{prices[crop]:.2f}")
@@ -258,7 +332,7 @@ Greedy extraction degrades soil; sustainable rotation across different crops win
                      f"high=£{prices.get('fertiliser_high', 75):.2f}")
         if not sim.state.irrigation_owned:
             lines.append(f"  Irrigation (one-time): £{prices.get('irrigation_cost', 35000):.2f}")
-        return ToolOutput(blocks=[_tb("\n".join(lines))], reward=None, finished=False)
+        return ToolOutput(blocks=[_tb("\n".join(lines))], reward=0.0, finished=False)
 
     @tool
     def commit_plan(self, params: CommitPlanInput) -> ToolOutput:
@@ -331,7 +405,7 @@ Greedy extraction degrades soil; sustainable rotation across different crops win
         lines.append(f"Cash balance: £{s.cash:,.0f}")
 
         if result.bankrupt:
-            lines.append("⚠  Cash is NEGATIVE — bankruptcy risk.")
+            lines.append("WARNING: Cash is NEGATIVE — bankruptcy risk.")
 
         lines.append("")
         lines.append("Updated soil scores:")
@@ -340,12 +414,12 @@ Greedy extraction degrades soil; sustainable rotation across different crops win
 
         if result.finished:
             lines.append("")
-            lines.append("═══ EPISODE COMPLETE ═══")
-            lines.append(f"Terminal score: {result.terminal_score:.4f}")
-            lines.append(f"Final cash: £{s.cash:,.0f}")
+            lines.append("EPISODE COMPLETE")
+            lines.append(f"Terminal score:      {result.terminal_score:.4f}")
+            lines.append(f"Final cash:          £{s.cash:,.0f}")
             mean_soil = sum(p.soil_health for p in s.plots) / NUM_PLOTS
-            lines.append(f"Mean final soil health: {mean_soil:.3f}")
-            lines.append(f"Ever bankrupt: {s.ever_bankrupt}")
+            lines.append(f"Mean final soil:     {mean_soil:.3f}")
+            lines.append(f"Ever bankrupt:       {s.ever_bankrupt}")
 
         return ToolOutput(
             blocks=[_tb("\n".join(lines))],
@@ -362,6 +436,7 @@ def _minimal_task(split: str, index: int) -> Dict[str, Any]:
         "seed": index,
         "split": split,
         "scenario_type": "standard",
+        "real_data_mode": False,
         "starting_cash": 150_000.0,
         "initial_weather_regime": "normal",
         "dry_bias": 0.0,
@@ -370,4 +445,5 @@ def _minimal_task(split: str, index: int) -> Dict[str, Any]:
         "irrigation_cost_multiplier": 1.0,
         "initial_soil_by_plot": [0.55, 0.55, 0.55, 0.55],
         "initial_crop_by_plot": ["fallow", "fallow", "fallow", "fallow"],
+        "recent_weather_context": [],
     }

@@ -1,10 +1,10 @@
 """
-ORS rollout client: runs policies against a live ORS server or directly
+Rollout client: runs policies against a live OpenReward server or directly
 against the simulator for local/offline use.
 
 Two modes:
   LocalRollout   — calls FarmSimulator directly (no HTTP)
-  ServerRollout  — calls a running ORS server via ors.client.ORS
+  ServerRollout  — calls a running server via openreward.EnvironmentsAPI
 """
 from __future__ import annotations
 
@@ -100,8 +100,9 @@ def run_local_rollout(
 
 class ServerRollout:
     """
-    Run a policy against a running ORS server.
-    Requires `ors.client.ORS` and a server started via `app.py`.
+    Run a policy against a running OpenReward server (started via server.py).
+    Uses openreward.EnvironmentsAPI directly so it works against localhost
+    without subdomain routing.
     """
 
     def __init__(
@@ -118,29 +119,36 @@ class ServerRollout:
         policy: Policy,
         baseline_name: Optional[str] = None,
     ) -> TrajectoryLog:
-        from ors.client import ORS
+        from openreward import EnvironmentsAPI
 
         logger = TrajectoryLogger(task_spec, baseline_name=baseline_name)
 
-        with ORS(base_url=self.base_url) as client:
-            env = client.environment(self.env_name)
-            with env.session(task_spec=task_spec) as session:
+        with EnvironmentsAPI(base_url=self.base_url, api_key="local") as api:
+            env = api.get(self.env_name, base_url=self.base_url)
+            tasks = env.list_tasks(task_spec.get("split", "train"))
+            # Find task matching task_id, or use first task as fallback
+            task_id = task_spec.get("task_id")
+            task = next(
+                (t for t in tasks if t.task_spec.get("task_id") == task_id),
+                tasks[0] if tasks else None,
+            )
+            if task is None:
+                raise RuntimeError(f"No tasks found for split {task_spec.get('split', 'train')!r}")
+
+            with env.session(task) as session:
                 obs_state: Dict[str, Any] = {}
                 quarter = 0
 
                 while quarter < TOTAL_QUARTERS:
-                    # Read farm state to give policy context
-                    fs_resp = session.call("read_farm_state", {})
+                    fs_resp = session.call_tool("read_farm_state", {})
                     obs_state["farm_state_text"] = _extract_text(fs_resp)
 
                     action_dict = policy(obs_state)
-
-                    # Translate action dict to commit_plan input
                     commit_input = _action_to_commit_plan_input(action_dict)
-                    result = session.call("commit_plan", commit_input)
+                    result = session.call_tool("commit_plan", commit_input)
 
-                    finished = getattr(result, "finished", False)
-                    reward = getattr(result, "reward", 0.0) or 0.0
+                    finished = result.finished
+                    reward   = result.reward or 0.0
                     obs_text = _extract_text(result)
 
                     logger.record_step(
@@ -196,5 +204,5 @@ def _action_to_commit_plan_input(d: Dict[str, Any]) -> Dict[str, Any]:
 
 def _extract_text(response: Any) -> str:
     if hasattr(response, "blocks"):
-        return " ".join(b.text for b in response.blocks if hasattr(b, "text"))
+        return "\n".join(b.text for b in response.blocks if hasattr(b, "text"))
     return str(response)

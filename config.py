@@ -174,8 +174,12 @@ SCENARIO_MIX = {
 import pathlib
 
 ROOT = pathlib.Path(__file__).parent
+
+# On the Open Reward platform, task/data files are uploaded to /orwd_data/.
+# Locally they live in data/processed/.  Auto-detect which is present.
+_ORWD = pathlib.Path("/orwd_data")
 DATA_RAW = ROOT / "data" / "raw"
-DATA_PROCESSED = ROOT / "data" / "processed"
+DATA_PROCESSED = _ORWD if _ORWD.exists() else ROOT / "data" / "processed"
 
 TASK_FILES = {
     "train":      DATA_PROCESSED / "scenario_tasks_train.json",

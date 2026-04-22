@@ -15,14 +15,18 @@ import numpy as np
 from config import (
     ACRES_PER_PLOT,
     BANKRUPTCY_HARD_THRESHOLD,
+    CLIMATE_NORMALS_PATH,
     CROPS,
+    CURRENT_PRICES_PATH,
     DIRECT_COST,
     DROUGHT_THRESHOLD,
     FERTILISER_COST,
     FERTILISER_NUTRIENT_BOOST,
+    FERTILISER_REFERENCE_AN_PRICE,
     FERTILISER_SOIL_PENALTY,
     FERTILISER_YIELD_MULT,
     GROSS_REVENUE,
+    GROSS_REVENUE_REFERENCE_PRICES,
     IRRIGATION_DRY_YIELD_BONUS,
     IRRIGATION_ONE_TIME_COST,
     LOCAL_NORMALS,
@@ -292,9 +296,15 @@ class FarmSimulator:
         seed = int(task_spec.get("seed", 42))
         self.rng = np.random.default_rng(seed)
 
+        self._real_data_mode: bool = bool(task_spec.get("real_data_mode", False))
+
         # Real data — empty dicts when files don't exist (tests still pass)
         self._price_data:   Dict = _load_json_safe(QUARTERLY_PRICES_PATH)
         self._weather_data: Dict = _load_json_safe(QUARTERLY_WEATHER_PATH)
+
+        # real_data_mode: climate normals and current absolute prices
+        self._climate_normals: Dict = _load_json_safe(CLIMATE_NORMALS_PATH) if self._real_data_mode else {}
+        self._current_prices:  Dict = _load_json_safe(CURRENT_PRICES_PATH)  if self._real_data_mode else {}
 
         self.state = self._build_initial_state(task_spec)
         self._resample_prices()
@@ -322,6 +332,17 @@ class FarmSimulator:
             crop_val = initial_crop[i] if i < len(initial_crop) else "fallow"
             p.previous_crop = crop_val
             p.current_crop = crop_val
+
+        # Pre-populate weather history with recent actuals (2 years = 8 quarters)
+        # so the agent starts with real recent context visible in observations.
+        # Quarters get negative indices (-8..-1) to mark them as pre-episode.
+        for ctx in spec.get("recent_weather_context", []):
+            fs.weather_history.append(WeatherRecord(
+                quarter=int(ctx.get("quarter_offset", -1)),
+                regime=str(ctx.get("regime", "normal")),
+                rainfall_index=float(ctx.get("rainfall_index", 1.0)),
+                temperature_index=float(ctx.get("temperature_index", 1.0)),
+            ))
 
         return fs
 
@@ -359,24 +380,47 @@ class FarmSimulator:
         fert_mult_task = float(self.task_spec.get("fertiliser_cost_multiplier", 1.0))
         irr_mult       = float(self.task_spec.get("irrigation_cost_multiplier", 1.0))
 
-        # Real historical price multipliers (empty dict → all default to 1.0).
-        # Clamp to [0.75, 1.40]: preserves real year-to-year dynamics while
-        # preventing extreme early-2000s lows and 2022 spikes from dominating.
-        real_raw = self._get_real_price_mults()
-        real = {k: float(np.clip(v, 0.75, 1.40)) for k, v in real_raw.items()}
-
         prices: Dict[str, float] = {}
-        for crop in CROPS:
-            base = GROSS_REVENUE[crop]
-            if base > 0.0:
-                real_factor = real.get(f"{_CROP_MULT_KEY.get(crop, crop)}_mult", 1.0)
-                noise = float(np.clip(self.rng.normal(1.0, vol), 0.60, 1.50))
-                prices[crop] = round(base * real_factor * noise, 2)
-            else:
-                prices[crop] = 0.0
 
-        fert_real  = real.get("fertiliser_mult", 1.0)
-        fert_total = fert_real * fert_mult_task
+        if self._real_data_mode and self._current_prices:
+            # real_data_mode: scale GROSS_REVENUE by (current_market / reference).
+            # Reference prices are the 2000-2025 period means against which
+            # GROSS_REVENUE constants were calibrated.
+            cp = self._current_prices.get("prices_gbp_per_tonne", {})
+            for crop in CROPS:
+                base = GROSS_REVENUE[crop]
+                if base > 0.0:
+                    ref = GROSS_REVENUE_REFERENCE_PRICES.get(crop)
+                    cur = cp.get(_CROP_MULT_KEY.get(crop, crop))
+                    price_factor = float(np.clip(cur / ref, 0.60, 2.00)) if (ref and cur) else 1.0
+                    noise = float(np.clip(self.rng.normal(1.0, vol), 0.60, 1.50))
+                    prices[crop] = round(base * price_factor * noise, 2)
+                else:
+                    prices[crop] = 0.0
+
+            an_cur = cp.get("an_fertiliser", FERTILISER_REFERENCE_AN_PRICE)
+            fert_market = float(np.clip(an_cur / FERTILISER_REFERENCE_AN_PRICE, 0.60, 2.50))
+            fert_total = fert_market * fert_mult_task
+
+        else:
+            # Historical replay or synthetic: use quarterly price multipliers.
+            # Clamp to [0.75, 1.40]: prevents extreme early-2000s lows and 2022 spike
+            # from dominating when replaying specific years.
+            real_raw = self._get_real_price_mults()
+            real = {k: float(np.clip(v, 0.75, 1.40)) for k, v in real_raw.items()}
+
+            for crop in CROPS:
+                base = GROSS_REVENUE[crop]
+                if base > 0.0:
+                    real_factor = real.get(f"{_CROP_MULT_KEY.get(crop, crop)}_mult", 1.0)
+                    noise = float(np.clip(self.rng.normal(1.0, vol), 0.60, 1.50))
+                    prices[crop] = round(base * real_factor * noise, 2)
+                else:
+                    prices[crop] = 0.0
+
+            fert_real  = real.get("fertiliser_mult", 1.0)
+            fert_total = fert_real * fert_mult_task
+
         prices["fertiliser_low"]    = round(20.0  * fert_total, 2)
         prices["fertiliser_medium"] = round(45.0  * fert_total, 2)
         prices["fertiliser_high"]   = round(75.0  * fert_total, 2)
@@ -390,16 +434,54 @@ class FarmSimulator:
     # ── Weather ──────────────────────────────────────────────────────────────
 
     def _step_weather(self) -> WeatherRecord:
+        dry_bias = float(self.task_spec.get("dry_bias", 0.0))
+
+        if self._real_data_mode and self._climate_normals:
+            # Sample from 30-year (1991-2020) seasonal climate normal for this quarter-of-year.
+            # quarter_of_year: 0-based sim quarter → Q1..Q4 key in climate_normals
+            q_of_year = str(self.state.quarter % 4 + 1)
+            qn = self._climate_normals.get("quarterly_normals", {}).get(q_of_year, {})
+
+            mu_rain = float(qn.get("mean_rain_mm", 160.0))
+            sd_rain = float(qn.get("std_rain_mm",  50.0))
+            mu_temp = float(qn.get("mean_temp_c",  10.0))
+            sd_temp = float(qn.get("std_temp_c",    1.0))
+
+            rain_mm = float(np.clip(self.rng.normal(mu_rain, sd_rain), 5.0, 500.0))
+            temp_c  = float(np.clip(self.rng.normal(mu_temp, sd_temp), -5.0, 30.0))
+
+            # Normalise against seasonal mean → index = 1.0 is exactly average
+            rain_idx = rain_mm / mu_rain if mu_rain > 0 else 1.0
+            temp_idx = temp_c  / mu_temp if abs(mu_temp) > 0.5 else 1.0
+
+            # Regime from rainfall index (WET_THRESHOLD mirrors fetch_weather.py)
+            WET_THRESHOLD = 1.35
+            regime = "dry" if rain_idx < DROUGHT_THRESHOLD else ("wet" if rain_idx > WET_THRESHOLD else "normal")
+
+            # dry_bias: nudge normal → dry with probability proportional to bias
+            if dry_bias > 0.0 and regime == "normal":
+                if float(self.rng.random()) < dry_bias * 0.45:
+                    regime = "dry"
+                    rain_idx = float(np.clip(rain_idx * 0.85, 0.10, DROUGHT_THRESHOLD - 0.01))
+
+            self.state.weather_regime = regime
+            rec = WeatherRecord(
+                quarter=self.state.quarter,
+                regime=regime,
+                rainfall_index=round(rain_idx, 3),
+                temperature_index=round(temp_idx, 3),
+            )
+            self.state.weather_history.append(rec)
+            return rec
+
         real_w = self._get_real_weather()
 
         if real_w is not None:
-            # Real historical path: use actual ERA5 rainfall/temperature
+            # Historical replay: use actual ERA5 rainfall/temperature for the mapped year
             rainfall    = float(real_w["rainfall_index"])
             temperature = float(real_w["temperature_index"])
             regime      = str(real_w["regime"])
 
-            # dry_bias can nudge borderline "normal" quarters into "dry"
-            dry_bias = float(self.task_spec.get("dry_bias", 0.0))
             if dry_bias > 0.0 and regime == "normal":
                 if float(self.rng.random()) < dry_bias * 0.45:
                     regime = "dry"
@@ -415,8 +497,7 @@ class FarmSimulator:
             return rec
 
         # Synthetic fallback: Markov chain (used when no real data / no start year)
-        regime   = self.state.weather_regime
-        dry_bias = float(self.task_spec.get("dry_bias", 0.0))
+        regime = self.state.weather_regime
 
         trans = dict(WEATHER_TRANSITION[regime])
         if dry_bias > 0.0:

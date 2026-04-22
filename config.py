@@ -186,6 +186,9 @@ TASK_FILES = {
 # Real historical data (written by fetch_weather.py / fetch_prices.py)
 QUARTERLY_WEATHER_PATH = DATA_PROCESSED / "quarterly_weather.json"
 QUARTERLY_PRICES_PATH  = DATA_PROCESSED / "quarterly_prices.json"
+CLIMATE_NORMALS_PATH   = DATA_PROCESSED / "climate_normals.json"
+RECENT_WEATHER_PATH    = DATA_PROCESSED / "recent_weather.json"
+CURRENT_PRICES_PATH    = DATA_PROCESSED / "current_prices.json"
 
 # Valid simulation start-year range: 10-year window must fit inside 2000-2023.
 # Effective start range is 2007-2014: avoids very low pre-reform wheat prices
@@ -193,3 +196,13 @@ QUARTERLY_PRICES_PATH  = DATA_PROCESSED / "quarterly_prices.json"
 REAL_DATA_START_YEAR = 2000
 REAL_DATA_END_YEAR   = 2023
 SIM_MAX_START_YEAR   = REAL_DATA_END_YEAR - 10 + 1  # 2014
+
+# Reference prices used to calibrate GROSS_REVENUE constants (2000-2025 period means).
+# In real_data_mode the simulator scales GROSS_REVENUE by current_price / reference_price.
+GROSS_REVENUE_REFERENCE_PRICES: Dict[str, float] = {
+    "wheat":         142.0,
+    "barley":        124.0,
+    "oilseed_rape":  323.0,
+    "field_beans":   121.0,
+}
+FERTILISER_REFERENCE_AN_PRICE = 270.0

@@ -4,7 +4,7 @@
     "seed": 20010002,
     "split": "validation",
     "scenario_type": "input_cost_shock",
-    "simulation_start_year": 2013,
+    "real_data_mode": true,
     "starting_cash": 156948.67,
     "initial_weather_regime": "normal",
     "dry_bias": 0.0682,
@@ -12,16 +12,98 @@
     "fertiliser_cost_multiplier": 1.3027,
     "irrigation_cost_multiplier": 1.1603,
     "initial_soil_by_plot": [
-      0.6636,
-      0.486,
-      0.6308,
-      0.6633
+      0.556,
+      0.5519,
+      0.5348,
+      0.5093
     ],
     "initial_crop_by_plot": [
       "oilseed_rape",
       "barley",
       "wheat",
       "barley"
+    ],
+    "recent_weather_context": [
+      {
+        "quarter_offset": -8,
+        "year": 2024,
+        "quarter": 1,
+        "rain_mm": 218.4,
+        "temp_c": 7.08,
+        "rainfall_index": 1.6452,
+        "temperature_index": 1.3015,
+        "regime": "wet"
+      },
+      {
+        "quarter_offset": -7,
+        "year": 2024,
+        "quarter": 2,
+        "rain_mm": 200.8,
+        "temp_c": 12.78,
+        "rainfall_index": 1.2361,
+        "temperature_index": 1.0519,
+        "regime": "normal"
+      },
+      {
+        "quarter_offset": -6,
+        "year": 2024,
+        "quarter": 3,
+        "rain_mm": 242.2,
+        "temp_c": 16.96,
+        "rainfall_index": 1.407,
+        "temperature_index": 1.0235,
+        "regime": "wet"
+      },
+      {
+        "quarter_offset": -5,
+        "year": 2024,
+        "quarter": 4,
+        "rain_mm": 189.4,
+        "temp_c": 8.92,
+        "rainfall_index": 1.1539,
+        "temperature_index": 1.1122,
+        "regime": "normal"
+      },
+      {
+        "quarter_offset": -4,
+        "year": 2025,
+        "quarter": 1,
+        "rain_mm": 120.6,
+        "temp_c": 5.3,
+        "rainfall_index": 0.9085,
+        "temperature_index": 0.9743,
+        "regime": "normal"
+      },
+      {
+        "quarter_offset": -3,
+        "year": 2025,
+        "quarter": 2,
+        "rain_mm": 106.0,
+        "temp_c": 14.21,
+        "rainfall_index": 0.6525,
+        "temperature_index": 1.1695,
+        "regime": "dry"
+      },
+      {
+        "quarter_offset": -2,
+        "year": 2025,
+        "quarter": 3,
+        "rain_mm": 168.4,
+        "temp_c": 17.46,
+        "rainfall_index": 0.9783,
+        "temperature_index": 1.0537,
+        "regime": "normal"
+      },
+      {
+        "quarter_offset": -1,
+        "year": 2025,
+        "quarter": 4,
+        "rain_mm": 192.3,
+        "temp_c": 9.37,
+        "rainfall_index": 1.1716,
+        "temperature_index": 1.1683,
+        "regime": "normal"
+      }
     ]
   },
   "steps": [
@@ -52,27 +134,27 @@
           }
         ]
       },
-      "reward": 2.300392,
-      "pnl": 23003.92,
-      "observation": "pnl=23004 weather=normal",
+      "reward": 6.922534,
+      "pnl": 69225.34,
+      "observation": "pnl=69225 weather=normal",
       "weather": {
         "quarter": 0,
         "regime": "normal",
-        "rainfall_index": 0.737,
-        "temperature_index": 0.263
+        "rainfall_index": 0.753,
+        "temperature_index": 1.016
       },
       "plot_pnl": [
-        20637.31,
-        -9936.5,
-        19908.48,
-        -7605.37
+        29786.8,
+        5463.01,
+        29246.92,
+        4728.61
       ],
       "bankrupt": false,
       "pest_pressure": [
+        true,
         false,
         true,
-        true,
-        false
+        true
       ],
       "state_snapshot": null
     },
@@ -103,25 +185,25 @@
           }
         ]
       },
-      "reward": 8.010175,
-      "pnl": 80101.75,
-      "observation": "pnl=80102 weather=normal",
+      "reward": 6.783497,
+      "pnl": 67834.97,
+      "observation": "pnl=67835 weather=normal",
       "weather": {
         "quarter": 1,
         "regime": "normal",
-        "rainfall_index": 0.703,
-        "temperature_index": 0.996
+        "rainfall_index": 0.758,
+        "temperature_index": 1.058
       },
       "plot_pnl": [
-        31126.64,
-        7312.25,
-        31089.95,
-        10572.91
+        14267.76,
+        20043.09,
+        14493.99,
+        19030.13
       ],
       "bankrupt": false,
       "pest_pressure": [
         false,
-        false,
+        true,
         false,
         false
       ],
@@ -154,27 +236,27 @@
           }
         ]
       },
-      "reward": 1.240473,
-      "pnl": 12404.73,
-      "observation": "pnl=12405 weather=normal",
+      "reward": 4.574179,
+      "pnl": 45741.79,
+      "observation": "pnl=45742 weather=dry",
       "weather": {
         "quarter": 2,
-        "regime": "normal",
-        "rainfall_index": 0.998,
-        "temperature_index": 1.593
+        "regime": "dry",
+        "rainfall_index": 0.649,
+        "temperature_index": 1.016
       },
       "plot_pnl": [
-        10329.12,
-        -5794.33,
-        10999.24,
-        -3129.3
+        20707.79,
+        2088.16,
+        21748.44,
+        1197.4
       ],
       "bankrupt": false,
       "pest_pressure": [
         false,
+        true,
         false,
-        false,
-        false
+        true
       ],
       "state_snapshot": null
     },
@@ -205,20 +287,20 @@
           }
         ]
       },
-      "reward": 11.817113,
-      "pnl": 118171.13,
-      "observation": "pnl=118171 weather=dry",
+      "reward": 10.900189,
+      "pnl": 109001.89,
+      "observation": "pnl=109002 weather=wet",
       "weather": {
         "quarter": 3,
-        "regime": "dry",
-        "rainfall_index": 1.136,
-        "temperature_index": 0.793
+        "regime": "wet",
+        "rainfall_index": 1.646,
+        "temperature_index": 1.144
       },
       "plot_pnl": [
-        35281.66,
-        21395.2,
-        36074.71,
-        25419.56
+        28451.02,
+        26331.36,
+        28965.79,
+        25253.72
       ],
       "bankrupt": false,
       "pest_pressure": [
@@ -256,26 +338,26 @@
           }
         ]
       },
-      "reward": 2.459249,
-      "pnl": 24592.49,
-      "observation": "pnl=24592 weather=normal",
+      "reward": 10.993773,
+      "pnl": 109937.73,
+      "observation": "pnl=109938 weather=normal",
       "weather": {
         "quarter": 4,
         "regime": "normal",
-        "rainfall_index": 1.193,
-        "temperature_index": 0.616
+        "rainfall_index": 1.034,
+        "temperature_index": 1.036
       },
       "plot_pnl": [
-        12611.98,
-        -1388.82,
-        12890.08,
-        479.25
+        32978.43,
+        22164.17,
+        33209.44,
+        21585.69
       ],
       "bankrupt": false,
       "pest_pressure": [
-        true,
         false,
-        true,
+        false,
+        false,
         false
       ],
       "state_snapshot": null
@@ -307,24 +389,24 @@
           }
         ]
       },
-      "reward": -0.737249,
-      "pnl": -7372.49,
-      "observation": "pnl=-7372 weather=normal",
+      "reward": 10.454086,
+      "pnl": 104540.86,
+      "observation": "pnl=104541 weather=wet",
       "weather": {
         "quarter": 5,
-        "regime": "normal",
-        "rainfall_index": 1.075,
-        "temperature_index": 1.198
+        "regime": "wet",
+        "rainfall_index": 1.394,
+        "temperature_index": 0.906
       },
       "plot_pnl": [
-        10794.4,
-        -14979.74,
-        10962.06,
-        -14149.21
+        35576.89,
+        16837.14,
+        35634.51,
+        16492.32
       ],
       "bankrupt": false,
       "pest_pressure": [
-        false,
+        true,
         false,
         false,
         false
@@ -358,20 +440,20 @@
           }
         ]
       },
-      "reward": -2.663667,
-      "pnl": -26636.67,
-      "observation": "pnl=-26637 weather=normal",
+      "reward": 9.352568,
+      "pnl": 93525.68,
+      "observation": "pnl=93526 weather=normal",
       "weather": {
         "quarter": 6,
         "regime": "normal",
-        "rainfall_index": 1.098,
-        "temperature_index": 1.555
+        "rainfall_index": 1.241,
+        "temperature_index": 0.958
       },
       "plot_pnl": [
-        -4476.65,
-        -9150.29,
-        -4424.44,
-        -8585.29
+        20203.77,
+        26590.3,
+        20203.77,
+        26527.84
       ],
       "bankrupt": false,
       "pest_pressure": [
@@ -409,27 +491,27 @@
           }
         ]
       },
-      "reward": 1.101367,
-      "pnl": 11013.67,
-      "observation": "pnl=11014 weather=normal",
+      "reward": 9.31311,
+      "pnl": 93131.1,
+      "observation": "pnl=93131 weather=normal",
       "weather": {
         "quarter": 7,
         "regime": "normal",
-        "rainfall_index": 1.164,
-        "temperature_index": 0.843
+        "rainfall_index": 1.269,
+        "temperature_index": 1.071
       },
       "plot_pnl": [
-        13168.44,
-        -7776.25,
-        13168.84,
-        -7547.36
+        20919.02,
+        25646.53,
+        20919.02,
+        25646.53
       ],
       "bankrupt": false,
       "pest_pressure": [
-        false,
         true,
         false,
-        false
+        true,
+        true
       ],
       "state_snapshot": null
     },
@@ -460,25 +542,25 @@
           }
         ]
       },
-      "reward": -5.993809,
-      "pnl": -59938.09,
-      "observation": "pnl=-59938 weather=normal",
+      "reward": 6.823804,
+      "pnl": 68238.04,
+      "observation": "pnl=68238 weather=wet",
       "weather": {
         "quarter": 8,
-        "regime": "normal",
-        "rainfall_index": 0.711,
-        "temperature_index": 0.456
+        "regime": "wet",
+        "rainfall_index": 1.366,
+        "temperature_index": 0.908
       },
       "plot_pnl": [
-        -9774.38,
-        -20211.4,
-        -9774.38,
-        -20177.93
+        17741.92,
+        16377.1,
+        17741.92,
+        16377.1
       ],
       "bankrupt": false,
       "pest_pressure": [
-        false,
         true,
+        false,
         true,
         false
       ],
@@ -511,27 +593,27 @@
           }
         ]
       },
-      "reward": -6.90481,
-      "pnl": -69048.1,
-      "observation": "pnl=-69048 weather=dry",
+      "reward": 9.013304,
+      "pnl": 90133.04,
+      "observation": "pnl=90133 weather=normal",
       "weather": {
         "quarter": 9,
-        "regime": "dry",
-        "rainfall_index": 0.669,
-        "temperature_index": 1.096
+        "regime": "normal",
+        "rainfall_index": 1.131,
+        "temperature_index": 1.147
       },
       "plot_pnl": [
-        -15589.99,
-        -18934.06,
-        -15589.99,
-        -18934.06
+        19050.38,
+        26016.14,
+        19050.38,
+        26016.14
       ],
       "bankrupt": false,
       "pest_pressure": [
+        false,
+        false,
         true,
-        false,
-        false,
-        true
+        false
       ],
       "state_snapshot": null
     },
@@ -562,27 +644,27 @@
           }
         ]
       },
-      "reward": -6.586578,
-      "pnl": -65865.78,
-      "observation": "pnl=-65866 weather=wet",
+      "reward": 5.358076,
+      "pnl": 53580.76,
+      "observation": "pnl=53581 weather=normal",
       "weather": {
         "quarter": 10,
-        "regime": "wet",
-        "rainfall_index": 1.413,
-        "temperature_index": 1.478
+        "regime": "normal",
+        "rainfall_index": 0.881,
+        "temperature_index": 0.998
       },
       "plot_pnl": [
-        -11340.22,
-        -21592.67,
-        -11340.22,
-        -21592.67
+        12958.22,
+        13832.16,
+        12958.22,
+        13832.16
       ],
       "bankrupt": false,
       "pest_pressure": [
         false,
         false,
-        false,
-        false
+        true,
+        true
       ],
       "state_snapshot": null
     },
@@ -613,24 +695,24 @@
           }
         ]
       },
-      "reward": -4.175034,
-      "pnl": -41750.34,
-      "observation": "pnl=-41750 weather=normal",
+      "reward": 10.094542,
+      "pnl": 100945.42,
+      "observation": "pnl=100945 weather=wet",
       "weather": {
         "quarter": 11,
-        "regime": "normal",
-        "rainfall_index": 1.099,
-        "temperature_index": 0.981
+        "regime": "wet",
+        "rainfall_index": 1.408,
+        "temperature_index": 0.79
       },
       "plot_pnl": [
-        -9793.85,
-        -11081.32,
-        -9793.85,
-        -11081.32
+        24212.86,
+        26259.85,
+        24212.86,
+        26259.85
       ],
       "bankrupt": false,
       "pest_pressure": [
-        false,
+        true,
         false,
         false,
         false
@@ -664,27 +746,27 @@
           }
         ]
       },
-      "reward": -5.867496,
-      "pnl": -58674.96,
-      "observation": "pnl=-58675 weather=normal",
+      "reward": 8.343006,
+      "pnl": 83430.06,
+      "observation": "pnl=83430 weather=normal",
       "weather": {
         "quarter": 12,
         "regime": "normal",
-        "rainfall_index": 1.01,
-        "temperature_index": 0.499
+        "rainfall_index": 0.95,
+        "temperature_index": 0.867
       },
       "plot_pnl": [
-        -9719.04,
-        -19618.44,
-        -9719.04,
-        -19618.44
+        28542.58,
+        13172.45,
+        28542.58,
+        13172.45
       ],
       "bankrupt": false,
       "pest_pressure": [
+        true,
         false,
         false,
-        false,
-        true
+        false
       ],
       "state_snapshot": null
     },
@@ -715,27 +797,27 @@
           }
         ]
       },
-      "reward": 0.077422,
-      "pnl": 774.22,
-      "observation": "pnl=774 weather=normal",
+      "reward": 11.314334,
+      "pnl": 113143.34,
+      "observation": "pnl=113143 weather=normal",
       "weather": {
         "quarter": 13,
         "regime": "normal",
-        "rainfall_index": 1.323,
-        "temperature_index": 1.09
+        "rainfall_index": 1.078,
+        "temperature_index": 1.026
       },
       "plot_pnl": [
-        5549.74,
-        -5162.63,
-        5549.74,
-        -5162.63
+        38093.86,
+        18477.81,
+        38093.86,
+        18477.81
       ],
       "bankrupt": false,
       "pest_pressure": [
         false,
         false,
-        true,
-        true
+        false,
+        false
       ],
       "state_snapshot": null
     },
@@ -766,26 +848,26 @@
           }
         ]
       },
-      "reward": -4.694668,
-      "pnl": -46946.68,
-      "observation": "pnl=-46947 weather=normal",
+      "reward": 7.537254,
+      "pnl": 75372.54,
+      "observation": "pnl=75373 weather=normal",
       "weather": {
         "quarter": 14,
         "regime": "normal",
-        "rainfall_index": 0.798,
-        "temperature_index": 1.667
+        "rainfall_index": 0.846,
+        "temperature_index": 0.975
       },
       "plot_pnl": [
-        -10832.88,
-        -12640.46,
-        -10832.88,
-        -12640.46
+        12055.45,
+        25630.82,
+        12055.45,
+        25630.82
       ],
       "bankrupt": false,
       "pest_pressure": [
         false,
         false,
-        false,
+        true,
         false
       ],
       "state_snapshot": null
@@ -817,25 +899,25 @@
           }
         ]
       },
-      "reward": -5.938966,
-      "pnl": -59389.66,
-      "observation": "pnl=-59390 weather=dry",
+      "reward": 1.168746,
+      "pnl": 11687.46,
+      "observation": "pnl=11687 weather=normal",
       "weather": {
         "quarter": 15,
-        "regime": "dry",
-        "rainfall_index": 0.554,
-        "temperature_index": 0.752
+        "regime": "normal",
+        "rainfall_index": 0.748,
+        "temperature_index": 1.15
       },
       "plot_pnl": [
-        -15089.52,
-        -14605.31,
-        -15089.52,
-        -14605.31
+        891.04,
+        4952.69,
+        891.04,
+        4952.69
       ],
-      "bankrupt": true,
+      "bankrupt": false,
       "pest_pressure": [
-        false,
-        false,
+        true,
+        true,
         false,
         false
       ],
@@ -868,22 +950,22 @@
           }
         ]
       },
-      "reward": 0.579258,
-      "pnl": 5792.58,
-      "observation": "pnl=5793 weather=normal",
+      "reward": 4.590734,
+      "pnl": 45907.34,
+      "observation": "pnl=45907 weather=normal",
       "weather": {
         "quarter": 16,
         "regime": "normal",
-        "rainfall_index": 0.828,
-        "temperature_index": 0.568
+        "rainfall_index": 0.838,
+        "temperature_index": 0.891
       },
       "plot_pnl": [
-        2473.58,
-        422.71,
-        2473.58,
-        422.71
+        11085.33,
+        11868.34,
+        11085.33,
+        11868.34
       ],
-      "bankrupt": true,
+      "bankrupt": false,
       "pest_pressure": [
         false,
         false,
@@ -919,26 +1001,26 @@
           }
         ]
       },
-      "reward": -0.291788,
-      "pnl": -2917.88,
-      "observation": "pnl=-2918 weather=normal",
+      "reward": -1.550778,
+      "pnl": -15507.78,
+      "observation": "pnl=-15508 weather=dry",
       "weather": {
         "quarter": 17,
-        "regime": "normal",
-        "rainfall_index": 1.145,
-        "temperature_index": 1.246
+        "regime": "dry",
+        "rainfall_index": 0.27,
+        "temperature_index": 1.089
       },
       "plot_pnl": [
-        -8257.83,
-        6798.89,
-        -8257.83,
-        6798.89
+        -869.26,
+        -6884.63,
+        -869.26,
+        -6884.63
       ],
-      "bankrupt": true,
+      "bankrupt": false,
       "pest_pressure": [
-        false,
-        false,
         true,
+        false,
+        false,
         false
       ],
       "state_snapshot": null
@@ -970,24 +1052,24 @@
           }
         ]
       },
-      "reward": -4.773062,
-      "pnl": -47730.62,
-      "observation": "pnl=-47731 weather=normal",
+      "reward": 11.024522,
+      "pnl": 110245.22,
+      "observation": "pnl=110245 weather=normal",
       "weather": {
         "quarter": 18,
         "regime": "normal",
-        "rainfall_index": 1.265,
-        "temperature_index": 1.498
+        "rainfall_index": 1.167,
+        "temperature_index": 0.989
       },
       "plot_pnl": [
-        -16009.4,
-        -7855.91,
-        -16009.4,
-        -7855.91
+        23348.11,
+        31774.5,
+        23348.11,
+        31774.5
       ],
-      "bankrupt": true,
+      "bankrupt": false,
       "pest_pressure": [
-        false,
+        true,
         false,
         false,
         true
@@ -1021,24 +1103,1044 @@
           }
         ]
       },
-      "reward": -3.49922,
-      "pnl": -34992.2,
-      "observation": "pnl=-34992 weather=normal",
+      "reward": 0.588026,
+      "pnl": 5880.26,
+      "observation": "pnl=5880 weather=normal",
       "weather": {
         "quarter": 19,
         "regime": "normal",
-        "rainfall_index": 0.787,
-        "temperature_index": 0.777
+        "rainfall_index": 1.157,
+        "temperature_index": 1.183
       },
       "plot_pnl": [
-        -10577.65,
-        -6918.45,
-        -10577.65,
-        -6918.45
+        1161.94,
+        1778.19,
+        1161.94,
+        1778.19
       ],
-      "bankrupt": true,
+      "bankrupt": false,
+      "pest_pressure": [
+        true,
+        true,
+        false,
+        false
+      ],
+      "state_snapshot": null
+    },
+    {
+      "quarter": 20,
+      "action": {
+        "capital_action": "none",
+        "plots": [
+          {
+            "crop": "oilseed_rape",
+            "fertiliser": "high",
+            "pest_control": "spray"
+          },
+          {
+            "crop": "wheat",
+            "fertiliser": "high",
+            "pest_control": "spray"
+          },
+          {
+            "crop": "oilseed_rape",
+            "fertiliser": "high",
+            "pest_control": "spray"
+          },
+          {
+            "crop": "wheat",
+            "fertiliser": "high",
+            "pest_control": "spray"
+          }
+        ]
+      },
+      "reward": 9.954972,
+      "pnl": 99549.72,
+      "observation": "pnl=99550 weather=wet",
+      "weather": {
+        "quarter": 20,
+        "regime": "wet",
+        "rainfall_index": 1.396,
+        "temperature_index": 0.89
+      },
+      "plot_pnl": [
+        25827.01,
+        23947.85,
+        25827.01,
+        23947.85
+      ],
+      "bankrupt": false,
       "pest_pressure": [
         false,
+        false,
+        false,
+        false
+      ],
+      "state_snapshot": null
+    },
+    {
+      "quarter": 21,
+      "action": {
+        "capital_action": "none",
+        "plots": [
+          {
+            "crop": "oilseed_rape",
+            "fertiliser": "high",
+            "pest_control": "spray"
+          },
+          {
+            "crop": "wheat",
+            "fertiliser": "high",
+            "pest_control": "spray"
+          },
+          {
+            "crop": "oilseed_rape",
+            "fertiliser": "high",
+            "pest_control": "spray"
+          },
+          {
+            "crop": "wheat",
+            "fertiliser": "high",
+            "pest_control": "spray"
+          }
+        ]
+      },
+      "reward": 9.074122,
+      "pnl": 90741.22,
+      "observation": "pnl=90741 weather=normal",
+      "weather": {
+        "quarter": 21,
+        "regime": "normal",
+        "rainfall_index": 0.966,
+        "temperature_index": 0.863
+      },
+      "plot_pnl": [
+        25616.54,
+        19754.07,
+        25616.54,
+        19754.07
+      ],
+      "bankrupt": false,
+      "pest_pressure": [
+        false,
+        false,
+        true,
+        false
+      ],
+      "state_snapshot": null
+    },
+    {
+      "quarter": 22,
+      "action": {
+        "capital_action": "none",
+        "plots": [
+          {
+            "crop": "oilseed_rape",
+            "fertiliser": "high",
+            "pest_control": "spray"
+          },
+          {
+            "crop": "wheat",
+            "fertiliser": "high",
+            "pest_control": "spray"
+          },
+          {
+            "crop": "oilseed_rape",
+            "fertiliser": "high",
+            "pest_control": "spray"
+          },
+          {
+            "crop": "wheat",
+            "fertiliser": "high",
+            "pest_control": "spray"
+          }
+        ]
+      },
+      "reward": 8.747342,
+      "pnl": 87473.42,
+      "observation": "pnl=87473 weather=normal",
+      "weather": {
+        "quarter": 22,
+        "regime": "normal",
+        "rainfall_index": 1.22,
+        "temperature_index": 1.133
+      },
+      "plot_pnl": [
+        24509.25,
+        19227.46,
+        24509.25,
+        19227.46
+      ],
+      "bankrupt": false,
+      "pest_pressure": [
+        true,
+        false,
+        false,
+        false
+      ],
+      "state_snapshot": null
+    },
+    {
+      "quarter": 23,
+      "action": {
+        "capital_action": "none",
+        "plots": [
+          {
+            "crop": "oilseed_rape",
+            "fertiliser": "high",
+            "pest_control": "spray"
+          },
+          {
+            "crop": "wheat",
+            "fertiliser": "high",
+            "pest_control": "spray"
+          },
+          {
+            "crop": "oilseed_rape",
+            "fertiliser": "high",
+            "pest_control": "spray"
+          },
+          {
+            "crop": "wheat",
+            "fertiliser": "high",
+            "pest_control": "spray"
+          }
+        ]
+      },
+      "reward": 0.712624,
+      "pnl": 7126.24,
+      "observation": "pnl=7126 weather=dry",
+      "weather": {
+        "quarter": 23,
+        "regime": "dry",
+        "rainfall_index": 0.586,
+        "temperature_index": 0.964
+      },
+      "plot_pnl": [
+        7435.44,
+        -3872.32,
+        7435.44,
+        -3872.32
+      ],
+      "bankrupt": false,
+      "pest_pressure": [
+        true,
+        true,
+        true,
+        false
+      ],
+      "state_snapshot": null
+    },
+    {
+      "quarter": 24,
+      "action": {
+        "capital_action": "none",
+        "plots": [
+          {
+            "crop": "oilseed_rape",
+            "fertiliser": "high",
+            "pest_control": "spray"
+          },
+          {
+            "crop": "wheat",
+            "fertiliser": "high",
+            "pest_control": "spray"
+          },
+          {
+            "crop": "oilseed_rape",
+            "fertiliser": "high",
+            "pest_control": "spray"
+          },
+          {
+            "crop": "wheat",
+            "fertiliser": "high",
+            "pest_control": "spray"
+          }
+        ]
+      },
+      "reward": 5.868504,
+      "pnl": 58685.04,
+      "observation": "pnl=58685 weather=normal",
+      "weather": {
+        "quarter": 24,
+        "regime": "normal",
+        "rainfall_index": 0.973,
+        "temperature_index": 0.951
+      },
+      "plot_pnl": [
+        16728.91,
+        12613.61,
+        16728.91,
+        12613.61
+      ],
+      "bankrupt": false,
+      "pest_pressure": [
+        true,
+        false,
+        false,
+        false
+      ],
+      "state_snapshot": null
+    },
+    {
+      "quarter": 25,
+      "action": {
+        "capital_action": "none",
+        "plots": [
+          {
+            "crop": "oilseed_rape",
+            "fertiliser": "high",
+            "pest_control": "spray"
+          },
+          {
+            "crop": "wheat",
+            "fertiliser": "high",
+            "pest_control": "spray"
+          },
+          {
+            "crop": "oilseed_rape",
+            "fertiliser": "high",
+            "pest_control": "spray"
+          },
+          {
+            "crop": "wheat",
+            "fertiliser": "high",
+            "pest_control": "spray"
+          }
+        ]
+      },
+      "reward": 7.169118,
+      "pnl": 71691.18,
+      "observation": "pnl=71691 weather=wet",
+      "weather": {
+        "quarter": 25,
+        "regime": "wet",
+        "rainfall_index": 1.507,
+        "temperature_index": 1.07
+      },
+      "plot_pnl": [
+        5970.35,
+        29875.24,
+        5970.35,
+        29875.24
+      ],
+      "bankrupt": false,
+      "pest_pressure": [
+        true,
+        false,
+        true,
+        false
+      ],
+      "state_snapshot": null
+    },
+    {
+      "quarter": 26,
+      "action": {
+        "capital_action": "none",
+        "plots": [
+          {
+            "crop": "oilseed_rape",
+            "fertiliser": "high",
+            "pest_control": "spray"
+          },
+          {
+            "crop": "wheat",
+            "fertiliser": "high",
+            "pest_control": "spray"
+          },
+          {
+            "crop": "oilseed_rape",
+            "fertiliser": "high",
+            "pest_control": "spray"
+          },
+          {
+            "crop": "wheat",
+            "fertiliser": "high",
+            "pest_control": "spray"
+          }
+        ]
+      },
+      "reward": 10.250332,
+      "pnl": 102503.32,
+      "observation": "pnl=102503 weather=normal",
+      "weather": {
+        "quarter": 26,
+        "regime": "normal",
+        "rainfall_index": 1.032,
+        "temperature_index": 1.152
+      },
+      "plot_pnl": [
+        22888.1,
+        28363.56,
+        22888.1,
+        28363.56
+      ],
+      "bankrupt": false,
+      "pest_pressure": [
+        true,
+        true,
+        false,
+        true
+      ],
+      "state_snapshot": null
+    },
+    {
+      "quarter": 27,
+      "action": {
+        "capital_action": "none",
+        "plots": [
+          {
+            "crop": "oilseed_rape",
+            "fertiliser": "high",
+            "pest_control": "spray"
+          },
+          {
+            "crop": "wheat",
+            "fertiliser": "high",
+            "pest_control": "spray"
+          },
+          {
+            "crop": "oilseed_rape",
+            "fertiliser": "high",
+            "pest_control": "spray"
+          },
+          {
+            "crop": "wheat",
+            "fertiliser": "high",
+            "pest_control": "spray"
+          }
+        ]
+      },
+      "reward": 2.15008,
+      "pnl": 21500.8,
+      "observation": "pnl=21501 weather=dry",
+      "weather": {
+        "quarter": 27,
+        "regime": "dry",
+        "rainfall_index": 0.698,
+        "temperature_index": 1.071
+      },
+      "plot_pnl": [
+        4717.28,
+        6033.12,
+        4717.28,
+        6033.12
+      ],
+      "bankrupt": false,
+      "pest_pressure": [
+        true,
+        true,
+        false,
+        false
+      ],
+      "state_snapshot": null
+    },
+    {
+      "quarter": 28,
+      "action": {
+        "capital_action": "none",
+        "plots": [
+          {
+            "crop": "oilseed_rape",
+            "fertiliser": "high",
+            "pest_control": "spray"
+          },
+          {
+            "crop": "wheat",
+            "fertiliser": "high",
+            "pest_control": "spray"
+          },
+          {
+            "crop": "oilseed_rape",
+            "fertiliser": "high",
+            "pest_control": "spray"
+          },
+          {
+            "crop": "wheat",
+            "fertiliser": "high",
+            "pest_control": "spray"
+          }
+        ]
+      },
+      "reward": 9.809674,
+      "pnl": 98096.74,
+      "observation": "pnl=98097 weather=wet",
+      "weather": {
+        "quarter": 28,
+        "regime": "wet",
+        "rainfall_index": 1.529,
+        "temperature_index": 1.186
+      },
+      "plot_pnl": [
+        26336.74,
+        22711.63,
+        26336.74,
+        22711.63
+      ],
+      "bankrupt": false,
+      "pest_pressure": [
+        false,
+        false,
+        false,
+        false
+      ],
+      "state_snapshot": null
+    },
+    {
+      "quarter": 29,
+      "action": {
+        "capital_action": "none",
+        "plots": [
+          {
+            "crop": "oilseed_rape",
+            "fertiliser": "high",
+            "pest_control": "spray"
+          },
+          {
+            "crop": "wheat",
+            "fertiliser": "high",
+            "pest_control": "spray"
+          },
+          {
+            "crop": "oilseed_rape",
+            "fertiliser": "high",
+            "pest_control": "spray"
+          },
+          {
+            "crop": "wheat",
+            "fertiliser": "high",
+            "pest_control": "spray"
+          }
+        ]
+      },
+      "reward": 3.009418,
+      "pnl": 30094.18,
+      "observation": "pnl=30094 weather=dry",
+      "weather": {
+        "quarter": 29,
+        "regime": "dry",
+        "rainfall_index": 0.657,
+        "temperature_index": 0.998
+      },
+      "plot_pnl": [
+        14316.77,
+        730.32,
+        14316.77,
+        730.32
+      ],
+      "bankrupt": false,
+      "pest_pressure": [
+        true,
+        false,
+        false,
+        true
+      ],
+      "state_snapshot": null
+    },
+    {
+      "quarter": 30,
+      "action": {
+        "capital_action": "none",
+        "plots": [
+          {
+            "crop": "oilseed_rape",
+            "fertiliser": "high",
+            "pest_control": "spray"
+          },
+          {
+            "crop": "wheat",
+            "fertiliser": "high",
+            "pest_control": "spray"
+          },
+          {
+            "crop": "oilseed_rape",
+            "fertiliser": "high",
+            "pest_control": "spray"
+          },
+          {
+            "crop": "wheat",
+            "fertiliser": "high",
+            "pest_control": "spray"
+          }
+        ]
+      },
+      "reward": 11.742304,
+      "pnl": 117423.04,
+      "observation": "pnl=117423 weather=wet",
+      "weather": {
+        "quarter": 30,
+        "regime": "wet",
+        "rainfall_index": 1.575,
+        "temperature_index": 1.041
+      },
+      "plot_pnl": [
+        39282.61,
+        19428.91,
+        39282.61,
+        19428.91
+      ],
+      "bankrupt": false,
+      "pest_pressure": [
+        false,
+        false,
+        true,
+        false
+      ],
+      "state_snapshot": null
+    },
+    {
+      "quarter": 31,
+      "action": {
+        "capital_action": "none",
+        "plots": [
+          {
+            "crop": "oilseed_rape",
+            "fertiliser": "high",
+            "pest_control": "spray"
+          },
+          {
+            "crop": "wheat",
+            "fertiliser": "high",
+            "pest_control": "spray"
+          },
+          {
+            "crop": "oilseed_rape",
+            "fertiliser": "high",
+            "pest_control": "spray"
+          },
+          {
+            "crop": "wheat",
+            "fertiliser": "high",
+            "pest_control": "spray"
+          }
+        ]
+      },
+      "reward": 5.94843,
+      "pnl": 59484.3,
+      "observation": "pnl=59484 weather=normal",
+      "weather": {
+        "quarter": 31,
+        "regime": "normal",
+        "rainfall_index": 1.178,
+        "temperature_index": 0.965
+      },
+      "plot_pnl": [
+        15552.4,
+        14189.75,
+        15552.4,
+        14189.75
+      ],
+      "bankrupt": false,
+      "pest_pressure": [
+        false,
+        false,
+        false,
+        true
+      ],
+      "state_snapshot": null
+    },
+    {
+      "quarter": 32,
+      "action": {
+        "capital_action": "none",
+        "plots": [
+          {
+            "crop": "oilseed_rape",
+            "fertiliser": "high",
+            "pest_control": "spray"
+          },
+          {
+            "crop": "wheat",
+            "fertiliser": "high",
+            "pest_control": "spray"
+          },
+          {
+            "crop": "oilseed_rape",
+            "fertiliser": "high",
+            "pest_control": "spray"
+          },
+          {
+            "crop": "wheat",
+            "fertiliser": "high",
+            "pest_control": "spray"
+          }
+        ]
+      },
+      "reward": 6.144838,
+      "pnl": 61448.38,
+      "observation": "pnl=61448 weather=normal",
+      "weather": {
+        "quarter": 32,
+        "regime": "normal",
+        "rainfall_index": 0.863,
+        "temperature_index": 1.255
+      },
+      "plot_pnl": [
+        19302.9,
+        11421.29,
+        19302.9,
+        11421.29
+      ],
+      "bankrupt": false,
+      "pest_pressure": [
+        false,
+        true,
+        false,
+        true
+      ],
+      "state_snapshot": null
+    },
+    {
+      "quarter": 33,
+      "action": {
+        "capital_action": "none",
+        "plots": [
+          {
+            "crop": "oilseed_rape",
+            "fertiliser": "high",
+            "pest_control": "spray"
+          },
+          {
+            "crop": "wheat",
+            "fertiliser": "high",
+            "pest_control": "spray"
+          },
+          {
+            "crop": "oilseed_rape",
+            "fertiliser": "high",
+            "pest_control": "spray"
+          },
+          {
+            "crop": "wheat",
+            "fertiliser": "high",
+            "pest_control": "spray"
+          }
+        ]
+      },
+      "reward": 8.691624,
+      "pnl": 86916.24,
+      "observation": "pnl=86916 weather=normal",
+      "weather": {
+        "quarter": 33,
+        "regime": "normal",
+        "rainfall_index": 1.338,
+        "temperature_index": 0.917
+      },
+      "plot_pnl": [
+        26855.55,
+        16602.57,
+        26855.55,
+        16602.57
+      ],
+      "bankrupt": false,
+      "pest_pressure": [
+        true,
+        false,
+        false,
+        false
+      ],
+      "state_snapshot": null
+    },
+    {
+      "quarter": 34,
+      "action": {
+        "capital_action": "none",
+        "plots": [
+          {
+            "crop": "oilseed_rape",
+            "fertiliser": "high",
+            "pest_control": "spray"
+          },
+          {
+            "crop": "wheat",
+            "fertiliser": "high",
+            "pest_control": "spray"
+          },
+          {
+            "crop": "oilseed_rape",
+            "fertiliser": "high",
+            "pest_control": "spray"
+          },
+          {
+            "crop": "wheat",
+            "fertiliser": "high",
+            "pest_control": "spray"
+          }
+        ]
+      },
+      "reward": 8.494056,
+      "pnl": 84940.56,
+      "observation": "pnl=84941 weather=normal",
+      "weather": {
+        "quarter": 34,
+        "regime": "normal",
+        "rainfall_index": 1.049,
+        "temperature_index": 1.046
+      },
+      "plot_pnl": [
+        15484.46,
+        26985.82,
+        15484.46,
+        26985.82
+      ],
+      "bankrupt": false,
+      "pest_pressure": [
+        false,
+        true,
+        true,
+        false
+      ],
+      "state_snapshot": null
+    },
+    {
+      "quarter": 35,
+      "action": {
+        "capital_action": "none",
+        "plots": [
+          {
+            "crop": "oilseed_rape",
+            "fertiliser": "high",
+            "pest_control": "spray"
+          },
+          {
+            "crop": "wheat",
+            "fertiliser": "high",
+            "pest_control": "spray"
+          },
+          {
+            "crop": "oilseed_rape",
+            "fertiliser": "high",
+            "pest_control": "spray"
+          },
+          {
+            "crop": "wheat",
+            "fertiliser": "high",
+            "pest_control": "spray"
+          }
+        ]
+      },
+      "reward": -0.259238,
+      "pnl": -2592.38,
+      "observation": "pnl=-2592 weather=dry",
+      "weather": {
+        "quarter": 35,
+        "regime": "dry",
+        "rainfall_index": 0.587,
+        "temperature_index": 1.063
+      },
+      "plot_pnl": [
+        4784.46,
+        -6080.65,
+        4784.46,
+        -6080.65
+      ],
+      "bankrupt": false,
+      "pest_pressure": [
+        false,
+        false,
+        false,
+        false
+      ],
+      "state_snapshot": null
+    },
+    {
+      "quarter": 36,
+      "action": {
+        "capital_action": "none",
+        "plots": [
+          {
+            "crop": "oilseed_rape",
+            "fertiliser": "high",
+            "pest_control": "spray"
+          },
+          {
+            "crop": "wheat",
+            "fertiliser": "high",
+            "pest_control": "spray"
+          },
+          {
+            "crop": "oilseed_rape",
+            "fertiliser": "high",
+            "pest_control": "spray"
+          },
+          {
+            "crop": "wheat",
+            "fertiliser": "high",
+            "pest_control": "spray"
+          }
+        ]
+      },
+      "reward": 0.909952,
+      "pnl": 9099.52,
+      "observation": "pnl=9100 weather=dry",
+      "weather": {
+        "quarter": 36,
+        "regime": "dry",
+        "rainfall_index": 0.517,
+        "temperature_index": 1.238
+      },
+      "plot_pnl": [
+        3231.02,
+        1318.74,
+        3231.02,
+        1318.74
+      ],
+      "bankrupt": false,
+      "pest_pressure": [
+        false,
+        false,
+        true,
+        false
+      ],
+      "state_snapshot": null
+    },
+    {
+      "quarter": 37,
+      "action": {
+        "capital_action": "none",
+        "plots": [
+          {
+            "crop": "oilseed_rape",
+            "fertiliser": "high",
+            "pest_control": "spray"
+          },
+          {
+            "crop": "wheat",
+            "fertiliser": "high",
+            "pest_control": "spray"
+          },
+          {
+            "crop": "oilseed_rape",
+            "fertiliser": "high",
+            "pest_control": "spray"
+          },
+          {
+            "crop": "wheat",
+            "fertiliser": "high",
+            "pest_control": "spray"
+          }
+        ]
+      },
+      "reward": 7.493962,
+      "pnl": 74939.62,
+      "observation": "pnl=74940 weather=normal",
+      "weather": {
+        "quarter": 37,
+        "regime": "normal",
+        "rainfall_index": 0.98,
+        "temperature_index": 0.946
+      },
+      "plot_pnl": [
+        13660.79,
+        23809.02,
+        13660.79,
+        23809.02
+      ],
+      "bankrupt": false,
+      "pest_pressure": [
+        false,
+        false,
+        true,
+        false
+      ],
+      "state_snapshot": null
+    },
+    {
+      "quarter": 38,
+      "action": {
+        "capital_action": "none",
+        "plots": [
+          {
+            "crop": "oilseed_rape",
+            "fertiliser": "high",
+            "pest_control": "spray"
+          },
+          {
+            "crop": "wheat",
+            "fertiliser": "high",
+            "pest_control": "spray"
+          },
+          {
+            "crop": "oilseed_rape",
+            "fertiliser": "high",
+            "pest_control": "spray"
+          },
+          {
+            "crop": "wheat",
+            "fertiliser": "high",
+            "pest_control": "spray"
+          }
+        ]
+      },
+      "reward": 8.996966,
+      "pnl": 89969.66,
+      "observation": "pnl=89970 weather=normal",
+      "weather": {
+        "quarter": 38,
+        "regime": "normal",
+        "rainfall_index": 0.896,
+        "temperature_index": 1.014
+      },
+      "plot_pnl": [
+        19703.79,
+        25281.04,
+        19703.79,
+        25281.04
+      ],
+      "bankrupt": false,
+      "pest_pressure": [
+        true,
+        true,
+        false,
+        true
+      ],
+      "state_snapshot": null
+    },
+    {
+      "quarter": 39,
+      "action": {
+        "capital_action": "none",
+        "plots": [
+          {
+            "crop": "oilseed_rape",
+            "fertiliser": "high",
+            "pest_control": "spray"
+          },
+          {
+            "crop": "wheat",
+            "fertiliser": "high",
+            "pest_control": "spray"
+          },
+          {
+            "crop": "oilseed_rape",
+            "fertiliser": "high",
+            "pest_control": "spray"
+          },
+          {
+            "crop": "wheat",
+            "fertiliser": "high",
+            "pest_control": "spray"
+          }
+        ]
+      },
+      "reward": 6.284768,
+      "pnl": 62847.68,
+      "observation": "pnl=62848 weather=normal",
+      "weather": {
+        "quarter": 39,
+        "regime": "normal",
+        "rainfall_index": 1.254,
+        "temperature_index": 1.065
+      },
+      "plot_pnl": [
+        12351.87,
+        19071.97,
+        12351.87,
+        19071.97
+      ],
+      "bankrupt": false,
+      "pest_pressure": [
+        true,
         false,
         false,
         true
@@ -1047,132 +2149,300 @@
     }
   ],
   "final_state": {
-    "quarter": 20,
-    "cash": -88460.31,
+    "quarter": 40,
+    "cash": 2904882.21,
     "starting_cash": 156948.67,
     "irrigation_owned": false,
-    "ever_bankrupt": true,
+    "ever_bankrupt": false,
     "weather_regime": "normal",
     "weather_history": [
       {
+        "quarter": -8,
+        "regime": "wet",
+        "rainfall_index": 1.6452,
+        "temperature_index": 1.3015
+      },
+      {
+        "quarter": -7,
+        "regime": "normal",
+        "rainfall_index": 1.2361,
+        "temperature_index": 1.0519
+      },
+      {
+        "quarter": -6,
+        "regime": "wet",
+        "rainfall_index": 1.407,
+        "temperature_index": 1.0235
+      },
+      {
+        "quarter": -5,
+        "regime": "normal",
+        "rainfall_index": 1.1539,
+        "temperature_index": 1.1122
+      },
+      {
+        "quarter": -4,
+        "regime": "normal",
+        "rainfall_index": 0.9085,
+        "temperature_index": 0.9743
+      },
+      {
+        "quarter": -3,
+        "regime": "dry",
+        "rainfall_index": 0.6525,
+        "temperature_index": 1.1695
+      },
+      {
+        "quarter": -2,
+        "regime": "normal",
+        "rainfall_index": 0.9783,
+        "temperature_index": 1.0537
+      },
+      {
+        "quarter": -1,
+        "regime": "normal",
+        "rainfall_index": 1.1716,
+        "temperature_index": 1.1683
+      },
+      {
         "quarter": 0,
         "regime": "normal",
-        "rainfall_index": 0.737,
-        "temperature_index": 0.263
+        "rainfall_index": 0.753,
+        "temperature_index": 1.016
       },
       {
         "quarter": 1,
         "regime": "normal",
-        "rainfall_index": 0.703,
-        "temperature_index": 0.996
+        "rainfall_index": 0.758,
+        "temperature_index": 1.058
       },
       {
         "quarter": 2,
-        "regime": "normal",
-        "rainfall_index": 0.998,
-        "temperature_index": 1.593
+        "regime": "dry",
+        "rainfall_index": 0.649,
+        "temperature_index": 1.016
       },
       {
         "quarter": 3,
-        "regime": "dry",
-        "rainfall_index": 1.136,
-        "temperature_index": 0.793
+        "regime": "wet",
+        "rainfall_index": 1.646,
+        "temperature_index": 1.144
       },
       {
         "quarter": 4,
         "regime": "normal",
-        "rainfall_index": 1.193,
-        "temperature_index": 0.616
+        "rainfall_index": 1.034,
+        "temperature_index": 1.036
       },
       {
         "quarter": 5,
-        "regime": "normal",
-        "rainfall_index": 1.075,
-        "temperature_index": 1.198
+        "regime": "wet",
+        "rainfall_index": 1.394,
+        "temperature_index": 0.906
       },
       {
         "quarter": 6,
         "regime": "normal",
-        "rainfall_index": 1.098,
-        "temperature_index": 1.555
+        "rainfall_index": 1.241,
+        "temperature_index": 0.958
       },
       {
         "quarter": 7,
         "regime": "normal",
-        "rainfall_index": 1.164,
-        "temperature_index": 0.843
+        "rainfall_index": 1.269,
+        "temperature_index": 1.071
       },
       {
         "quarter": 8,
-        "regime": "normal",
-        "rainfall_index": 0.711,
-        "temperature_index": 0.456
+        "regime": "wet",
+        "rainfall_index": 1.366,
+        "temperature_index": 0.908
       },
       {
         "quarter": 9,
-        "regime": "dry",
-        "rainfall_index": 0.669,
-        "temperature_index": 1.096
+        "regime": "normal",
+        "rainfall_index": 1.131,
+        "temperature_index": 1.147
       },
       {
         "quarter": 10,
-        "regime": "wet",
-        "rainfall_index": 1.413,
-        "temperature_index": 1.478
+        "regime": "normal",
+        "rainfall_index": 0.881,
+        "temperature_index": 0.998
       },
       {
         "quarter": 11,
-        "regime": "normal",
-        "rainfall_index": 1.099,
-        "temperature_index": 0.981
+        "regime": "wet",
+        "rainfall_index": 1.408,
+        "temperature_index": 0.79
       },
       {
         "quarter": 12,
         "regime": "normal",
-        "rainfall_index": 1.01,
-        "temperature_index": 0.499
+        "rainfall_index": 0.95,
+        "temperature_index": 0.867
       },
       {
         "quarter": 13,
         "regime": "normal",
-        "rainfall_index": 1.323,
-        "temperature_index": 1.09
+        "rainfall_index": 1.078,
+        "temperature_index": 1.026
       },
       {
         "quarter": 14,
         "regime": "normal",
-        "rainfall_index": 0.798,
-        "temperature_index": 1.667
+        "rainfall_index": 0.846,
+        "temperature_index": 0.975
       },
       {
         "quarter": 15,
-        "regime": "dry",
-        "rainfall_index": 0.554,
-        "temperature_index": 0.752
+        "regime": "normal",
+        "rainfall_index": 0.748,
+        "temperature_index": 1.15
       },
       {
         "quarter": 16,
         "regime": "normal",
-        "rainfall_index": 0.828,
-        "temperature_index": 0.568
+        "rainfall_index": 0.838,
+        "temperature_index": 0.891
       },
       {
         "quarter": 17,
-        "regime": "normal",
-        "rainfall_index": 1.145,
-        "temperature_index": 1.246
+        "regime": "dry",
+        "rainfall_index": 0.27,
+        "temperature_index": 1.089
       },
       {
         "quarter": 18,
         "regime": "normal",
-        "rainfall_index": 1.265,
-        "temperature_index": 1.498
+        "rainfall_index": 1.167,
+        "temperature_index": 0.989
       },
       {
         "quarter": 19,
         "regime": "normal",
-        "rainfall_index": 0.787,
-        "temperature_index": 0.777
+        "rainfall_index": 1.157,
+        "temperature_index": 1.183
+      },
+      {
+        "quarter": 20,
+        "regime": "wet",
+        "rainfall_index": 1.396,
+        "temperature_index": 0.89
+      },
+      {
+        "quarter": 21,
+        "regime": "normal",
+        "rainfall_index": 0.966,
+        "temperature_index": 0.863
+      },
+      {
+        "quarter": 22,
+        "regime": "normal",
+        "rainfall_index": 1.22,
+        "temperature_index": 1.133
+      },
+      {
+        "quarter": 23,
+        "regime": "dry",
+        "rainfall_index": 0.586,
+        "temperature_index": 0.964
+      },
+      {
+        "quarter": 24,
+        "regime": "normal",
+        "rainfall_index": 0.973,
+        "temperature_index": 0.951
+      },
+      {
+        "quarter": 25,
+        "regime": "wet",
+        "rainfall_index": 1.507,
+        "temperature_index": 1.07
+      },
+      {
+        "quarter": 26,
+        "regime": "normal",
+        "rainfall_index": 1.032,
+        "temperature_index": 1.152
+      },
+      {
+        "quarter": 27,
+        "regime": "dry",
+        "rainfall_index": 0.698,
+        "temperature_index": 1.071
+      },
+      {
+        "quarter": 28,
+        "regime": "wet",
+        "rainfall_index": 1.529,
+        "temperature_index": 1.186
+      },
+      {
+        "quarter": 29,
+        "regime": "dry",
+        "rainfall_index": 0.657,
+        "temperature_index": 0.998
+      },
+      {
+        "quarter": 30,
+        "regime": "wet",
+        "rainfall_index": 1.575,
+        "temperature_index": 1.041
+      },
+      {
+        "quarter": 31,
+        "regime": "normal",
+        "rainfall_index": 1.178,
+        "temperature_index": 0.965
+      },
+      {
+        "quarter": 32,
+        "regime": "normal",
+        "rainfall_index": 0.863,
+        "temperature_index": 1.255
+      },
+      {
+        "quarter": 33,
+        "regime": "normal",
+        "rainfall_index": 1.338,
+        "temperature_index": 0.917
+      },
+      {
+        "quarter": 34,
+        "regime": "normal",
+        "rainfall_index": 1.049,
+        "temperature_index": 1.046
+      },
+      {
+        "quarter": 35,
+        "regime": "dry",
+        "rainfall_index": 0.587,
+        "temperature_index": 1.063
+      },
+      {
+        "quarter": 36,
+        "regime": "dry",
+        "rainfall_index": 0.517,
+        "temperature_index": 1.238
+      },
+      {
+        "quarter": 37,
+        "regime": "normal",
+        "rainfall_index": 0.98,
+        "temperature_index": 0.946
+      },
+      {
+        "quarter": 38,
+        "regime": "normal",
+        "rainfall_index": 0.896,
+        "temperature_index": 1.014
+      },
+      {
+        "quarter": 39,
+        "regime": "normal",
+        "rainfall_index": 1.254,
+        "temperature_index": 1.065
       }
     ],
     "plots": [
@@ -1214,24 +2484,24 @@
       }
     ],
     "current_prices": {
-      "wheat": 654.37,
-      "barley": 741.05,
-      "oilseed_rape": 672.33,
-      "field_beans": 564.15,
+      "wheat": 857.59,
+      "barley": 810.24,
+      "oilseed_rape": 837.88,
+      "field_beans": 628.64,
       "cover_crop": 0.0,
       "fallow": 0.0,
-      "fertiliser_low": 25.33,
-      "fertiliser_medium": 57.0,
-      "fertiliser_high": 95.01,
+      "fertiliser_low": 29.09,
+      "fertiliser_medium": 65.46,
+      "fertiliser_high": 109.1,
       "irrigation_cost": 40610.5
     }
   },
   "terminal_score": 0.0,
-  "ever_bankrupt": true,
-  "quarters_completed": 20,
-  "total_reward": -24.540898000000002,
-  "total_pnl": -245408.97999999998,
+  "ever_bankrupt": false,
+  "quarters_completed": 40,
+  "total_reward": 274.79335399999997,
+  "total_pnl": 2747933.540000001,
   "mean_final_soil": 0.2,
   "baseline_name": "greedy_extractor",
-  "created_at": 1776786554.6897962
+  "created_at": 1776853337.161299
 }

@@ -4,7 +4,7 @@
     "seed": 20010007,
     "split": "validation",
     "scenario_type": "standard",
-    "simulation_start_year": 2012,
+    "real_data_mode": true,
     "starting_cash": 177234.88,
     "initial_weather_regime": "wet",
     "dry_bias": 0.0,
@@ -12,16 +12,98 @@
     "fertiliser_cost_multiplier": 0.9682,
     "irrigation_cost_multiplier": 1.0,
     "initial_soil_by_plot": [
+      0.671,
       0.5476,
       0.6481,
-      0.6288,
-      0.6504
+      0.6288
     ],
     "initial_crop_by_plot": [
-      "field_beans",
       "wheat",
       "field_beans",
-      "oilseed_rape"
+      "wheat",
+      "field_beans"
+    ],
+    "recent_weather_context": [
+      {
+        "quarter_offset": -8,
+        "year": 2024,
+        "quarter": 1,
+        "rain_mm": 218.4,
+        "temp_c": 7.08,
+        "rainfall_index": 1.6452,
+        "temperature_index": 1.3015,
+        "regime": "wet"
+      },
+      {
+        "quarter_offset": -7,
+        "year": 2024,
+        "quarter": 2,
+        "rain_mm": 200.8,
+        "temp_c": 12.78,
+        "rainfall_index": 1.2361,
+        "temperature_index": 1.0519,
+        "regime": "normal"
+      },
+      {
+        "quarter_offset": -6,
+        "year": 2024,
+        "quarter": 3,
+        "rain_mm": 242.2,
+        "temp_c": 16.96,
+        "rainfall_index": 1.407,
+        "temperature_index": 1.0235,
+        "regime": "wet"
+      },
+      {
+        "quarter_offset": -5,
+        "year": 2024,
+        "quarter": 4,
+        "rain_mm": 189.4,
+        "temp_c": 8.92,
+        "rainfall_index": 1.1539,
+        "temperature_index": 1.1122,
+        "regime": "normal"
+      },
+      {
+        "quarter_offset": -4,
+        "year": 2025,
+        "quarter": 1,
+        "rain_mm": 120.6,
+        "temp_c": 5.3,
+        "rainfall_index": 0.9085,
+        "temperature_index": 0.9743,
+        "regime": "normal"
+      },
+      {
+        "quarter_offset": -3,
+        "year": 2025,
+        "quarter": 2,
+        "rain_mm": 106.0,
+        "temp_c": 14.21,
+        "rainfall_index": 0.6525,
+        "temperature_index": 1.1695,
+        "regime": "dry"
+      },
+      {
+        "quarter_offset": -2,
+        "year": 2025,
+        "quarter": 3,
+        "rain_mm": 168.4,
+        "temp_c": 17.46,
+        "rainfall_index": 0.9783,
+        "temperature_index": 1.0537,
+        "regime": "normal"
+      },
+      {
+        "quarter_offset": -1,
+        "year": 2025,
+        "quarter": 4,
+        "rain_mm": 192.3,
+        "temp_c": 9.37,
+        "rainfall_index": 1.1716,
+        "temperature_index": 1.1683,
+        "regime": "normal"
+      }
     ]
   },
   "steps": [
@@ -52,26 +134,26 @@
           }
         ]
       },
-      "reward": 2.10277,
-      "pnl": 21027.7,
-      "observation": "pnl=21028 weather=dry",
+      "reward": 2.484578,
+      "pnl": 24845.78,
+      "observation": "pnl=24846 weather=normal",
       "weather": {
         "quarter": 0,
-        "regime": "dry",
-        "rainfall_index": 0.506,
-        "temperature_index": 0.532
+        "regime": "normal",
+        "rainfall_index": 1.31,
+        "temperature_index": 1.265
       },
       "plot_pnl": [
-        5418.79,
-        5388.87,
-        16656.44,
+        6469.73,
+        3143.07,
+        21669.38,
         -6436.4
       ],
       "bankrupt": false,
       "pest_pressure": [
-        false,
-        false,
         true,
+        true,
+        false,
         true
       ],
       "state_snapshot": null
@@ -103,27 +185,27 @@
           }
         ]
       },
-      "reward": 11.115086,
-      "pnl": 111150.86,
-      "observation": "pnl=111151 weather=wet",
+      "reward": 5.535657,
+      "pnl": 55356.57,
+      "observation": "pnl=55357 weather=normal",
       "weather": {
         "quarter": 1,
-        "regime": "wet",
-        "rainfall_index": 1.835,
-        "temperature_index": 1.036
+        "regime": "normal",
+        "rainfall_index": 0.8,
+        "temperature_index": 0.802
       },
       "plot_pnl": [
-        39867.2,
+        14257.69,
         -6436.4,
-        31898.9,
-        45821.16
+        21418.36,
+        26116.92
       ],
       "bankrupt": false,
       "pest_pressure": [
+        true,
         false,
         false,
-        false,
-        true
+        false
       ],
       "state_snapshot": null
     },
@@ -154,25 +236,25 @@
           }
         ]
       },
-      "reward": 2.815915,
-      "pnl": 28159.15,
-      "observation": "pnl=28159 weather=wet",
+      "reward": 5.248967,
+      "pnl": 52489.67,
+      "observation": "pnl=52490 weather=normal",
       "weather": {
         "quarter": 2,
-        "regime": "wet",
-        "rainfall_index": 1.436,
-        "temperature_index": 1.456
+        "regime": "normal",
+        "rainfall_index": 0.841,
+        "temperature_index": 1.026
       },
       "plot_pnl": [
-        6905.37,
-        11224.85,
+        13722.24,
+        28153.36,
         -6436.4,
-        16465.33
+        17050.47
       ],
       "bankrupt": false,
       "pest_pressure": [
-        false,
         true,
+        false,
         false,
         true
       ],
@@ -205,26 +287,26 @@
           }
         ]
       },
-      "reward": 7.963049,
-      "pnl": 79630.49,
-      "observation": "pnl=79630 weather=wet",
+      "reward": 5.480962,
+      "pnl": 54809.62,
+      "observation": "pnl=54810 weather=dry",
       "weather": {
         "quarter": 3,
-        "regime": "wet",
-        "rainfall_index": 1.527,
-        "temperature_index": 0.676
+        "regime": "dry",
+        "rainfall_index": 0.584,
+        "temperature_index": 0.998
       },
       "plot_pnl": [
         -6436.4,
-        17429.92,
-        39051.33,
-        29585.64
+        8894.38,
+        23988.39,
+        28363.25
       ],
       "bankrupt": false,
       "pest_pressure": [
         false,
         false,
-        false,
+        true,
         false
       ],
       "state_snapshot": null
@@ -256,26 +338,26 @@
           }
         ]
       },
-      "reward": 0.038235,
-      "pnl": 382.35,
-      "observation": "pnl=382 weather=normal",
+      "reward": 4.16587,
+      "pnl": 41658.7,
+      "observation": "pnl=41659 weather=normal",
       "weather": {
         "quarter": 4,
         "regime": "normal",
-        "rainfall_index": 0.737,
-        "temperature_index": 0.263
+        "rainfall_index": 0.862,
+        "temperature_index": 1.349
       },
       "plot_pnl": [
-        7322.43,
-        571.18,
-        -1074.86,
+        15027.66,
+        13658.96,
+        19408.48,
         -6436.4
       ],
       "bankrupt": false,
       "pest_pressure": [
+        false,
         true,
-        true,
-        true,
+        false,
         false
       ],
       "state_snapshot": null
@@ -307,24 +389,24 @@
           }
         ]
       },
-      "reward": 1.776829,
-      "pnl": 17768.29,
-      "observation": "pnl=17768 weather=normal",
+      "reward": 7.075081,
+      "pnl": 70750.81,
+      "observation": "pnl=70751 weather=wet",
       "weather": {
         "quarter": 5,
-        "regime": "normal",
-        "rainfall_index": 0.703,
-        "temperature_index": 0.996
+        "regime": "wet",
+        "rainfall_index": 1.697,
+        "temperature_index": 1.066
       },
       "plot_pnl": [
-        2168.96,
+        20402.54,
         -6436.4,
-        16086.51,
-        5949.22
+        30401.59,
+        26383.08
       ],
       "bankrupt": false,
       "pest_pressure": [
-        false,
+        true,
         true,
         false,
         true
@@ -358,27 +440,27 @@
           }
         ]
       },
-      "reward": 0.11991,
-      "pnl": 1199.1,
-      "observation": "pnl=1199 weather=normal",
+      "reward": 7.274308,
+      "pnl": 72743.08,
+      "observation": "pnl=72743 weather=normal",
       "weather": {
         "quarter": 6,
         "regime": "normal",
-        "rainfall_index": 0.998,
-        "temperature_index": 1.593
+        "rainfall_index": 1.158,
+        "temperature_index": 1.097
       },
       "plot_pnl": [
-        -739.91,
-        5163.55,
+        28408.68,
+        32176.75,
         -6436.4,
-        3211.86
+        18594.05
       ],
       "bankrupt": false,
       "pest_pressure": [
         false,
         false,
-        false,
-        true
+        true,
+        false
       ],
       "state_snapshot": null
     },
@@ -409,27 +491,27 @@
           }
         ]
       },
-      "reward": 5.755827,
-      "pnl": 57558.27,
-      "observation": "pnl=57558 weather=normal",
+      "reward": 7.274707,
+      "pnl": 72747.07,
+      "observation": "pnl=72747 weather=normal",
       "weather": {
         "quarter": 7,
         "regime": "normal",
-        "rainfall_index": 1.136,
-        "temperature_index": 0.793
+        "rainfall_index": 1.154,
+        "temperature_index": 1.112
       },
       "plot_pnl": [
         -6436.4,
-        18584.36,
-        17150.36,
-        28259.95
+        28088.76,
+        22962.55,
+        28132.16
       ],
       "bankrupt": false,
       "pest_pressure": [
-        true,
-        true,
         false,
-        false
+        false,
+        true,
+        true
       ],
       "state_snapshot": null
     },
@@ -460,19 +542,19 @@
           }
         ]
       },
-      "reward": -0.32448,
-      "pnl": -3244.8,
-      "observation": "pnl=-3245 weather=normal",
+      "reward": 9.614045,
+      "pnl": 96140.45,
+      "observation": "pnl=96140 weather=normal",
       "weather": {
         "quarter": 8,
         "regime": "normal",
-        "rainfall_index": 1.193,
-        "temperature_index": 0.616
+        "rainfall_index": 0.969,
+        "temperature_index": 1.08
       },
       "plot_pnl": [
-        -4861.5,
-        1322.91,
-        6730.19,
+        41602.08,
+        29462.09,
+        31512.68,
         -6436.4
       ],
       "bankrupt": false,
@@ -511,26 +593,26 @@
           }
         ]
       },
-      "reward": 0.727518,
-      "pnl": 7275.18,
-      "observation": "pnl=7275 weather=normal",
+      "reward": 6.442167,
+      "pnl": 64421.67,
+      "observation": "pnl=64422 weather=normal",
       "weather": {
         "quarter": 9,
         "regime": "normal",
-        "rainfall_index": 1.075,
-        "temperature_index": 1.198
+        "rainfall_index": 0.997,
+        "temperature_index": 0.904
       },
       "plot_pnl": [
-        7077.17,
+        13751.54,
         -6436.4,
-        1141.66,
-        5492.75
+        30176.85,
+        26929.68
       ],
       "bankrupt": false,
       "pest_pressure": [
         false,
         false,
-        false,
+        true,
         false
       ],
       "state_snapshot": null
@@ -562,27 +644,27 @@
           }
         ]
       },
-      "reward": -2.930252,
-      "pnl": -29302.52,
-      "observation": "pnl=-29303 weather=normal",
+      "reward": 6.222755,
+      "pnl": 62227.55,
+      "observation": "pnl=62228 weather=normal",
       "weather": {
         "quarter": 10,
         "regime": "normal",
-        "rainfall_index": 1.098,
-        "temperature_index": 1.555
+        "rainfall_index": 0.921,
+        "temperature_index": 1.011
       },
       "plot_pnl": [
-        -12160.63,
-        -5155.63,
+        23541.19,
+        22286.25,
         -6436.4,
-        -5549.86
+        22836.51
       ],
       "bankrupt": false,
       "pest_pressure": [
         true,
-        true,
-        true,
-        false
+        false,
+        false,
+        true
       ],
       "state_snapshot": null
     },
@@ -613,27 +695,27 @@
           }
         ]
       },
-      "reward": -0.047782,
-      "pnl": -477.82,
-      "observation": "pnl=-478 weather=normal",
+      "reward": 6.64285,
+      "pnl": 66428.5,
+      "observation": "pnl=66428 weather=normal",
       "weather": {
         "quarter": 11,
         "regime": "normal",
-        "rainfall_index": 1.164,
-        "temperature_index": 0.843
+        "rainfall_index": 1.068,
+        "temperature_index": 0.999
       },
       "plot_pnl": [
         -6436.4,
-        7838.24,
-        4460.41,
-        -6340.07
+        20484.1,
+        19578.7,
+        32802.1
       ],
       "bankrupt": false,
       "pest_pressure": [
         false,
         false,
-        false,
-        true
+        true,
+        false
       ],
       "state_snapshot": null
     },
@@ -664,27 +746,27 @@
           }
         ]
       },
-      "reward": -4.598279,
-      "pnl": -45982.79,
-      "observation": "pnl=-45983 weather=normal",
+      "reward": 9.673194,
+      "pnl": 96731.94,
+      "observation": "pnl=96732 weather=dry",
       "weather": {
         "quarter": 12,
-        "regime": "normal",
-        "rainfall_index": 0.711,
-        "temperature_index": 0.456
+        "regime": "dry",
+        "rainfall_index": 0.669,
+        "temperature_index": 0.942
       },
       "plot_pnl": [
-        -14924.02,
-        -12841.39,
-        -11780.98,
+        46407.49,
+        20062.06,
+        36698.79,
         -6436.4
       ],
       "bankrupt": false,
       "pest_pressure": [
-        true,
         false,
         false,
-        false
+        false,
+        true
       ],
       "state_snapshot": null
     },
@@ -715,27 +797,27 @@
           }
         ]
       },
-      "reward": -0.714874,
-      "pnl": -7148.74,
-      "observation": "pnl=-7149 weather=dry",
+      "reward": 5.551087,
+      "pnl": 55510.87,
+      "observation": "pnl=55511 weather=normal",
       "weather": {
         "quarter": 13,
-        "regime": "dry",
-        "rainfall_index": 0.669,
-        "temperature_index": 1.096
+        "regime": "normal",
+        "rainfall_index": 1.124,
+        "temperature_index": 1.017
       },
       "plot_pnl": [
-        -2231.19,
+        23036.31,
         -6436.4,
-        -3480.66,
-        4999.51
+        20911.44,
+        17999.52
       ],
       "bankrupt": false,
       "pest_pressure": [
         false,
         false,
-        false,
-        true
+        true,
+        false
       ],
       "state_snapshot": null
     },
@@ -766,27 +848,27 @@
           }
         ]
       },
-      "reward": -4.202495,
-      "pnl": -42024.95,
-      "observation": "pnl=-42025 weather=wet",
+      "reward": 5.357368,
+      "pnl": 53573.68,
+      "observation": "pnl=53574 weather=wet",
       "weather": {
         "quarter": 14,
         "regime": "wet",
-        "rainfall_index": 1.413,
-        "temperature_index": 1.478
+        "rainfall_index": 1.665,
+        "temperature_index": 1.053
       },
       "plot_pnl": [
-        -16752.09,
-        -12235.82,
+        23225.0,
+        16360.78,
         -6436.4,
-        -6600.64
+        20424.3
       ],
       "bankrupt": false,
       "pest_pressure": [
-        true,
         false,
         true,
-        false
+        true,
+        true
       ],
       "state_snapshot": null
     },
@@ -817,27 +899,27 @@
           }
         ]
       },
-      "reward": -1.893112,
-      "pnl": -18931.12,
-      "observation": "pnl=-18931 weather=normal",
+      "reward": 7.159393,
+      "pnl": 71593.93,
+      "observation": "pnl=71594 weather=dry",
       "weather": {
         "quarter": 15,
-        "regime": "normal",
-        "rainfall_index": 1.099,
-        "temperature_index": 0.981
+        "regime": "dry",
+        "rainfall_index": 0.602,
+        "temperature_index": 1.07
       },
       "plot_pnl": [
         -6436.4,
-        -477.17,
-        -6000.6,
-        -6016.95
+        17943.27,
+        20616.31,
+        39470.75
       ],
       "bankrupt": false,
       "pest_pressure": [
         false,
-        true,
         false,
-        true
+        true,
+        false
       ],
       "state_snapshot": null
     },
@@ -868,27 +950,27 @@
           }
         ]
       },
-      "reward": -1.950324,
-      "pnl": -19503.24,
-      "observation": "pnl=-19503 weather=normal",
+      "reward": 5.77795,
+      "pnl": 57779.5,
+      "observation": "pnl=57780 weather=normal",
       "weather": {
         "quarter": 16,
         "regime": "normal",
-        "rainfall_index": 1.01,
-        "temperature_index": 0.499
+        "rainfall_index": 0.75,
+        "temperature_index": 1.025
       },
       "plot_pnl": [
-        -6267.06,
-        -7530.56,
-        730.78,
+        33161.0,
+        19011.03,
+        12043.87,
         -6436.4
       ],
       "bankrupt": false,
       "pest_pressure": [
         true,
-        true,
         false,
-        true
+        false,
+        false
       ],
       "state_snapshot": null
     },
@@ -919,27 +1001,27 @@
           }
         ]
       },
-      "reward": -0.715561,
-      "pnl": -7155.61,
-      "observation": "pnl=-7156 weather=normal",
+      "reward": 5.707318,
+      "pnl": 57073.18,
+      "observation": "pnl=57073 weather=normal",
       "weather": {
         "quarter": 17,
         "regime": "normal",
-        "rainfall_index": 1.323,
-        "temperature_index": 1.09
+        "rainfall_index": 0.968,
+        "temperature_index": 1.018
       },
       "plot_pnl": [
-        -1551.28,
+        25307.73,
         -6436.4,
-        1176.07,
-        -344.0
+        23144.68,
+        15057.17
       ],
       "bankrupt": false,
       "pest_pressure": [
+        true,
         false,
-        false,
-        false,
-        true
+        true,
+        false
       ],
       "state_snapshot": null
     },
@@ -970,27 +1052,27 @@
           }
         ]
       },
-      "reward": -4.019099,
-      "pnl": -40190.99,
-      "observation": "pnl=-40191 weather=normal",
+      "reward": 8.491869,
+      "pnl": 84918.69,
+      "observation": "pnl=84919 weather=wet",
       "weather": {
         "quarter": 18,
-        "regime": "normal",
-        "rainfall_index": 0.798,
-        "temperature_index": 1.667
+        "regime": "wet",
+        "rainfall_index": 1.415,
+        "temperature_index": 1.038
       },
       "plot_pnl": [
-        -17497.02,
-        -7236.92,
+        22137.98,
+        30946.13,
         -6436.4,
-        -9020.65
+        38270.98
       ],
       "bankrupt": false,
       "pest_pressure": [
         true,
-        false,
         true,
-        true
+        true,
+        false
       ],
       "state_snapshot": null
     },
@@ -1021,27 +1103,27 @@
           }
         ]
       },
-      "reward": -0.200256,
-      "pnl": -2002.56,
-      "observation": "pnl=-2003 weather=dry",
+      "reward": 6.742412,
+      "pnl": 67424.12,
+      "observation": "pnl=67424 weather=normal",
       "weather": {
         "quarter": 19,
-        "regime": "dry",
-        "rainfall_index": 0.554,
-        "temperature_index": 0.752
+        "regime": "normal",
+        "rainfall_index": 0.866,
+        "temperature_index": 0.874
       },
       "plot_pnl": [
         -6436.4,
-        -131.03,
-        1649.69,
-        2915.18
+        21105.46,
+        24173.96,
+        28581.1
       ],
       "bankrupt": false,
       "pest_pressure": [
-        true,
-        true,
         false,
-        false
+        false,
+        true,
+        true
       ],
       "state_snapshot": null
     },
@@ -1072,27 +1154,27 @@
           }
         ]
       },
-      "reward": -0.610111,
-      "pnl": -6101.11,
-      "observation": "pnl=-6101 weather=normal",
+      "reward": 3.985861,
+      "pnl": 39858.61,
+      "observation": "pnl=39859 weather=wet",
       "weather": {
         "quarter": 20,
-        "regime": "normal",
-        "rainfall_index": 0.828,
-        "temperature_index": 0.568
+        "regime": "wet",
+        "rainfall_index": 1.446,
+        "temperature_index": 0.689
       },
       "plot_pnl": [
-        4627.58,
-        1185.24,
-        -5477.53,
+        15185.95,
+        23371.92,
+        7737.14,
         -6436.4
       ],
       "bankrupt": false,
       "pest_pressure": [
         true,
-        true,
         false,
-        true
+        true,
+        false
       ],
       "state_snapshot": null
     },
@@ -1123,25 +1205,25 @@
           }
         ]
       },
-      "reward": 1.625959,
-      "pnl": 16259.59,
-      "observation": "pnl=16260 weather=normal",
+      "reward": 5.475592,
+      "pnl": 54755.92,
+      "observation": "pnl=54756 weather=normal",
       "weather": {
         "quarter": 21,
         "regime": "normal",
-        "rainfall_index": 1.145,
-        "temperature_index": 1.246
+        "rainfall_index": 1.247,
+        "temperature_index": 0.912
       },
       "plot_pnl": [
-        1233.32,
+        17438.05,
         -6436.4,
-        6804.97,
-        14657.7
+        24881.95,
+        18872.32
       ],
       "bankrupt": false,
       "pest_pressure": [
         false,
-        false,
+        true,
         false,
         false
       ],
@@ -1174,26 +1256,26 @@
           }
         ]
       },
-      "reward": -0.611039,
-      "pnl": -6110.39,
-      "observation": "pnl=-6110 weather=normal",
+      "reward": 5.563625,
+      "pnl": 55636.25,
+      "observation": "pnl=55636 weather=normal",
       "weather": {
         "quarter": 22,
         "regime": "normal",
-        "rainfall_index": 1.265,
-        "temperature_index": 1.498
+        "rainfall_index": 1.322,
+        "temperature_index": 0.959
       },
       "plot_pnl": [
-        -2948.4,
-        -5099.98,
+        11773.69,
+        28048.28,
         -6436.4,
-        8374.39
+        22250.68
       ],
       "bankrupt": false,
       "pest_pressure": [
         false,
-        true,
         false,
+        true,
         false
       ],
       "state_snapshot": null
@@ -1225,27 +1307,27 @@
           }
         ]
       },
-      "reward": 1.169342,
-      "pnl": 11693.42,
-      "observation": "pnl=11693 weather=normal",
+      "reward": 6.282653,
+      "pnl": 62826.53,
+      "observation": "pnl=62827 weather=wet",
       "weather": {
         "quarter": 23,
-        "regime": "normal",
-        "rainfall_index": 0.787,
-        "temperature_index": 0.777
+        "regime": "wet",
+        "rainfall_index": 1.644,
+        "temperature_index": 1.107
       },
       "plot_pnl": [
         -6436.4,
-        9585.39,
-        -1354.26,
-        9898.69
+        17376.36,
+        34388.48,
+        17498.09
       ],
       "bankrupt": false,
       "pest_pressure": [
         false,
+        false,
         true,
-        true,
-        false
+        true
       ],
       "state_snapshot": null
     },
@@ -1276,26 +1358,26 @@
           }
         ]
       },
-      "reward": 3.216398,
-      "pnl": 32163.98,
-      "observation": "pnl=32164 weather=normal",
+      "reward": 4.610737,
+      "pnl": 46107.37,
+      "observation": "pnl=46107 weather=normal",
       "weather": {
         "quarter": 24,
         "regime": "normal",
-        "rainfall_index": 1.086,
-        "temperature_index": 0.41
+        "rainfall_index": 0.992,
+        "temperature_index": 1.218
       },
       "plot_pnl": [
-        11382.42,
-        21098.58,
-        6119.38,
+        13481.93,
+        20249.41,
+        18812.43,
         -6436.4
       ],
       "bankrupt": false,
       "pest_pressure": [
         false,
         false,
-        true,
+        false,
         false
       ],
       "state_snapshot": null
@@ -1327,25 +1409,25 @@
           }
         ]
       },
-      "reward": 5.039906,
-      "pnl": 50399.06,
-      "observation": "pnl=50399 weather=normal",
+      "reward": 6.614958,
+      "pnl": 66149.58,
+      "observation": "pnl=66150 weather=wet",
       "weather": {
         "quarter": 25,
-        "regime": "normal",
-        "rainfall_index": 0.991,
-        "temperature_index": 1.255
+        "regime": "wet",
+        "rainfall_index": 1.388,
+        "temperature_index": 1.055
       },
       "plot_pnl": [
-        16269.42,
+        22680.77,
         -6436.4,
-        29351.65,
-        11214.39
+        27730.77,
+        22174.44
       ],
       "bankrupt": false,
       "pest_pressure": [
         true,
-        true,
+        false,
         false,
         false
       ],
@@ -1378,20 +1460,20 @@
           }
         ]
       },
-      "reward": 1.210074,
-      "pnl": 12100.74,
-      "observation": "pnl=12101 weather=normal",
+      "reward": 6.97545,
+      "pnl": 69754.5,
+      "observation": "pnl=69754 weather=normal",
       "weather": {
         "quarter": 26,
         "regime": "normal",
-        "rainfall_index": 0.786,
-        "temperature_index": 1.661
+        "rainfall_index": 1.209,
+        "temperature_index": 1.104
       },
       "plot_pnl": [
-        1839.67,
-        7440.68,
+        27625.08,
+        32467.15,
         -6436.4,
-        9256.79
+        16098.67
       ],
       "bankrupt": false,
       "pest_pressure": [
@@ -1429,27 +1511,27 @@
           }
         ]
       },
-      "reward": 5.755625,
-      "pnl": 57556.25,
-      "observation": "pnl=57556 weather=normal",
+      "reward": 5.736013,
+      "pnl": 57360.13,
+      "observation": "pnl=57360 weather=normal",
       "weather": {
         "quarter": 27,
         "regime": "normal",
-        "rainfall_index": 0.825,
-        "temperature_index": 0.838
+        "rainfall_index": 1.007,
+        "temperature_index": 1.138
       },
       "plot_pnl": [
         -6436.4,
-        22360.85,
-        20627.02,
-        21004.78
+        16095.18,
+        22946.12,
+        24755.23
       ],
       "bankrupt": false,
       "pest_pressure": [
         false,
         true,
         false,
-        false
+        true
       ],
       "state_snapshot": null
     },
@@ -1480,24 +1562,24 @@
           }
         ]
       },
-      "reward": 4.024711,
-      "pnl": 40247.11,
-      "observation": "pnl=40247 weather=dry",
+      "reward": 5.280562,
+      "pnl": 52805.62,
+      "observation": "pnl=52806 weather=normal",
       "weather": {
         "quarter": 28,
-        "regime": "dry",
-        "rainfall_index": 0.689,
-        "temperature_index": 0.583
+        "regime": "normal",
+        "rainfall_index": 1.318,
+        "temperature_index": 0.768
       },
       "plot_pnl": [
-        16536.06,
-        20063.62,
-        10083.83,
+        19692.08,
+        23683.1,
+        15866.84,
         -6436.4
       ],
       "bankrupt": false,
       "pest_pressure": [
-        false,
+        true,
         false,
         false,
         false
@@ -1531,27 +1613,27 @@
           }
         ]
       },
-      "reward": 4.443698,
-      "pnl": 44436.98,
-      "observation": "pnl=44437 weather=normal",
+      "reward": 6.502474,
+      "pnl": 65024.74,
+      "observation": "pnl=65025 weather=normal",
       "weather": {
         "quarter": 29,
         "regime": "normal",
-        "rainfall_index": 1.03,
-        "temperature_index": 1.123
+        "rainfall_index": 1.065,
+        "temperature_index": 0.908
       },
       "plot_pnl": [
-        14017.08,
+        26438.47,
         -6436.4,
-        26221.33,
-        10634.97
+        17126.01,
+        27896.66
       ],
       "bankrupt": false,
       "pest_pressure": [
+        false,
+        false,
         true,
-        false,
-        false,
-        true
+        false
       ],
       "state_snapshot": null
     },
@@ -1582,27 +1664,27 @@
           }
         ]
       },
-      "reward": 0.168992,
-      "pnl": 1689.92,
-      "observation": "pnl=1690 weather=normal",
+      "reward": 6.996533,
+      "pnl": 69965.33,
+      "observation": "pnl=69965 weather=wet",
       "weather": {
         "quarter": 30,
-        "regime": "normal",
-        "rainfall_index": 1.27,
-        "temperature_index": 1.63
+        "regime": "wet",
+        "rainfall_index": 1.357,
+        "temperature_index": 1.055
       },
       "plot_pnl": [
-        2230.7,
-        1508.0,
+        37339.17,
+        13098.26,
         -6436.4,
-        4387.62
+        25964.3
       ],
       "bankrupt": false,
       "pest_pressure": [
         false,
+        true,
         false,
-        false,
-        true
+        false
       ],
       "state_snapshot": null
     },
@@ -1633,25 +1715,25 @@
           }
         ]
       },
-      "reward": 4.072175,
-      "pnl": 40721.75,
-      "observation": "pnl=40722 weather=wet",
+      "reward": 4.276104,
+      "pnl": 42761.04,
+      "observation": "pnl=42761 weather=normal",
       "weather": {
         "quarter": 31,
-        "regime": "wet",
-        "rainfall_index": 1.62,
-        "temperature_index": 0.736
+        "regime": "normal",
+        "rainfall_index": 0.782,
+        "temperature_index": 1.324
       },
       "plot_pnl": [
         -6436.4,
-        14661.95,
-        16576.14,
-        15920.06
+        12653.11,
+        14618.21,
+        21926.12
       ],
       "bankrupt": false,
       "pest_pressure": [
         true,
-        true,
+        false,
         false,
         false
       ],
@@ -1684,27 +1766,27 @@
           }
         ]
       },
-      "reward": 3.878847,
-      "pnl": 38788.47,
-      "observation": "pnl=38788 weather=normal",
+      "reward": 8.087963,
+      "pnl": 80879.63,
+      "observation": "pnl=80880 weather=dry",
       "weather": {
         "quarter": 32,
-        "regime": "normal",
-        "rainfall_index": 1.005,
-        "temperature_index": 0.627
+        "regime": "dry",
+        "rainfall_index": 0.663,
+        "temperature_index": 1.068
       },
       "plot_pnl": [
-        393.38,
-        21658.48,
-        23173.01,
+        37587.41,
+        25879.88,
+        23848.74,
         -6436.4
       ],
       "bankrupt": false,
       "pest_pressure": [
-        false,
-        false,
         true,
-        false
+        true,
+        true,
+        true
       ],
       "state_snapshot": null
     },
@@ -1735,20 +1817,20 @@
           }
         ]
       },
-      "reward": 1.779257,
-      "pnl": 17792.57,
-      "observation": "pnl=17793 weather=normal",
+      "reward": 5.816123,
+      "pnl": 58161.23,
+      "observation": "pnl=58161 weather=normal",
       "weather": {
         "quarter": 33,
         "regime": "normal",
-        "rainfall_index": 0.711,
-        "temperature_index": 1.248
+        "rainfall_index": 0.765,
+        "temperature_index": 1.022
       },
       "plot_pnl": [
-        8081.32,
+        16474.91,
         -6436.4,
-        6511.47,
-        9636.18
+        21156.02,
+        26966.7
       ],
       "bankrupt": false,
       "pest_pressure": [
@@ -1786,24 +1868,24 @@
           }
         ]
       },
-      "reward": 0.779891,
-      "pnl": 7798.91,
-      "observation": "pnl=7799 weather=normal",
+      "reward": 4.461809,
+      "pnl": 44618.09,
+      "observation": "pnl=44618 weather=normal",
       "weather": {
         "quarter": 34,
         "regime": "normal",
-        "rainfall_index": 1.155,
-        "temperature_index": 1.601
+        "rainfall_index": 0.754,
+        "temperature_index": 0.937
       },
       "plot_pnl": [
-        -881.97,
-        13695.9,
+        8727.35,
+        24713.0,
         -6436.4,
-        1421.38
+        17614.14
       ],
       "bankrupt": false,
       "pest_pressure": [
-        false,
+        true,
         false,
         false,
         true
@@ -1837,27 +1919,27 @@
           }
         ]
       },
-      "reward": 5.277704,
-      "pnl": 52777.04,
-      "observation": "pnl=52777 weather=wet",
+      "reward": 6.901954,
+      "pnl": 69019.54,
+      "observation": "pnl=69020 weather=normal",
       "weather": {
         "quarter": 35,
-        "regime": "wet",
-        "rainfall_index": 1.639,
-        "temperature_index": 0.787
+        "regime": "normal",
+        "rainfall_index": 1.303,
+        "temperature_index": 0.975
       },
       "plot_pnl": [
         -6436.4,
-        10365.88,
-        23713.41,
-        25134.15
+        18078.6,
+        18711.43,
+        38665.91
       ],
       "bankrupt": false,
       "pest_pressure": [
+        false,
+        false,
         true,
-        false,
-        false,
-        false
+        true
       ],
       "state_snapshot": null
     },
@@ -1888,27 +1970,27 @@
           }
         ]
       },
-      "reward": 6.966499,
-      "pnl": 69664.99,
-      "observation": "pnl=69665 weather=normal",
+      "reward": 5.621918,
+      "pnl": 56219.18,
+      "observation": "pnl=56219 weather=dry",
       "weather": {
         "quarter": 36,
-        "regime": "normal",
-        "rainfall_index": 1.017,
-        "temperature_index": 0.474
+        "regime": "dry",
+        "rainfall_index": 0.525,
+        "temperature_index": 0.855
       },
       "plot_pnl": [
-        29251.06,
-        26363.49,
-        20486.84,
+        19706.01,
+        22534.77,
+        20414.8,
         -6436.4
       ],
       "bankrupt": false,
       "pest_pressure": [
         false,
         false,
-        false,
-        true
+        true,
+        false
       ],
       "state_snapshot": null
     },
@@ -1939,26 +2021,26 @@
           }
         ]
       },
-      "reward": 7.69318,
-      "pnl": 76931.8,
-      "observation": "pnl=76932 weather=normal",
+      "reward": 5.621678,
+      "pnl": 56216.78,
+      "observation": "pnl=56217 weather=normal",
       "weather": {
         "quarter": 37,
         "regime": "normal",
-        "rainfall_index": 1.074,
-        "temperature_index": 1.042
+        "rainfall_index": 0.922,
+        "temperature_index": 0.934
       },
       "plot_pnl": [
-        29056.14,
+        23305.1,
         -6436.4,
-        23631.62,
-        30680.44
+        16982.2,
+        22365.88
       ],
       "bankrupt": false,
       "pest_pressure": [
-        true,
-        true,
-        true,
+        false,
+        false,
+        false,
         false
       ],
       "state_snapshot": null
@@ -1990,27 +2072,27 @@
           }
         ]
       },
-      "reward": 3.016218,
-      "pnl": 30162.18,
-      "observation": "pnl=30162 weather=normal",
+      "reward": 2.227844,
+      "pnl": 22278.44,
+      "observation": "pnl=22278 weather=normal",
       "weather": {
         "quarter": 38,
         "regime": "normal",
-        "rainfall_index": 0.974,
-        "temperature_index": 1.581
+        "rainfall_index": 0.733,
+        "temperature_index": 1.065
       },
       "plot_pnl": [
-        15854.74,
-        10932.34,
+        8979.21,
+        14665.31,
         -6436.4,
-        9811.5
+        5070.32
       ],
       "bankrupt": false,
       "pest_pressure": [
         false,
         true,
-        true,
-        true
+        false,
+        false
       ],
       "state_snapshot": null
     },
@@ -2041,278 +2123,326 @@
           }
         ]
       },
-      "reward": 8.782838,
-      "pnl": 78325.38,
-      "observation": "pnl=78325 weather=normal",
+      "reward": 7.921785,
+      "pnl": 52192.85,
+      "observation": "pnl=52193 weather=normal",
       "weather": {
         "quarter": 39,
         "regime": "normal",
-        "rainfall_index": 1.019,
-        "temperature_index": 0.838
+        "rainfall_index": 0.948,
+        "temperature_index": 0.938
       },
       "plot_pnl": [
         -6436.4,
-        17191.62,
-        24284.59,
-        43285.57
+        20278.63,
+        26480.46,
+        11870.16
       ],
       "bankrupt": false,
       "pest_pressure": [
-        true,
         false,
         false,
-        false
+        false,
+        true
       ],
       "state_snapshot": null
     }
   ],
   "final_state": {
     "quarter": 40,
-    "cash": 917719.77,
+    "cash": 2544051.62,
     "starting_cash": 177234.88,
     "irrigation_owned": true,
     "ever_bankrupt": false,
     "weather_regime": "normal",
     "weather_history": [
       {
-        "quarter": 0,
+        "quarter": -8,
+        "regime": "wet",
+        "rainfall_index": 1.6452,
+        "temperature_index": 1.3015
+      },
+      {
+        "quarter": -7,
+        "regime": "normal",
+        "rainfall_index": 1.2361,
+        "temperature_index": 1.0519
+      },
+      {
+        "quarter": -6,
+        "regime": "wet",
+        "rainfall_index": 1.407,
+        "temperature_index": 1.0235
+      },
+      {
+        "quarter": -5,
+        "regime": "normal",
+        "rainfall_index": 1.1539,
+        "temperature_index": 1.1122
+      },
+      {
+        "quarter": -4,
+        "regime": "normal",
+        "rainfall_index": 0.9085,
+        "temperature_index": 0.9743
+      },
+      {
+        "quarter": -3,
         "regime": "dry",
-        "rainfall_index": 0.506,
-        "temperature_index": 0.532
+        "rainfall_index": 0.6525,
+        "temperature_index": 1.1695
+      },
+      {
+        "quarter": -2,
+        "regime": "normal",
+        "rainfall_index": 0.9783,
+        "temperature_index": 1.0537
+      },
+      {
+        "quarter": -1,
+        "regime": "normal",
+        "rainfall_index": 1.1716,
+        "temperature_index": 1.1683
+      },
+      {
+        "quarter": 0,
+        "regime": "normal",
+        "rainfall_index": 1.31,
+        "temperature_index": 1.265
       },
       {
         "quarter": 1,
-        "regime": "wet",
-        "rainfall_index": 1.835,
-        "temperature_index": 1.036
+        "regime": "normal",
+        "rainfall_index": 0.8,
+        "temperature_index": 0.802
       },
       {
         "quarter": 2,
-        "regime": "wet",
-        "rainfall_index": 1.436,
-        "temperature_index": 1.456
+        "regime": "normal",
+        "rainfall_index": 0.841,
+        "temperature_index": 1.026
       },
       {
         "quarter": 3,
-        "regime": "wet",
-        "rainfall_index": 1.527,
-        "temperature_index": 0.676
+        "regime": "dry",
+        "rainfall_index": 0.584,
+        "temperature_index": 0.998
       },
       {
         "quarter": 4,
         "regime": "normal",
-        "rainfall_index": 0.737,
-        "temperature_index": 0.263
+        "rainfall_index": 0.862,
+        "temperature_index": 1.349
       },
       {
         "quarter": 5,
-        "regime": "normal",
-        "rainfall_index": 0.703,
-        "temperature_index": 0.996
+        "regime": "wet",
+        "rainfall_index": 1.697,
+        "temperature_index": 1.066
       },
       {
         "quarter": 6,
         "regime": "normal",
-        "rainfall_index": 0.998,
-        "temperature_index": 1.593
+        "rainfall_index": 1.158,
+        "temperature_index": 1.097
       },
       {
         "quarter": 7,
         "regime": "normal",
-        "rainfall_index": 1.136,
-        "temperature_index": 0.793
+        "rainfall_index": 1.154,
+        "temperature_index": 1.112
       },
       {
         "quarter": 8,
         "regime": "normal",
-        "rainfall_index": 1.193,
-        "temperature_index": 0.616
+        "rainfall_index": 0.969,
+        "temperature_index": 1.08
       },
       {
         "quarter": 9,
         "regime": "normal",
-        "rainfall_index": 1.075,
-        "temperature_index": 1.198
+        "rainfall_index": 0.997,
+        "temperature_index": 0.904
       },
       {
         "quarter": 10,
         "regime": "normal",
-        "rainfall_index": 1.098,
-        "temperature_index": 1.555
+        "rainfall_index": 0.921,
+        "temperature_index": 1.011
       },
       {
         "quarter": 11,
         "regime": "normal",
-        "rainfall_index": 1.164,
-        "temperature_index": 0.843
+        "rainfall_index": 1.068,
+        "temperature_index": 0.999
       },
       {
         "quarter": 12,
-        "regime": "normal",
-        "rainfall_index": 0.711,
-        "temperature_index": 0.456
+        "regime": "dry",
+        "rainfall_index": 0.669,
+        "temperature_index": 0.942
       },
       {
         "quarter": 13,
-        "regime": "dry",
-        "rainfall_index": 0.669,
-        "temperature_index": 1.096
+        "regime": "normal",
+        "rainfall_index": 1.124,
+        "temperature_index": 1.017
       },
       {
         "quarter": 14,
         "regime": "wet",
-        "rainfall_index": 1.413,
-        "temperature_index": 1.478
+        "rainfall_index": 1.665,
+        "temperature_index": 1.053
       },
       {
         "quarter": 15,
-        "regime": "normal",
-        "rainfall_index": 1.099,
-        "temperature_index": 0.981
+        "regime": "dry",
+        "rainfall_index": 0.602,
+        "temperature_index": 1.07
       },
       {
         "quarter": 16,
         "regime": "normal",
-        "rainfall_index": 1.01,
-        "temperature_index": 0.499
+        "rainfall_index": 0.75,
+        "temperature_index": 1.025
       },
       {
         "quarter": 17,
         "regime": "normal",
-        "rainfall_index": 1.323,
-        "temperature_index": 1.09
+        "rainfall_index": 0.968,
+        "temperature_index": 1.018
       },
       {
         "quarter": 18,
-        "regime": "normal",
-        "rainfall_index": 0.798,
-        "temperature_index": 1.667
+        "regime": "wet",
+        "rainfall_index": 1.415,
+        "temperature_index": 1.038
       },
       {
         "quarter": 19,
-        "regime": "dry",
-        "rainfall_index": 0.554,
-        "temperature_index": 0.752
+        "regime": "normal",
+        "rainfall_index": 0.866,
+        "temperature_index": 0.874
       },
       {
         "quarter": 20,
-        "regime": "normal",
-        "rainfall_index": 0.828,
-        "temperature_index": 0.568
+        "regime": "wet",
+        "rainfall_index": 1.446,
+        "temperature_index": 0.689
       },
       {
         "quarter": 21,
         "regime": "normal",
-        "rainfall_index": 1.145,
-        "temperature_index": 1.246
+        "rainfall_index": 1.247,
+        "temperature_index": 0.912
       },
       {
         "quarter": 22,
         "regime": "normal",
-        "rainfall_index": 1.265,
-        "temperature_index": 1.498
+        "rainfall_index": 1.322,
+        "temperature_index": 0.959
       },
       {
         "quarter": 23,
-        "regime": "normal",
-        "rainfall_index": 0.787,
-        "temperature_index": 0.777
+        "regime": "wet",
+        "rainfall_index": 1.644,
+        "temperature_index": 1.107
       },
       {
         "quarter": 24,
         "regime": "normal",
-        "rainfall_index": 1.086,
-        "temperature_index": 0.41
+        "rainfall_index": 0.992,
+        "temperature_index": 1.218
       },
       {
         "quarter": 25,
-        "regime": "normal",
-        "rainfall_index": 0.991,
-        "temperature_index": 1.255
+        "regime": "wet",
+        "rainfall_index": 1.388,
+        "temperature_index": 1.055
       },
       {
         "quarter": 26,
         "regime": "normal",
-        "rainfall_index": 0.786,
-        "temperature_index": 1.661
+        "rainfall_index": 1.209,
+        "temperature_index": 1.104
       },
       {
         "quarter": 27,
         "regime": "normal",
-        "rainfall_index": 0.825,
-        "temperature_index": 0.838
+        "rainfall_index": 1.007,
+        "temperature_index": 1.138
       },
       {
         "quarter": 28,
-        "regime": "dry",
-        "rainfall_index": 0.689,
-        "temperature_index": 0.583
+        "regime": "normal",
+        "rainfall_index": 1.318,
+        "temperature_index": 0.768
       },
       {
         "quarter": 29,
         "regime": "normal",
-        "rainfall_index": 1.03,
-        "temperature_index": 1.123
+        "rainfall_index": 1.065,
+        "temperature_index": 0.908
       },
       {
         "quarter": 30,
-        "regime": "normal",
-        "rainfall_index": 1.27,
-        "temperature_index": 1.63
+        "regime": "wet",
+        "rainfall_index": 1.357,
+        "temperature_index": 1.055
       },
       {
         "quarter": 31,
-        "regime": "wet",
-        "rainfall_index": 1.62,
-        "temperature_index": 0.736
+        "regime": "normal",
+        "rainfall_index": 0.782,
+        "temperature_index": 1.324
       },
       {
         "quarter": 32,
-        "regime": "normal",
-        "rainfall_index": 1.005,
-        "temperature_index": 0.627
+        "regime": "dry",
+        "rainfall_index": 0.663,
+        "temperature_index": 1.068
       },
       {
         "quarter": 33,
         "regime": "normal",
-        "rainfall_index": 0.711,
-        "temperature_index": 1.248
+        "rainfall_index": 0.765,
+        "temperature_index": 1.022
       },
       {
         "quarter": 34,
         "regime": "normal",
-        "rainfall_index": 1.155,
-        "temperature_index": 1.601
+        "rainfall_index": 0.754,
+        "temperature_index": 0.937
       },
       {
         "quarter": 35,
-        "regime": "wet",
-        "rainfall_index": 1.639,
-        "temperature_index": 0.787
+        "regime": "normal",
+        "rainfall_index": 1.303,
+        "temperature_index": 0.975
       },
       {
         "quarter": 36,
-        "regime": "normal",
-        "rainfall_index": 1.017,
-        "temperature_index": 0.474
+        "regime": "dry",
+        "rainfall_index": 0.525,
+        "temperature_index": 0.855
       },
       {
         "quarter": 37,
         "regime": "normal",
-        "rainfall_index": 1.074,
-        "temperature_index": 1.042
+        "rainfall_index": 0.922,
+        "temperature_index": 0.934
       },
       {
         "quarter": 38,
         "regime": "normal",
-        "rainfall_index": 0.974,
-        "temperature_index": 1.581
+        "rainfall_index": 0.733,
+        "temperature_index": 1.065
       },
       {
         "quarter": 39,
         "regime": "normal",
-        "rainfall_index": 1.019,
-        "temperature_index": 0.838
+        "rainfall_index": 0.948,
+        "temperature_index": 0.938
       }
     ],
     "plots": [
@@ -2320,58 +2450,58 @@
         "plot_id": 0,
         "current_crop": "cover_crop",
         "previous_crop": "barley",
-        "_organic_matter": 0.3502,
-        "_structure": 0.4055,
-        "_ph": 0.4687,
-        "_nutrient_balance": 0.6409
+        "_organic_matter": 0.4541,
+        "_structure": 0.5617,
+        "_ph": 0.5777,
+        "_nutrient_balance": 0.8261
       },
       {
         "plot_id": 1,
         "current_crop": "field_beans",
         "previous_crop": "wheat",
-        "_organic_matter": 0.5628,
-        "_structure": 0.5807,
-        "_ph": 0.6095,
-        "_nutrient_balance": 0.8087
+        "_organic_matter": 0.4414,
+        "_structure": 0.45,
+        "_ph": 0.4643,
+        "_nutrient_balance": 0.6218
       },
       {
         "plot_id": 2,
         "current_crop": "barley",
         "previous_crop": "cover_crop",
-        "_organic_matter": 0.4759,
-        "_structure": 0.4492,
-        "_ph": 0.555,
-        "_nutrient_balance": 0.774
+        "_organic_matter": 0.4981,
+        "_structure": 0.4887,
+        "_ph": 0.5626,
+        "_nutrient_balance": 0.7281
       },
       {
         "plot_id": 3,
         "current_crop": "wheat",
         "previous_crop": "field_beans",
-        "_organic_matter": 0.5142,
-        "_structure": 0.5236,
-        "_ph": 0.585,
-        "_nutrient_balance": 0.8081
+        "_organic_matter": 0.5649,
+        "_structure": 0.5196,
+        "_ph": 0.5426,
+        "_nutrient_balance": 0.7992
       }
     ],
     "current_prices": {
-      "wheat": 1076.58,
-      "barley": 817.78,
-      "oilseed_rape": 1176.14,
-      "field_beans": 634.24,
+      "wheat": 724.52,
+      "barley": 824.93,
+      "oilseed_rape": 813.65,
+      "field_beans": 682.16,
       "cover_crop": 0.0,
       "fallow": 0.0,
-      "fertiliser_low": 27.11,
-      "fertiliser_medium": 61.0,
-      "fertiliser_high": 101.66,
+      "fertiliser_low": 21.62,
+      "fertiliser_medium": 48.65,
+      "fertiliser_high": 81.09,
       "irrigation_cost": 35000.0
     }
   },
-  "terminal_score": 0.9503,
+  "terminal_score": 2.7025,
   "ever_bankrupt": false,
   "quarters_completed": 40,
-  "total_reward": 78.498789,
-  "total_pnl": 775484.8900000001,
-  "mean_final_soil": 0.54681625,
+  "total_reward": 242.88417399999997,
+  "total_pnl": 2401816.74,
+  "mean_final_soil": 0.55061125,
   "baseline_name": "conservative_rotation",
-  "created_at": 1776786554.779305
+  "created_at": 1776853337.314806
 }

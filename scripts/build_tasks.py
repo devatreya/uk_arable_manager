@@ -16,7 +16,7 @@ import json
 import random
 import sys
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
@@ -24,26 +24,36 @@ from config import (
     CROPS,
     DATA_PROCESSED,
     DEFAULT_SCALE,
-    REAL_DATA_START_YEAR,
+    RECENT_WEATHER_PATH,
     SCENARIO_MIX,
-    SIM_MAX_START_YEAR,
     SPLIT_SCALES,
     STARTING_CASH_DEFAULT,
     WEATHER_REGIMES,
 )
 
-# Restrict to 2007-2013: avoids very low pre-reform wheat prices (2000-2006)
-# while covering the 2007-08 price spike, 2009 crash, 2012 drought, and moderate years.
-# Each window is 10 years, so 2013+10 = 2023 = last data year.
-_STABLE_START_YEARS     = list(range(2007, SIM_MAX_START_YEAR + 1))   # 2007-2014
-_DROUGHT_PREFERRED_START_YEARS = [2009, 2010, 2011, 2012, 2013]       # drier windows
-_ALL_START_YEARS = _STABLE_START_YEARS
-
-
-def _pick_start_year(scenario: str, seed_rng: random.Random) -> int:
-    if scenario == "drought_stressed":
-        return seed_rng.choice(_DROUGHT_PREFERRED_START_YEARS)
-    return seed_rng.choice(_ALL_START_YEARS)
+def _load_recent_weather_context() -> List[Dict[str, Any]]:
+    """Load 2024-2025 actual weather quarters and format as pre-episode context."""
+    try:
+        with open(RECENT_WEATHER_PATH) as f:
+            data = json.load(f)
+        quarters = data.get("quarters", [])
+        # Assign negative quarter offsets so the sim can distinguish from episode quarters
+        ctx = []
+        n = len(quarters)
+        for i, q in enumerate(quarters):
+            ctx.append({
+                "quarter_offset": i - n,   # e.g. -8, -7, …, -1
+                "year":              q["year"],
+                "quarter":           q["quarter"],
+                "rain_mm":           q["rain_mm"],
+                "temp_c":            q["temp_c"],
+                "rainfall_index":    q["rainfall_index"],
+                "temperature_index": q["temperature_index"],
+                "regime":            q["regime"],
+            })
+        return ctx
+    except (FileNotFoundError, json.JSONDecodeError, KeyError):
+        return []
 
 
 def _scenario_params(scenario: str, seed_rng: random.Random) -> Dict[str, Any]:
@@ -107,6 +117,7 @@ def build_tasks_for_split(
     split: str,
     n: int,
     base_seed: int,
+    recent_weather_context: Optional[List[Dict[str, Any]]] = None,
 ) -> List[Dict[str, Any]]:
     tasks: List[Dict[str, Any]] = []
     global_rng = random.Random(base_seed)
@@ -132,7 +143,7 @@ def build_tasks_for_split(
             "seed": task_seed,
             "split": split,
             "scenario_type": scenario,
-            "simulation_start_year": _pick_start_year(scenario, seed_rng),
+            "real_data_mode": True,
             "starting_cash": round(params["starting_cash"], 2),
             "initial_weather_regime": params["initial_weather_regime"],
             "dry_bias": round(params["dry_bias"], 4),
@@ -141,6 +152,7 @@ def build_tasks_for_split(
             "irrigation_cost_multiplier": round(params["irrigation_cost_multiplier"], 4),
             "initial_soil_by_plot": [round(v, 4) for v in _initial_soil(scenario, seed_rng)],
             "initial_crop_by_plot": _initial_crops(seed_rng),
+            "recent_weather_context": recent_weather_context or [],
         }
         tasks.append(task)
 
@@ -154,11 +166,20 @@ def main(scale: str = DEFAULT_SCALE) -> None:
 
     DATA_PROCESSED.mkdir(parents=True, exist_ok=True)
 
+    recent_ctx = _load_recent_weather_context()
+    if recent_ctx:
+        print(f"  Loaded {len(recent_ctx)} quarters of recent weather context "
+              f"({recent_ctx[0]['year']} Q{recent_ctx[0]['quarter']} – "
+              f"{recent_ctx[-1]['year']} Q{recent_ctx[-1]['quarter']})")
+    else:
+        print("  Warning: recent_weather.json not found — tasks will have empty context")
+
     # Use fixed base seeds per split for reproducibility
     seeds = {"train": 1001, "validation": 2001, "test": 3001}
 
     for split, n in scales.items():
-        tasks = build_tasks_for_split(split, n, base_seed=seeds[split])
+        tasks = build_tasks_for_split(split, n, base_seed=seeds[split],
+                                      recent_weather_context=recent_ctx)
         out_path = DATA_PROCESSED / f"scenario_tasks_{split}.json"
         with open(out_path, "w") as f:
             json.dump(tasks, f, indent=2)

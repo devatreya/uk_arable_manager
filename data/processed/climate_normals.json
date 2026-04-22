@@ -1,0 +1,36 @@
+{
+  "period": "1991-2020",
+  "location": "Cambridge 52.2\u00b0N 0.1\u00b0E",
+  "source": "ERA5 via Open-Meteo",
+  "annual_mean_rain_mm": 631.5,
+  "quarterly_normals": {
+    "1": {
+      "mean_rain_mm": 132.75,
+      "std_rain_mm": 37.05,
+      "mean_temp_c": 5.44,
+      "std_temp_c": 1.06,
+      "n_years": 30
+    },
+    "2": {
+      "mean_rain_mm": 162.44,
+      "std_rain_mm": 54.41,
+      "mean_temp_c": 12.15,
+      "std_temp_c": 0.81,
+      "n_years": 30
+    },
+    "3": {
+      "mean_rain_mm": 172.14,
+      "std_rain_mm": 43.56,
+      "mean_temp_c": 16.57,
+      "std_temp_c": 0.81,
+      "n_years": 30
+    },
+    "4": {
+      "mean_rain_mm": 164.14,
+      "std_rain_mm": 53.51,
+      "mean_temp_c": 8.02,
+      "std_temp_c": 1.03,
+      "n_years": 30
+    }
+  }
+}

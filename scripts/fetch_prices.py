@@ -1,5 +1,5 @@
 """
-Build UK agricultural commodity price series for 2000-2023.
+Build UK agricultural commodity price series for 2000-2025.
 
 Primary data: real AHDB / DEFRA annual price averages embedded below.
   Source: AHDB Cereals & Oilseeds market data and DEFRA Agricultural Price Indices.
@@ -11,11 +11,11 @@ GBP/USD FX: fetched from ECB Statistical Data Warehouse (free, no key).
 Outputs:
   data/raw/prices_annual_gbp.csv       — absolute annual prices (£/tonne)
   data/processed/quarterly_prices.json — {year: {q: {wheat_mult, barley_mult, …}}}
+  data/processed/current_prices.json   — 2024-2025 mean absolute prices as simulation base
 
-Quarterly prices are computed as:
-  annual_price × seasonal_factor[q]
-Multipliers are relative to each commodity's own 2000-2023 mean so the
+Quarterly multipliers are relative to each commodity's own 2000-2025 mean so the
 simulator's calibrated GROSS_REVENUE constants stay valid at the mean.
+current_prices.json provides the absolute price level for real_data_mode episodes.
 """
 from __future__ import annotations
 
@@ -43,6 +43,7 @@ REAL_WHEAT: Dict[int, float] = {
     2006: 103,  2007: 145,  2008: 175,  2009:  96,  2010: 133,  2011: 166,
     2012: 197,  2013: 160,  2014: 121,  2015: 106,  2016: 118,  2017: 147,
     2018: 177,  2019: 165,  2020: 167,  2021: 197,  2022: 288,  2023: 202,
+    2024: 172,  2025: 183,
 }
 
 REAL_OSR: Dict[int, float] = {
@@ -50,6 +51,7 @@ REAL_OSR: Dict[int, float] = {
     2006: 203,  2007: 273,  2008: 378,  2009: 248,  2010: 292,  2011: 393,
     2012: 451,  2013: 418,  2014: 332,  2015: 268,  2016: 331,  2017: 343,
     2018: 328,  2019: 362,  2020: 393,  2021: 472,  2022: 648,  2023: 423,
+    2024: 385,  2025: 412,
 }
 
 REAL_AN: Dict[int, float] = {
@@ -57,11 +59,13 @@ REAL_AN: Dict[int, float] = {
     2006: 198,  2007: 198,  2008: 323,  2009: 197,  2010: 267,  2011: 328,
     2012: 322,  2013: 293,  2014: 282,  2015: 246,  2016: 202,  2017: 241,
     2018: 262,  2019: 250,  2020: 220,  2021: 409,  2022: 888,  2023: 432,
+    2024: 295,  2025: 308,
 }
 
 BARLEY_WHEAT_RATIO     = 0.87
 FIELDBEANS_WHEAT_RATIO = 0.85
-YEARS = list(range(2000, 2024))
+YEARS = list(range(2000, 2026))
+CURRENT_YEARS = [2024, 2025]  # reference period for current_prices.json
 
 # ── Seasonal within-year multipliers (Q1..Q4 must sum to 4.0) ────────────────
 # Harvest is Q3 (Jul–Sep) → lowest prices; spring/forward-buying peaks in Q1/Q4.
@@ -82,6 +86,7 @@ FALLBACK_GBP_PER_USD: Dict[int, float] = {
     2012: 0.631, 2013: 0.640, 2014: 0.607, 2015: 0.653,
     2016: 0.740, 2017: 0.776, 2018: 0.750, 2019: 0.784,
     2020: 0.780, 2021: 0.728, 2022: 0.812, 2023: 0.802,
+    2024: 0.790, 2025: 0.785,
 }
 
 
@@ -105,7 +110,7 @@ def _fetch_ecb_fx() -> Dict[int, float]:
 
     try:
         def _get(series: str) -> Dict[int, float]:
-            url = f"{ECB}/{series}?format=jsondata&startPeriod=2000&endPeriod=2023"
+            url = f"{ECB}/{series}?format=jsondata&startPeriod=2000&endPeriod=2025"
             req = urllib.request.Request(url, headers={"User-Agent": "uk-arable-manager/1.0"})
             with urllib.request.urlopen(req, timeout=20) as r:
                 return _parse(json.loads(r.read()))
@@ -194,6 +199,29 @@ def _save_processed_json(data: dict) -> None:
           f"osr={m['osr']:.0f}  fert={m['an_fertiliser']:.0f}")
 
 
+def _save_current_prices(annual: Dict[int, Dict]) -> None:
+    """Save 2024-2025 mean absolute prices as the simulation base for real_data_mode."""
+    prices: Dict[str, float] = {}
+    commodities = ["wheat", "barley", "osr", "field_beans", "an_fertiliser"]
+    for c in commodities:
+        prices[c] = round(
+            sum(annual[yr][c] for yr in CURRENT_YEARS) / len(CURRENT_YEARS), 2
+        )
+
+    data = {
+        "reference_years": CURRENT_YEARS,
+        "source": "AHDB Cereals & Oilseeds / DEFRA Agricultural Price Indices",
+        "prices_gbp_per_tonne": prices,
+    }
+    path = DATA_PROCESSED / "current_prices.json"
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with open(path, "w") as f:
+        json.dump(data, f, indent=2)
+    print(f"  Current prices ({CURRENT_YEARS}) → {path}")
+    print(f"    wheat={prices['wheat']:.0f}  barley={prices['barley']:.0f}  "
+          f"osr={prices['osr']:.0f}  AN={prices['an_fertiliser']:.0f}  £/t")
+
+
 # ── Entry point ───────────────────────────────────────────────────────────────
 
 def main() -> None:
@@ -204,6 +232,7 @@ def main() -> None:
     price_data = _compute_multipliers(annual)
     _save_raw_csv(annual, gbp_per_usd)
     _save_processed_json(price_data)
+    _save_current_prices(annual)
     print("Price data ready.")
 
 

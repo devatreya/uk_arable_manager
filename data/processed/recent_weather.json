@@ -1,0 +1,80 @@
+{
+  "years": [
+    2024,
+    2025
+  ],
+  "quarters": [
+    {
+      "year": 2024,
+      "quarter": 1,
+      "rain_mm": 218.4,
+      "temp_c": 7.08,
+      "rainfall_index": 1.6452,
+      "temperature_index": 1.3015,
+      "regime": "wet"
+    },
+    {
+      "year": 2024,
+      "quarter": 2,
+      "rain_mm": 200.8,
+      "temp_c": 12.78,
+      "rainfall_index": 1.2361,
+      "temperature_index": 1.0519,
+      "regime": "normal"
+    },
+    {
+      "year": 2024,
+      "quarter": 3,
+      "rain_mm": 242.2,
+      "temp_c": 16.96,
+      "rainfall_index": 1.407,
+      "temperature_index": 1.0235,
+      "regime": "wet"
+    },
+    {
+      "year": 2024,
+      "quarter": 4,
+      "rain_mm": 189.4,
+      "temp_c": 8.92,
+      "rainfall_index": 1.1539,
+      "temperature_index": 1.1122,
+      "regime": "normal"
+    },
+    {
+      "year": 2025,
+      "quarter": 1,
+      "rain_mm": 120.6,
+      "temp_c": 5.3,
+      "rainfall_index": 0.9085,
+      "temperature_index": 0.9743,
+      "regime": "normal"
+    },
+    {
+      "year": 2025,
+      "quarter": 2,
+      "rain_mm": 106.0,
+      "temp_c": 14.21,
+      "rainfall_index": 0.6525,
+      "temperature_index": 1.1695,
+      "regime": "dry"
+    },
+    {
+      "year": 2025,
+      "quarter": 3,
+      "rain_mm": 168.4,
+      "temp_c": 17.46,
+      "rainfall_index": 0.9783,
+      "temperature_index": 1.0537,
+      "regime": "normal"
+    },
+    {
+      "year": 2025,
+      "quarter": 4,
+      "rain_mm": 192.3,
+      "temp_c": 9.37,
+      "rainfall_index": 1.1716,
+      "temperature_index": 1.1683,
+      "regime": "normal"
+    }
+  ]
+}

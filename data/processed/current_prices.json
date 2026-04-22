@@ -1,0 +1,14 @@
+{
+  "reference_years": [
+    2024,
+    2025
+  ],
+  "source": "AHDB Cereals & Oilseeds / DEFRA Agricultural Price Indices",
+  "prices_gbp_per_tonne": {
+    "wheat": 177.5,
+    "barley": 154.43,
+    "osr": 398.5,
+    "field_beans": 150.88,
+    "an_fertiliser": 301.5
+  }
+}

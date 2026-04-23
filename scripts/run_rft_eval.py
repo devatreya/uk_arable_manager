@@ -1,21 +1,21 @@
 """
-Run post-training evaluation of o4-mini against the ORS environment.
+Run post-training evaluation of o4-mini against a live OpenReward server.
 
 This script:
   1. Loads validation/test tasks
-  2. Runs o4-mini against a live ORS server, allowing it to call farm tools
-  3. Logs trajectories
-  4. Grades with all three graders
-  5. Compares against scripted baseline results
+  2. Opens an OpenReward session via the openreward SDK
+  3. Gets OpenAI-formatted tool specs directly from the session
+  4. Lets the model call farm tools iteratively until the episode finishes
+  5. Logs trajectories and grades them
 
 Prerequisites:
-  - ORS server running: python app.py
+  - Server running: python server.py  (or python app.py)
   - OPENAI_API_KEY set
-  - Baseline results exist in eval/results/
+  - Task files built: python scripts/build_tasks.py
 
 Usage:
   python scripts/run_rft_eval.py --split validation --model o4-mini-2025-04-16
-  python scripts/run_rft_eval.py --split test --fine-tuned-model ft:o4-mini-2025-04-16:uk-arable:xxx
+  python scripts/run_rft_eval.py --split test --fine-tuned-model ft:...
 """
 from __future__ import annotations
 
@@ -23,7 +23,6 @@ import argparse
 import json
 import os
 import sys
-import time
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
@@ -35,173 +34,153 @@ from openai_rft_config import RFT_MODEL
 from trajectory_logger import TrajectoryLogger
 
 
-DEFAULT_ORS_URL = "http://localhost:8080"
+DEFAULT_SERVER_URL = "http://localhost:8080"
+ENV_NAME = "UKArableManager"
+
+
+def _extract_text(tool_output: Any) -> str:
+    blocks = getattr(tool_output, "blocks", None) or []
+    return "\n".join(getattr(b, "text", "") for b in blocks if hasattr(b, "text"))
 
 
 def run_model_on_task(
     task_spec: Dict[str, Any],
     model: str,
-    ors_url: str,
+    server_url: str,
     api_key: str,
-    max_quarters: int = TOTAL_QUARTERS,
+    max_tool_calls: int = 250,
 ) -> Dict[str, Any]:
     """
-    Run an OpenAI model against the ORS environment for one task.
-    The model calls farm tools via the OpenAI tool-use API against the ORS server.
+    Run an OpenAI model against the OpenReward server for one task.
 
-    IMPORTANT: This function connects two systems:
-      - ORS server (farm environment, tool execution)
-      - OpenAI API (model inference)
-
-    The model receives the farm prompt and must call tools iteratively.
-    Each commit_plan call with finished=True ends the episode.
+    The model sees the farm prompt and calls tools iteratively via OpenAI's
+    tool-use API.  Each commit_plan advances the episode by one quarter.
     """
     import openai
-    import httpx
+    from openreward import EnvironmentsAPI
 
     client = openai.OpenAI(api_key=api_key)
     logger = TrajectoryLogger(task_spec, baseline_name=f"model:{model}")
 
-    # Create ORS session
-    ors_client = httpx.Client(base_url=ors_url, timeout=30.0)
-    session_id = f"eval-{task_spec['task_id']}-{int(time.time())}"
+    quarter = 0
+    total_reward = 0.0
+    finished = False
+    final_observation = ""
 
-    try:
-        # Create session
-        sess_resp = ors_client.post(
-            f"/environments/UKArableManager/sessions",
-            json={"task_spec": task_spec},
-            headers={"X-Session-ID": session_id},
+    with EnvironmentsAPI(base_url=server_url, api_key="local") as api:
+        env = api.get(ENV_NAME, base_url=server_url)
+
+        # Locate the matching Task (fall back to first task if id not found)
+        tasks = env.list_tasks(task_spec.get("split", "validation"))
+        task_id = task_spec.get("task_id")
+        task = next(
+            (t for t in tasks if t.task_spec.get("task_id") == task_id),
+            tasks[0] if tasks else None,
         )
-        sess_resp.raise_for_status()
+        if task is None:
+            raise RuntimeError(f"No tasks for split {task_spec.get('split')!r}")
 
-        # Get prompt
-        prompt_resp = ors_client.get(
-            f"/environments/UKArableManager/sessions/prompt",
-            headers={"X-Session-ID": session_id},
-        )
-        prompt_resp.raise_for_status()
-        prompt_data = prompt_resp.json()
-        system_prompt = prompt_data.get("blocks", [{}])[0].get("text", "Manage the farm.")
+        with env.session(task) as session:
+            # SDK emits Responses-API-style specs; wrap for Chat Completions
+            raw_tools = session.list_tools(format="openai")
+            openai_tools = [
+                {
+                    "type": "function",
+                    "function": {
+                        "name": t["name"],
+                        "description": t.get("description", ""),
+                        "parameters": t.get("parameters") or {"type": "object", "properties": {}},
+                    },
+                }
+                for t in raw_tools
+            ]
 
-        # Get tool specs
-        tools_resp = ors_client.get("/environments/UKArableManager/tools")
-        tools_resp.raise_for_status()
-        ors_tools = tools_resp.json().get("tools", [])
+            prompt_blocks = session.get_prompt()
+            system_prompt = "\n".join(
+                getattr(b, "text", "") for b in prompt_blocks if hasattr(b, "text")
+            ) or "Manage the farm."
 
-        # Convert ORS tools to OpenAI tool format
-        openai_tools = [
-            {
-                "type": "function",
-                "function": {
-                    "name": t["name"],
-                    "description": t["description"],
-                    "parameters": t.get("input_schema") or {"type": "object", "properties": {}},
+            messages: List[Dict[str, Any]] = [
+                {"role": "system", "content": system_prompt},
+                {
+                    "role": "user",
+                    "content": f"Begin managing the farm. Task ID: {task_spec.get('task_id','?')}. "
+                               f"Call tools each quarter and commit_plan to advance time.",
                 },
-            }
-            for t in ors_tools
-        ]
+            ]
 
-        messages = [
-            {"role": "system", "content": system_prompt},
-            {"role": "user", "content": f"Begin managing the farm. Task ID: {task_spec['task_id']}"},
-        ]
-
-        quarter = 0
-        finished = False
-        total_reward = 0.0
-        final_observation = ""
-
-        while quarter < max_quarters and not finished:
-            response = client.chat.completions.create(
-                model=model,
-                messages=messages,
-                tools=openai_tools,
-                tool_choice="auto",
-            )
-
-            msg = response.choices[0].message
-            messages.append(msg.model_dump(exclude_unset=True))
-
-            if not msg.tool_calls:
-                # Model responded without tool calls — treat as end
-                break
-
-            tool_results = []
-            for tc in msg.tool_calls:
-                tool_name = tc.function.name
-                try:
-                    tool_input = json.loads(tc.function.arguments)
-                except json.JSONDecodeError:
-                    tool_input = {}
-
-                # Call tool on ORS server
-                ors_resp = ors_client.post(
-                    f"/environments/UKArableManager/sessions/tools",
-                    json={"name": tool_name, "input": tool_input},
-                    headers={"X-Session-ID": session_id},
+            calls_made = 0
+            while not finished and quarter < TOTAL_QUARTERS and calls_made < max_tool_calls:
+                response = client.chat.completions.create(
+                    model=model,
+                    messages=messages,
+                    tools=openai_tools,
+                    tool_choice="auto",
                 )
-                ors_resp.raise_for_status()
-                ors_result = ors_resp.json()
+                msg = response.choices[0].message
+                messages.append(msg.model_dump(exclude_unset=True))
 
-                tool_output_text = ""
-                step_reward = 0.0
-                step_finished = False
+                if not msg.tool_calls:
+                    break  # model gave text without calling a tool — end
 
-                if ors_result.get("ok"):
-                    out = ors_result["output"]
-                    tool_output_text = " ".join(b["text"] for b in out.get("blocks", []) if "text" in b)
-                    step_reward = out.get("reward") or 0.0
-                    step_finished = out.get("finished", False)
-                else:
-                    tool_output_text = f"Error: {ors_result.get('error', 'unknown')}"
+                tool_results = []
+                for tc in msg.tool_calls:
+                    calls_made += 1
+                    tool_name = tc.function.name
+                    try:
+                        tool_input = json.loads(tc.function.arguments or "{}")
+                    except json.JSONDecodeError:
+                        tool_input = {}
 
-                tool_results.append({
-                    "role": "tool",
-                    "tool_call_id": tc.id,
-                    "content": tool_output_text,
-                })
+                    try:
+                        out = session.call_tool(tool_name, tool_input)
+                        text = _extract_text(out)
+                        step_reward = float(out.reward or 0.0)
+                        step_finished = bool(out.finished)
+                    except Exception as e:
+                        text = f"Tool error: {e}"
+                        step_reward = 0.0
+                        step_finished = False
 
-                if tool_name == "commit_plan":
-                    total_reward += step_reward
-                    logger.record_step(
-                        quarter=quarter,
-                        action={"tool": tool_name, "input": tool_input},
-                        reward=float(step_reward),
-                        pnl=0.0,
-                        observation=tool_output_text,
-                        weather={},
-                        plot_pnl=[0.0] * 4,
-                        bankrupt=False,
-                        pest_pressure=[False] * 4,
-                    )
-                    quarter += 1
-                    final_observation = tool_output_text
-                    if step_finished:
-                        finished = True
+                    tool_results.append({
+                        "role": "tool",
+                        "tool_call_id": tc.id,
+                        "content": text,
+                    })
 
-            messages.extend(tool_results)
+                    if tool_name == "commit_plan":
+                        total_reward += step_reward
+                        logger.record_step(
+                            quarter=quarter,
+                            action={"tool": tool_name, "input": tool_input},
+                            reward=step_reward,
+                            pnl=0.0,
+                            observation=text,
+                            weather={},
+                            plot_pnl=[0.0, 0.0, 0.0, 0.0],
+                            bankrupt=False,
+                            pest_pressure=[False] * 4,
+                        )
+                        quarter += 1
+                        final_observation = text
+                        if step_finished:
+                            finished = True
 
-    finally:
-        try:
-            ors_client.delete(
-                f"/environments/UKArableManager/sessions",
-                headers={"X-Session-ID": session_id},
-            )
-        except Exception:
-            pass
-        ors_client.close()
+                messages.extend(tool_results)
 
     traj = logger.finalise(final_state={}, terminal_score=None)
-    return traj.to_dict()
+    d = traj.to_dict()
+    d["model_total_reward"] = total_reward
+    d["final_observation"] = final_observation
+    return d
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Run o4-mini eval against ORS environment")
+    parser = argparse.ArgumentParser(description="Run o4-mini eval vs OpenReward env")
     parser.add_argument("--split", default="validation", choices=["train", "validation", "test"])
     parser.add_argument("--model", default=RFT_MODEL)
     parser.add_argument("--fine-tuned-model", default=None, help="Override with fine-tuned model ID")
-    parser.add_argument("--ors-url", default=DEFAULT_ORS_URL)
+    parser.add_argument("--server-url", default=DEFAULT_SERVER_URL)
     parser.add_argument("--max-tasks", type=int, default=None, help="Limit number of tasks")
     parser.add_argument("--out-dir", type=Path, default=Path("eval/model_trajectories"))
     parser.add_argument("--grader", default=DEFAULT_GRADER, choices=list(GRADERS))
@@ -216,7 +195,7 @@ def main() -> None:
     print(f"\n=== RFT Evaluation ===")
     print(f"Model  : {model}")
     print(f"Split  : {args.split}")
-    print(f"ORS URL: {args.ors_url}")
+    print(f"Server : {args.server_url}")
 
     task_file = TASK_FILES.get(args.split)
     if not task_file or not task_file.exists():
@@ -227,17 +206,17 @@ def main() -> None:
         tasks = json.load(f)
 
     if args.max_tasks:
-        tasks = tasks[:args.max_tasks]
+        tasks = tasks[: args.max_tasks]
 
     out_dir = args.out_dir / args.split
     out_dir.mkdir(parents=True, exist_ok=True)
 
-    results = []
+    results: List[Dict[str, Any]] = []
     for i, task in enumerate(tasks):
         task_id = task.get("task_id", f"task_{i}")
         print(f"  [{i+1}/{len(tasks)}] {task_id} ... ", end="", flush=True)
         try:
-            traj = run_model_on_task(task, model, args.ors_url, api_key)
+            traj = run_model_on_task(task, model, args.server_url, api_key)
             out_path = out_dir / f"{task_id}.json"
             with open(out_path, "w") as f:
                 json.dump(traj, f, indent=2)
@@ -248,7 +227,6 @@ def main() -> None:
             print(f"FAILED: {e}")
             results.append({"task_id": task_id, "error": str(e)})
 
-    # Summary
     valid = [r for r in results if "score" in r]
     if valid:
         scores = [r["score"] for r in valid]

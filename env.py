@@ -5,7 +5,6 @@ Wraps FarmSimulator and exposes the five required tools via the openreward SDK.
 from __future__ import annotations
 
 import json
-from functools import cache
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Sequence, Union
 
@@ -113,7 +112,6 @@ class UKArableManager(Environment):
     # ── Class methods ─────────────────────────────────────────────────────────
 
     @classmethod
-    @cache
     def list_splits(cls) -> Sequence[Union[Split, str]]:
         return [
             Split(name="train",      type="train"),

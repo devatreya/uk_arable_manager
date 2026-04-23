@@ -20,6 +20,7 @@ from config import (
     CURRENT_PRICES_PATH,
     DIRECT_COST,
     DROUGHT_THRESHOLD,
+    EPISODE_COMPLETION_BONUS,
     FERTILISER_COST,
     FERTILISER_NUTRIENT_BOOST,
     FERTILISER_REFERENCE_AN_PRICE,
@@ -45,6 +46,8 @@ from config import (
     SOIL_OM_SENSITIVITY,
     SOIL_NUTRIENT_SENSITIVITY,
     SOIL_PH_SENSITIVITY,
+    SOIL_PRESERVATION_BONUS_PER_PLOT,
+    SOIL_PRESERVATION_THRESHOLD,
     SOIL_REPEAT_PENALTY,
     SOIL_STRUCTURE_SENSITIVITY,
     SOIL_WEIGHT_NUTRIENT,
@@ -643,6 +646,11 @@ class FarmSimulator:
         total_pnl = sum(plot_pnl)
         reward = round(total_pnl * REWARD_SCALE, 6)
 
+        # Per-quarter soil preservation shaping: small bonus per plot above threshold.
+        # Encourages sustainable rotation without dominating the P&L signal.
+        healthy_plots = sum(1 for p in s.plots if p.soil_health > SOIL_PRESERVATION_THRESHOLD)
+        reward += healthy_plots * SOIL_PRESERVATION_BONUS_PER_PLOT
+
         s.quarter += 1
         hard_stop = s.cash < BANKRUPTCY_HARD_THRESHOLD
         finished = (s.quarter >= TOTAL_QUARTERS) or hard_stop
@@ -651,6 +659,10 @@ class FarmSimulator:
         if finished:
             term_score = self.terminal_score()
             reward += term_score  # final step carries both shaping and terminal signal
+            # Completion bonus: only paid if reached final quarter without bankruptcy.
+            # Counters the "give up early" failure mode common to long-horizon RL.
+            if s.quarter >= TOTAL_QUARTERS and not s.ever_bankrupt:
+                reward += EPISODE_COMPLETION_BONUS
 
         # Resample prices for next quarter
         if not finished:

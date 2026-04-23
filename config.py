@@ -154,6 +154,15 @@ TERMINAL_SOIL_MIN = 0.40
 TERMINAL_SOIL_MAX = 1.20
 SOLVENCY_GATE_PENALTY = 0.20
 
+# Per-quarter shaping bonuses (added to step reward; each ~10–20% of typical
+# quarterly P&L reward of ~2–5 units, so shaping nudges policy without dominating).
+SOIL_PRESERVATION_THRESHOLD = 0.55  # plot considered "healthy" above this
+SOIL_PRESERVATION_BONUS_PER_PLOT = 0.10  # per healthy plot per quarter (max 0.4 / qtr)
+
+# Episode completion bonus: only paid if model reaches Q40 without going bankrupt.
+# Comparable in magnitude to terminal_score itself, so directly rewards "don't quit".
+EPISODE_COMPLETION_BONUS = 2.0
+
 # ── Split scales ─────────────────────────────────────────────────────────────
 SPLIT_SCALES: Dict[str, Dict[str, int]] = {
     "dry_run": {"train": 24, "validation": 8,  "test": 8},

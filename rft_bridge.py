@@ -216,27 +216,47 @@ def upload_and_create_job(
         result["validation_file_id"] = fid
         print(f"  [rft_bridge] Uploaded validation file → {fid}")
 
-    # Upload grader
+    # Load grader source (embedded inline in job payload, not uploaded)
+    grader_source = ""
     if "grader" in artifacts:
-        # ASSUMPTION: purpose="fine-tune" for grader scripts.
-        # If OpenAI uses a different purpose string, update here.
-        fid = _upload(artifacts["grader"], "fine-tune")
-        manifest.grader_file_id = fid
-        result["grader_file_id"] = fid
-        print(f"  [rft_bridge] Uploaded grader script → {fid}")
+        grader_source = artifacts["grader"].read_text()
+        print(f"  [rft_bridge] Grader script embedded inline ({len(grader_source)} chars)")
 
-    result["manifest"] = manifest.to_api_payload()
+    # Build correct payload for OpenAI SDK v2.x: method is a dict with nested reinforcement config
+    payload: Dict[str, Any] = {
+        "model": manifest.model,
+        "training_file": manifest.training_file_id,
+        "suffix": manifest.suffix,
+        "method": {
+            "type": "reinforcement",
+            "reinforcement": {
+                "grader": {
+                    "type": "python",
+                    "name": "uk_arable_scalar_final_score",
+                    "source": grader_source,
+                },
+            },
+        },
+    }
+    if manifest.validation_file_id:
+        payload["validation_file"] = manifest.validation_file_id
+
+    result["manifest"] = payload
 
     if not dry_run and manifest.training_file_id:
         client = openai.OpenAI(api_key=api_key)
-        # ASSUMPTION: fine_tuning.jobs.create accepts method="reinforcement"
-        # This is the critical assumption.  See openai_rft_config.py for details.
-        job = client.fine_tuning.jobs.create(**manifest.to_api_payload())
+        job = client.fine_tuning.jobs.create(**payload)
         result["job_id"] = job.id
         result["job_status"] = job.status
         print(f"  [rft_bridge] RFT job created → {job.id}  status={job.status}")
     elif dry_run:
-        print(f"  [rft_bridge] DRY RUN — manifest:\n{json.dumps(manifest.to_api_payload(), indent=2)}")
+        # Redact long source in dry-run print
+        pretty = dict(payload)
+        pretty["method"] = {**payload["method"], "reinforcement": {
+            **payload["method"]["reinforcement"],
+            "grader": {**payload["method"]["reinforcement"]["grader"], "source": f"<{len(grader_source)} chars>"},
+        }}
+        print(f"  [rft_bridge] DRY RUN — manifest:\n{json.dumps(pretty, indent=2)}")
 
     return result
 

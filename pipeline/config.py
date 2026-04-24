@@ -95,10 +95,11 @@ class EvalJobConfig:
     max_completion_tokens: int = 512
     temperature: float = 0.0
     art_path: str = MODAL_ART_ROOT
+    engine_gpu_memory_utilization: float = 0.8
     session_backend: str = DEFAULT_SESSION_BACKEND
     openreward_env_id: str = DEFAULT_OPENREWARD_ENV_ID
-    trainer_gpu_ids: list[int] = field(default_factory=lambda: [0])
-    inference_gpu_ids: list[int] = field(default_factory=lambda: [1])
+    trainer_gpu_ids: list[int] | None = None
+    inference_gpu_ids: list[int] | None = None
 
     def to_dict(self) -> dict[str, Any]:
         return asdict(self)

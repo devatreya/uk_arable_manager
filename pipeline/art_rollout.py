@@ -58,6 +58,10 @@ def _continuation_user_message(next_quarter: int) -> str:
     )
 
 
+def _quarter_committed_message(completed_quarter: int) -> str:
+    return f"Quarter {completed_quarter} plan committed."
+
+
 def _safe_json_loads(raw_arguments: str | None) -> dict[str, Any]:
     if not raw_arguments:
         return {}
@@ -170,7 +174,14 @@ async def rollout(
             if episode_finished or session.episode_metrics()["finished"]:
                 break
             if committed_quarter:
-                next_quarter = int(session.episode_metrics()["quarter"]) + 1
+                completed_quarter = int(session.episode_metrics()["quarter"])
+                next_quarter = completed_quarter + 1
+                trajectory.messages_and_choices.append(
+                    {
+                        "role": "assistant",
+                        "content": _quarter_committed_message(completed_quarter),
+                    }
+                )
                 trajectory.messages_and_choices.append(
                     {
                         "role": "user",

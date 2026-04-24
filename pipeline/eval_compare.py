@@ -82,14 +82,34 @@ async def _run_eval_async(config: dict[str, Any]) -> dict[str, Any]:
 
     backend = LocalBackend(path=cfg.art_path)
     try:
+        internal_config = art.dev.InternalModelConfig(
+            engine_args={
+                "gpu_memory_utilization": cfg.engine_gpu_memory_utilization,
+            }
+        )
+        if cfg.trainer_gpu_ids is not None or cfg.inference_gpu_ids is not None:
+            if cfg.trainer_gpu_ids is None or cfg.inference_gpu_ids is None:
+                raise ValueError(
+                    "trainer_gpu_ids and inference_gpu_ids must both be set or both be unset."
+                )
+            internal_config["trainer_gpu_ids"] = cfg.trainer_gpu_ids
+            internal_config["inference_gpu_ids"] = cfg.inference_gpu_ids
+            print(
+                "Running eval with dedicated ART GPUs:",
+                f"trainer={cfg.trainer_gpu_ids}",
+                f"inference={cfg.inference_gpu_ids}",
+                f"gpu_memory_utilization={cfg.engine_gpu_memory_utilization}",
+            )
+        else:
+            print(
+                "Running eval in shared ART mode inside the H100:2 container.",
+                f"gpu_memory_utilization={cfg.engine_gpu_memory_utilization}",
+            )
         model = art.TrainableModel(
             name=cfg.model_name,
             project=cfg.project,
             base_model=cfg.base_model,
-            _internal_config=art.dev.InternalModelConfig(
-                trainer_gpu_ids=cfg.trainer_gpu_ids,
-                inference_gpu_ids=cfg.inference_gpu_ids,
-            ),
+            _internal_config=internal_config,
         )
         await model.register(backend)
 

@@ -29,7 +29,7 @@ from pipeline.config import (
     SFT_VALIDATION_FILE,
 )
 from pipeline.farm_session import build_farm_session, close_hosted_sessions, format_commit_plan_payload
-from rollout_client import run_hosted_rollout, run_local_rollout
+from rollout_client import HostedRolloutManager, run_local_rollout
 
 
 def _assistant_tool_call_message(call_id: str, tool_name: str, payload: dict[str, Any]) -> dict[str, Any]:
@@ -75,20 +75,26 @@ async def _rank_tasks(
     max_tasks: int | None = None,
 ) -> list[tuple[float, dict[str, Any]]]:
     ranked: list[tuple[float, dict[str, Any]]] = []
-    rollout_fn = run_hosted_rollout if session_backend == "hosted" else run_local_rollout
-    for task_spec in _load_tasks(split, max_tasks=max_tasks):
-        kwargs: dict[str, Any] = {
-            "task_spec": task_spec,
-            "policy": weather_aware_policy,
-            "baseline_name": "weather_aware_rotation",
-        }
-        if rollout_fn is run_hosted_rollout:
-            kwargs["env_id"] = openreward_env_id
-            traj = await asyncio.to_thread(rollout_fn, **kwargs)
-        else:
-            traj = rollout_fn(**kwargs)
-        score = grade(traj.to_dict()).score
-        ranked.append((score, task_spec))
+    tasks = _load_tasks(split, max_tasks=max_tasks)
+    if session_backend == "hosted":
+        async with HostedRolloutManager(env_id=openreward_env_id) as manager:
+            for task_spec in tasks:
+                traj = await manager.run(
+                    task_spec,
+                    weather_aware_policy,
+                    baseline_name="weather_aware_rotation",
+                )
+                score = grade(traj.to_dict()).score
+                ranked.append((score, task_spec))
+    else:
+        for task_spec in tasks:
+            traj = run_local_rollout(
+                task_spec=task_spec,
+                policy=weather_aware_policy,
+                baseline_name="weather_aware_rotation",
+            )
+            score = grade(traj.to_dict()).score
+            ranked.append((score, task_spec))
     ranked.sort(key=lambda item: item[0], reverse=True)
     return ranked
 

@@ -16,12 +16,12 @@ from pipeline.art_rollout import load_scenarios, rollout
 from pipeline.config import EvalJobConfig, MODAL_APP_NAME_PREFIX
 from pipeline.farm_session import close_hosted_sessions
 from pipeline.modal_common import IMAGE, RUNTIME_SECRET, VOLUMES, commit_all_volumes_async, maybe_aclose, modal_result_path, require_local_env
-from rollout_client import run_hosted_rollout, run_local_rollout
+from rollout_client import HostedRolloutManager, run_local_rollout
 
 app = modal.App(f"{MODAL_APP_NAME_PREFIX}-eval")
 
 
-def _summarize_baseline(
+async def _summarize_baseline(
     split: str,
     task_specs: list[dict[str, Any]],
     baseline_name: str,
@@ -30,17 +30,22 @@ def _summarize_baseline(
     openreward_env_id: str,
 ) -> dict[str, Any]:
     policy = BASELINES[baseline_name]
-    rollout_fn = run_hosted_rollout if session_backend == "hosted" else run_local_rollout
     trajectories = []
-    for task in task_specs:
-        kwargs: dict[str, Any] = {
-            "task_spec": task,
-            "policy": policy,
-            "baseline_name": baseline_name,
-        }
-        if rollout_fn is run_hosted_rollout:
-            kwargs["env_id"] = openreward_env_id
-        trajectories.append(rollout_fn(**kwargs))
+    if session_backend == "hosted":
+        async with HostedRolloutManager(env_id=openreward_env_id) as manager:
+            for task in task_specs:
+                trajectories.append(
+                    await manager.run(
+                        task,
+                        policy,
+                        baseline_name=baseline_name,
+                    )
+                )
+    else:
+        trajectories = [
+            run_local_rollout(task_spec=task, policy=policy, baseline_name=baseline_name)
+            for task in task_specs
+        ]
     grades = [grade(traj.to_dict()) for traj in trajectories]
     return {
         "policy": baseline_name,
@@ -106,18 +111,12 @@ async def _run_eval_async(config: dict[str, Any]) -> dict[str, Any]:
         await maybe_aclose(backend)
 
     baseline_summaries = [
-        await asyncio.to_thread(
-            _summarize_baseline,
+        await _summarize_baseline(
             cfg.split,
             task_specs,
-            baseline_name,
+            "weather_aware_rotation",
             session_backend=cfg.session_backend,
             openreward_env_id=cfg.openreward_env_id,
-        )
-        for baseline_name in (
-            "greedy_extractor",
-            "conservative_rotation",
-            "weather_aware_rotation",
         )
     ]
 

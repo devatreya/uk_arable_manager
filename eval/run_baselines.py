@@ -13,6 +13,7 @@ Outputs:
 from __future__ import annotations
 
 import argparse
+import asyncio
 import json
 import sys
 from pathlib import Path
@@ -21,9 +22,44 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from config import TASK_FILES
 from pipeline.config import DEFAULT_OPENREWARD_ENV_ID, DEFAULT_SESSION_BACKEND
-from rollout_client import run_hosted_rollout, run_local_rollout
+from rollout_client import HostedRolloutManager, run_local_rollout
 from baselines import BASELINES
 from grader import grade, DEFAULT_GRADER
+
+
+async def _run_hosted_baseline_on_split(
+    *,
+    baseline_name: str,
+    tasks: list[dict],
+    out_dir: Path,
+    openreward_env_id: str,
+    grader_name: str,
+) -> list:
+    policy = BASELINES[baseline_name]
+    results = []
+    async with HostedRolloutManager(env_id=openreward_env_id) as manager:
+        for i, task_spec in enumerate(tasks):
+            task_id = task_spec.get("task_id", f"task_{i:04d}")
+            out_path = out_dir / f"{task_id}.json"
+            traj = await manager.run(
+                task_spec,
+                policy,
+                baseline_name=baseline_name,
+                save_to=out_path,
+            )
+            g = grade(traj.to_dict(), grader_name)
+            result = {
+                "task_id": task_id,
+                "baseline": baseline_name,
+                "split": str(task_spec.get("split", "unknown")),
+                **g.to_dict(),
+            }
+            results.append(result)
+            if (i + 1) % 5 == 0 or i == len(tasks) - 1:
+                scores = [r["score"] for r in results]
+                print(f"    {baseline_name}/{task_spec.get('split', 'unknown')} [{i+1}/{len(tasks)}]  "
+                      f"mean_score={sum(scores)/len(scores):.3f}")
+    return results
 
 
 def run_baseline_on_split(
@@ -53,23 +89,28 @@ def run_baseline_on_split(
     out_dir.mkdir(parents=True, exist_ok=True)
 
     results = []
-    rollout_fn = run_hosted_rollout if session_backend == "hosted" else run_local_rollout
+    if session_backend == "hosted":
+        return asyncio.run(
+            _run_hosted_baseline_on_split(
+                baseline_name=baseline_name,
+                tasks=tasks,
+                out_dir=out_dir,
+                openreward_env_id=openreward_env_id,
+                grader_name=grader_name,
+            )
+        )
+
     for i, task_spec in enumerate(tasks):
         task_id = task_spec.get("task_id", f"task_{i:04d}")
         out_path = out_dir / f"{task_id}.json"
 
-        kwargs = {
-            "task_spec": task_spec,
-            "policy": policy,
-            "baseline_name": baseline_name,
-            "save_to": out_path,
-        }
-        if rollout_fn is run_local_rollout:
-            kwargs["save_snapshots"] = save_snapshots
-        else:
-            kwargs["env_id"] = openreward_env_id
-
-        traj = rollout_fn(**kwargs)
+        traj = run_local_rollout(
+            task_spec=task_spec,
+            policy=policy,
+            baseline_name=baseline_name,
+            save_to=out_path,
+            save_snapshots=save_snapshots,
+        )
 
         g = grade(traj.to_dict(), grader_name)
         result = {
@@ -91,7 +132,7 @@ def run_baseline_on_split(
 def main() -> None:
     parser = argparse.ArgumentParser(description="Run scripted baselines")
     parser.add_argument("--split", default="validation", choices=["train", "validation", "test"])
-    parser.add_argument("--baselines", nargs="+", default=list(BASELINES.keys()))
+    parser.add_argument("--baselines", nargs="+", default=["weather_aware_rotation"])
     parser.add_argument("--grader", default=DEFAULT_GRADER)
     parser.add_argument("--max-tasks", type=int, default=None)
     parser.add_argument("--traj-dir", type=Path, default=Path("eval/trajectories"))

@@ -10,7 +10,6 @@ Two modes:
 from __future__ import annotations
 
 import asyncio
-import inspect
 import json
 import os
 import ssl
@@ -235,110 +234,150 @@ class HostedRollout:
         policy: Policy,
         baseline_name: Optional[str] = None,
     ) -> TrajectoryLog:
-        return asyncio.run(self._run_async(task_spec, policy, baseline_name=baseline_name))
+        return asyncio.run(
+            run_hosted_rollout_async(
+                task_spec,
+                policy,
+                env_id=self.env_id,
+                baseline_name=baseline_name,
+            )
+        )
 
-    async def _run_async(
-        self,
-        task_spec: Dict[str, Any],
-        policy: Policy,
-        baseline_name: Optional[str] = None,
-    ) -> TrajectoryLog:
+def _task_index(task_spec: Dict[str, Any]) -> int:
+    task_id = str(task_spec.get("task_id", ""))
+    try:
+        return int(task_id.rsplit("_", 1)[-1])
+    except (ValueError, IndexError) as exc:
+        raise ValueError(f"Task id {task_id!r} does not end with a numeric index.") from exc
+
+
+class HostedRolloutManager:
+    def __init__(self, env_id: str = DEFAULT_OPENREWARD_ENV_ID) -> None:
+        self.env_id = env_id
+        self._client: Any | None = None
+        self._environment: Any | None = None
+
+    async def __aenter__(self) -> "HostedRolloutManager":
         _configure_ssl_cert_file()
         from openreward import AsyncOpenReward
 
+        api_key = os.environ.get("OPENREWARD_API_KEY", "")
+        if not api_key:
+            raise RuntimeError("OPENREWARD_API_KEY must be set for hosted OpenReward rollouts.")
+        self._client = AsyncOpenReward(api_key=api_key)
+        self._environment = self._client.environments.get(name=self.env_id)
+        return self
+
+    async def __aexit__(self, exc_type, exc, tb) -> None:
+        client = self._client
+        self._environment = None
+        self._client = None
+        if client is None:
+            return
+        close = getattr(client, "close", None)
+        if callable(close):
+            maybe = close()
+            if asyncio.iscoroutine(maybe):
+                await maybe
+
+    async def run(
+        self,
+        task_spec: Dict[str, Any],
+        policy: Policy,
+        *,
+        baseline_name: Optional[str] = None,
+        save_to: Optional[Path] = None,
+    ) -> TrajectoryLog:
+        if self._environment is None:
+            raise RuntimeError("HostedRolloutManager must be used inside 'async with'.")
+
         logger = TrajectoryLogger(task_spec, baseline_name=baseline_name)
         split = str(task_spec.get("split", "train"))
-        task_id = str(task_spec.get("task_id", ""))
+        index = _task_index(task_spec)
+        state = initial_state_from_task(task_spec)
+        final_state: Dict[str, Any] = dict(state)
+        terminal_score: float | None = None
+        ever_bankrupt = False
 
-        client = AsyncOpenReward(api_key=os.environ["OPENREWARD_API_KEY"])
-        try:
-            env = client.environments.get(name=self.env_id)
-            try:
-                task = await env.get_task(split=split, index=int(task_id.rsplit("_", 1)[-1]))
-                if str(task.task_spec.get("task_id", "")) != task_id:
-                    raise ValueError("resolved different task id")
-            except Exception:
-                tasks = await env.list_tasks(split)
-                task = next(
-                    (candidate for candidate in tasks if str(candidate.task_spec.get("task_id", "")) == task_id),
-                    None,
-                )
-                if task is None:
-                    raise RuntimeError(
-                        f"Task task_id={task_id!r} not found in split={split!r} for env={self.env_id!r}"
-                    )
-
-            async with env.session(task=task) as session:
-                quarter = 0
-                state = initial_state_from_task(task_spec)
-                final_state: Dict[str, Any] = dict(state)
-                terminal_score: float | None = None
-                ever_bankrupt = False
-
-                while quarter < TOTAL_QUARTERS:
-                    for tool_name, tool_payload in DEFAULT_READ_TOOL_SEQUENCE:
-                        tool_output = await session.call_tool(tool_name, tool_payload)
-                        metadata_state = _extract_state_metadata(tool_output)
-                        if metadata_state:
-                            state = metadata_state
-                        else:
-                            parsed = update_state_from_tool_output(
-                                tool_name,
-                                _extract_text(tool_output),
-                                state,
-                                payload=tool_payload,
-                            )
-                            state = parsed["state"]
-
-                    action_dict = policy(state)
-                    commit_input = _action_to_commit_plan_input(action_dict)
-                    result = await session.call_tool("commit_plan", commit_input)
-
-                    state_after = _extract_state_metadata(result)
-                    episode_metrics = _extract_episode_metrics(result)
-                    step_metrics = _extract_step_metrics(result)
-                    if state_after:
-                        state = state_after
+        async with self._environment.session(split=split, index=index) as session:
+            quarter = 0
+            while quarter < TOTAL_QUARTERS:
+                for tool_name, tool_payload in DEFAULT_READ_TOOL_SEQUENCE:
+                    tool_output = await session.call_tool(tool_name, tool_payload)
+                    metadata_state = _extract_state_metadata(tool_output)
+                    if metadata_state:
+                        state = metadata_state
                     else:
                         parsed = update_state_from_tool_output(
-                            "commit_plan",
-                            _extract_text(result),
+                            tool_name,
+                            _extract_text(tool_output),
                             state,
-                            payload=commit_input,
+                            payload=tool_payload,
                         )
                         state = parsed["state"]
-                        if not step_metrics:
-                            step_metrics = dict(parsed.get("step", {}))
-                        if not episode_metrics:
-                            episode_metrics = dict(parsed.get("episode_metrics", {}))
-                    final_state = dict(state)
-                    terminal_score = episode_metrics.get("terminal_score", terminal_score)
-                    ever_bankrupt = bool(episode_metrics.get("ever_bankrupt", ever_bankrupt))
 
-                    logger.record_step(
-                        quarter=quarter,
-                        action=action_dict,
-                        reward=float(getattr(result, "reward", 0.0) or 0.0),
-                        pnl=float(step_metrics.get("pnl", 0.0)),
-                        observation=_extract_text(result),
-                        weather=dict(step_metrics.get("weather", {})),
-                        plot_pnl=[float(v) for v in step_metrics.get("plot_pnl", [0.0] * NUM_PLOTS)],
-                        bankrupt=ever_bankrupt,
-                        pest_pressure=[bool(v) for v in step_metrics.get("pest_pressure", [False] * NUM_PLOTS)],
-                        state_snapshot=state_after or None,
+                action_dict = policy(state)
+                commit_input = _action_to_commit_plan_input(action_dict)
+                result = await session.call_tool("commit_plan", commit_input)
+
+                state_after = _extract_state_metadata(result)
+                episode_metrics = _extract_episode_metrics(result)
+                step_metrics = _extract_step_metrics(result)
+                if state_after:
+                    state = state_after
+                else:
+                    parsed = update_state_from_tool_output(
+                        "commit_plan",
+                        _extract_text(result),
+                        state,
+                        payload=commit_input,
                     )
+                    state = parsed["state"]
+                    if not step_metrics:
+                        step_metrics = dict(parsed.get("step", {}))
+                    if not episode_metrics:
+                        episode_metrics = dict(parsed.get("episode_metrics", {}))
+                final_state = dict(state)
+                terminal_score = episode_metrics.get("terminal_score", terminal_score)
+                ever_bankrupt = bool(episode_metrics.get("ever_bankrupt", ever_bankrupt))
 
-                    quarter += 1
-                    if getattr(result, "finished", False):
-                        break
-        finally:
-            close = getattr(client, "close", None)
-            if callable(close):
-                maybe = close()
-                if inspect.isawaitable(maybe):
-                    await maybe
+                logger.record_step(
+                    quarter=quarter,
+                    action=action_dict,
+                    reward=float(getattr(result, "reward", 0.0) or 0.0),
+                    pnl=float(step_metrics.get("pnl", 0.0)),
+                    observation=_extract_text(result),
+                    weather=dict(step_metrics.get("weather", {})),
+                    plot_pnl=[float(v) for v in step_metrics.get("plot_pnl", [0.0] * NUM_PLOTS)],
+                    bankrupt=ever_bankrupt,
+                    pest_pressure=[bool(v) for v in step_metrics.get("pest_pressure", [False] * NUM_PLOTS)],
+                    state_snapshot=state_after or dict(state),
+                )
 
-        return logger.finalise(final_state=final_state, terminal_score=terminal_score)
+                quarter += 1
+                if getattr(result, "finished", False):
+                    break
+
+        trajectory = logger.finalise(final_state=final_state, terminal_score=terminal_score)
+        if save_to is not None:
+            trajectory.save(save_to)
+        return trajectory
+
+
+async def run_hosted_rollout_async(
+    task_spec: Dict[str, Any],
+    policy: Policy,
+    *,
+    env_id: str = DEFAULT_OPENREWARD_ENV_ID,
+    baseline_name: Optional[str] = None,
+    save_to: Optional[Path] = None,
+    manager: HostedRolloutManager | None = None,
+) -> TrajectoryLog:
+    if manager is not None:
+        return await manager.run(task_spec, policy, baseline_name=baseline_name, save_to=save_to)
+
+    async with HostedRolloutManager(env_id=env_id) as owned_manager:
+        return await owned_manager.run(task_spec, policy, baseline_name=baseline_name, save_to=save_to)
 
 
 def run_hosted_rollout(

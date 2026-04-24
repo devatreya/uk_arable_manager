@@ -2,7 +2,8 @@
 Trajectory logger for uk_arable_manager episodes.
 
 Captures full episode history: task spec, per-step actions/rewards/observations,
-final state, and graded outcomes.  Serialisable to JSON for RFT bridge consumption.
+final state, and graded outcomes. Serialisable to JSON for offline evaluation
+and dataset generation.
 """
 from __future__ import annotations
 

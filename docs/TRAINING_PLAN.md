@@ -1,129 +1,124 @@
 # Training Plan
 
-## Environment Design Rationale
+## Objective
 
-### Why This Is a Good RL Benchmark
+Train `Qwen/Qwen2.5-7B-Instruct` to beat the scripted `weather_aware_rotation` baseline on the UK arable farm benchmark while preserving soil health.
 
-**Long horizon**: 40 quarters forces genuine long-horizon planning.
-Greedy strategies look profitable for years 1–3 but collapse by year 7–10 as
-soil health falls below 0.4 and yield modifiers compound.
+## Phase 1: Generate Tasks
 
-**Sparse terminal signal**: The terminal_score is only available at the end.
-Per-step rewards (scaled P&L) provide shaping but the terminal score is the
-true objective.
-
-**Non-trivial trade-offs**:
-- High fertiliser: immediate yield boost, long-term soil damage
-- Cover crops: immediate cost, long-term soil restoration
-- Irrigation: large upfront cost, multi-year dry-weather insurance
-- Rotation: reduces income diversity but prevents repeat-crop soil penalty
-
-**Calibration targets** (verified with scripted baselines):
-- `greedy_extractor`: high early scores, terminal_score ≈ 0.05–0.25
-- `conservative_rotation`: stable scores, terminal_score ≈ 0.30–0.55
-- `weather_aware_rotation`: best overall, terminal_score ≈ 0.45–0.70
-
----
-
-## Task Distribution
-
-### Splits (dry_run scale, 24/8/8)
-
-| Split | n | Purpose |
-|-------|---|---------|
-| train | 24 | Policy training |
-| validation | 8 | Hyperparameter tuning, early stopping |
-| test | 8 | Final evaluation |
-
-### Scenario Mix
-
-| Scenario | Fraction | Key characteristic |
-|----------|----------|-------------------|
-| standard | 50% | Normal starting conditions |
-| drought_stressed | 25% | High dry_bias, low initial weather |
-| input_cost_shock | 15% | High fertiliser/irrigation costs |
-| recovery | 10% | Low starting cash and soil |
-
-### Scaling Up
-
-Run `python scripts/build_tasks.py --scale medium` for 64/16/16 or `--scale full` for 128/32/32.
-
----
-
-## Training Phases
-
-### Phase 1: Baseline establishment
+```bash
+python scripts/build_tasks.py --scale medium
 ```
-python scripts/build_tasks.py --scale dry_run
+
+Current medium scale:
+
+| Split | Tasks |
+|-------|-------|
+| train | 64 |
+| validation | 16 |
+| test | 16 |
+
+## Phase 2: Establish Baselines
+
+```bash
 python eval/run_baselines.py --split train
 python eval/run_baselines.py --split validation
-python eval/summarize_results.py --split validation --plot
+python eval/run_baselines.py --split test
 ```
 
-### Phase 2: RFT artifact generation
-```
-python scripts/build_rft_artifacts.py --grader scalar_final_score
-# Inspect artifacts/rft/rft_train.jsonl and artifacts/rft/grader.py
-```
+Track these headline metrics:
 
-### Phase 3: RFT job launch
-```
-export OPENAI_API_KEY=sk-...
-python scripts/build_rft_artifacts.py --upload
-# Note the job_id from the output
-```
+- mean terminal cash
+- mean final soil health
+- bankruptcy rate
+- completion rate
+- mean total episode reward
+- mean terminal score
 
-### Phase 4: Post-training eval
-```
-python app.py &   # ORS server
-python scripts/run_rft_eval.py --split validation --fine-tuned-model ft:o4-mini-2025-04-16:...
-python eval/summarize_results.py --split validation --plot
+## Phase 3: Build SFT Warm-Start Data
+
+```bash
+python scripts/prepare_sft_data.py
 ```
 
----
+This script:
 
-## Reward Signal Design
+1. ranks tasks with `weather_aware_rotation`
+2. keeps the top quantile
+3. replays them through the in-process farm environment
+4. writes chat/tool traces to `artifacts/sft/train.jsonl` and `artifacts/sft/validation.jsonl`
 
-### Per-step reward
-`reward = total_quarterly_pnl × 1e-4`
+Cheap smoke:
 
-This keeps per-step rewards in the range [−0.5, +1.5] for typical quarters.
+```bash
+python scripts/prepare_sft_data.py --top-quantile 0.25 --max-tasks-per-split 4
+```
 
-### Terminal reward (added to final step)
-`terminal_score = max(0, cash/start_cash) × soil_factor × solvency_gate`
+## Phase 4: Modal Preflight
 
-Added to the final commit_plan reward so the model receives a single
-unified reward signal at episode end that captures the full objective.
+Export credentials:
 
-### Why not just terminal reward?
-Pure terminal rewards are hard to learn from with sparse signal over 40 steps.
-Per-step P&L shaping helps the model build intuition for what actions are
-locally profitable before it can plan globally.
+```bash
+export MODAL_TOKEN_ID=...
+export MODAL_TOKEN_SECRET=...
+export HF_TOKEN=...
+export WANDB_API_KEY=...
+export OPENREWARD_API_KEY=...
+```
 
----
+Verify GPU provisioning:
 
-## Expected Failure Modes
+```bash
+modal run scripts/modal_hello.py
+```
 
-1. **Reward hacking via fallow abuse**: Model goes all-fallow for 40 quarters.
-   Result: large negative cash from costs, zero revenue, zero terminal score.
-   Fix: the bankruptcy mechanism ensures this fails.
+## Phase 5: SFT on `H100:2`
 
-2. **Greedy convergence**: Model learns to maximise per-step reward but ignores
-   soil degradation. Result: high early rewards, low terminal score.
-   This is fine — it should appear as a sub-optimal policy that RFT should move away from.
+```bash
+modal run pipeline/train_sft.py
+```
 
-3. **Forgetting soil restoration**: Model never plants cover crops or field beans.
-   Result: soil collapses after year 6, yield × 0.75 multiplier, cash collapse.
-   The terminal score penalises this through the soil_factor.
+Useful overrides:
 
----
+```bash
+modal run pipeline/train_sft.py --epochs 1 --batch-size 2
+modal run pipeline/train_sft.py --dataset-path artifacts/sft/train.jsonl
+```
 
-## Evaluation Metrics
+Result summary is written to the Modal results volume under `training/sft_result.json`.
 
-| Metric | Definition | Target (post-RFT) |
-|--------|-----------|------------------|
-| terminal_score | Primary composite score | > 0.50 |
-| mean_final_soil | Avg soil health at episode end | > 0.55 |
-| bankruptcy_rate | % episodes with ever_bankrupt=True | < 20% |
-| cash_ratio | ending_cash / starting_cash | > 1.0 |
-| mean_q_reward | Average per-step reward | > 0.05 |
+## Phase 6: RL on `H100:2`
+
+```bash
+modal run pipeline/train_rl.py
+```
+
+Cheap RL smoke:
+
+```bash
+modal run pipeline/train_rl.py \
+  --train-steps 1 \
+  --groups-per-step 1 \
+  --trajectories-per-group 1 \
+  --max-train-tasks 1 \
+  --max-validation-tasks 1 \
+  --eval-every 1
+```
+
+RL summary is written to the Modal results volume under `training/rl_result.json`.
+
+## Phase 7: Evaluation
+
+```bash
+modal run pipeline/eval_compare.py --split validation --max-tasks 8
+modal run pipeline/eval_compare.py --split test --max-tasks 16
+```
+
+Comparison summaries are written to the Modal results volume under `eval/`.
+
+## Success Criteria
+
+- beats or matches `weather_aware_rotation` on mean terminal score
+- maintains mean final soil health at or above the baseline
+- keeps bankruptcy rate acceptably low
+- reliably reaches quarter 40 on held-out tasks

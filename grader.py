@@ -94,7 +94,7 @@ class ScalarFinalScoreGrader:
     """
     Replicates the simulator's terminal_score:
       max(0, cash/start_cash) × soil_factor × solvency_gate
-    This is the canonical RFT reward signal.
+    This is the canonical terminal evaluation signal.
     """
 
     name = "scalar_final_score"

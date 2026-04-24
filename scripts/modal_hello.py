@@ -4,6 +4,8 @@ Modal GPU smoke test — confirms your Modal account can provision a GPU.
 Cost: ~$0.002 (uses cheapest Tesla T4 for ~10 seconds).
 Run:  modal run scripts/modal_hello.py
 """
+import json
+
 import modal
 
 app = modal.App("uk-arable-modal-hello")
@@ -13,7 +15,7 @@ image = modal.Image.debian_slim().pip_install("torch")
 
 
 @app.function(image=image, gpu="T4", timeout=120)
-def check_gpu() -> dict:
+def check_gpu() -> str:
     """Run inside the Modal container; reports back GPU details."""
     import torch
     info = {
@@ -28,13 +30,13 @@ def check_gpu() -> dict:
         x = torch.randn(1000, 1000, device="cuda")
         y = (x @ x).sum().item()
         info["cuda_op_check"] = "PASS" if isinstance(y, float) else "FAIL"
-    return info
+    return json.dumps(info)
 
 
 @app.local_entrypoint()
 def main():
     print("Provisioning GPU on Modal (this takes ~30–60 seconds first time)...")
-    result = check_gpu.remote()
+    result = json.loads(check_gpu.remote())
     print()
     print("=" * 50)
     print("MODAL GPU CHECK RESULTS")

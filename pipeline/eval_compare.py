@@ -1,0 +1,124 @@
+from __future__ import annotations
+
+import asyncio
+import json
+import sys
+from pathlib import Path
+from typing import Any
+
+import modal
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+
+from baselines import BASELINES
+from grader import grade
+from pipeline.art_rollout import load_scenarios, rollout
+from pipeline.config import EvalJobConfig, MODAL_APP_NAME_PREFIX
+from pipeline.modal_common import IMAGE, RUNTIME_SECRET, VOLUMES, commit_all_volumes_async, maybe_aclose, modal_result_path, require_local_env
+from rollout_client import run_local_rollout
+
+app = modal.App(f"{MODAL_APP_NAME_PREFIX}-eval")
+
+
+def _summarize_baseline(split: str, task_specs: list[dict[str, Any]], baseline_name: str) -> dict[str, Any]:
+    policy = BASELINES[baseline_name]
+    trajectories = [
+        run_local_rollout(task_spec=task, policy=policy, baseline_name=baseline_name)
+        for task in task_specs
+    ]
+    grades = [grade(traj.to_dict()) for traj in trajectories]
+    return {
+        "policy": baseline_name,
+        "mean_terminal_cash": sum(float(traj.final_state.get("cash", 0.0)) for traj in trajectories) / len(trajectories),
+        "mean_final_soil": sum(float(traj.mean_final_soil) for traj in trajectories) / len(trajectories),
+        "bankruptcy_rate": sum(bool(traj.ever_bankrupt) for traj in trajectories) / len(trajectories),
+        "completion_rate": sum(int(traj.quarters_completed >= 40) for traj in trajectories) / len(trajectories),
+        "mean_total_episode_reward": sum(float(traj.total_reward) for traj in trajectories) / len(trajectories),
+        "mean_terminal_score": sum(float(g.score) for g in grades) / len(grades),
+    }
+
+
+def _summarize_model(policy_name: str, trajectories: list[Any]) -> dict[str, Any]:
+    return {
+        "policy": policy_name,
+        "mean_terminal_cash": sum(float(t.metrics.get("ending_cash", 0.0)) for t in trajectories) / len(trajectories),
+        "mean_final_soil": sum(float(t.metrics.get("mean_final_soil", 0.0)) for t in trajectories) / len(trajectories),
+        "bankruptcy_rate": sum(bool(t.metrics.get("ever_bankrupt", False)) for t in trajectories) / len(trajectories),
+        "completion_rate": sum(int(t.metrics.get("quarters_completed", 0) >= 40) for t in trajectories) / len(trajectories),
+        "mean_total_episode_reward": sum(float(t.reward) for t in trajectories) / len(trajectories),
+        "mean_terminal_score": sum(float(t.metrics.get("terminal_score", 0.0)) for t in trajectories) / len(trajectories),
+    }
+
+
+async def _run_eval_async(config: dict[str, Any]) -> dict[str, Any]:
+    import art
+    from art.local import LocalBackend
+
+    cfg = EvalJobConfig(**config)
+    scenarios = load_scenarios(cfg.split, cfg.max_tasks)
+    task_specs = [scenario.task_spec for scenario in scenarios]
+    if not task_specs:
+        raise RuntimeError(f"No tasks found for split={cfg.split!r}")
+
+    backend = LocalBackend(path=cfg.art_path)
+    try:
+        model = art.TrainableModel(
+            name=cfg.model_name,
+            project=cfg.project,
+            base_model=cfg.base_model,
+            _internal_config=art.dev.InternalModelConfig(
+                trainer_gpu_ids=cfg.trainer_gpu_ids,
+                inference_gpu_ids=cfg.inference_gpu_ids,
+            ),
+        )
+        await model.register(backend)
+
+        model_trajectories = [
+            await rollout(
+                model,
+                scenario,
+                max_tool_calls=cfg.max_tool_calls,
+                max_completion_tokens=cfg.max_completion_tokens,
+                temperature=cfg.temperature,
+            )
+            for scenario in scenarios
+        ]
+        await model.log(model_trajectories, split=f"eval_{cfg.split}")
+    finally:
+        await maybe_aclose(backend)
+
+    summary = {
+        "split": cfg.split,
+        "num_tasks": len(task_specs),
+        "agents": [
+            _summarize_baseline(cfg.split, task_specs, "greedy_extractor"),
+            _summarize_baseline(cfg.split, task_specs, "conservative_rotation"),
+            _summarize_baseline(cfg.split, task_specs, "weather_aware_rotation"),
+            _summarize_model(cfg.model_name, model_trajectories),
+        ],
+    }
+
+    out_path = modal_result_path("eval", f"{cfg.split}_comparison.json")
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+    out_path.write_text(json.dumps(summary, indent=2))
+    await commit_all_volumes_async()
+    return summary
+
+
+@app.function(
+    image=IMAGE,
+    gpu="H100:2",
+    timeout=60 * 60 * 12,
+    secrets=[RUNTIME_SECRET],
+    volumes=VOLUMES,
+)
+def run_eval_remote(config: dict[str, Any]) -> dict[str, Any]:
+    return asyncio.run(_run_eval_async(config))
+
+
+@app.local_entrypoint()
+def main(split: str = "validation", max_tasks: int = 4) -> None:
+    require_local_env("MODAL_TOKEN_ID", "MODAL_TOKEN_SECRET", "HF_TOKEN", "WANDB_API_KEY")
+    config = EvalJobConfig(split=split, max_tasks=max_tasks)
+    result = run_eval_remote.remote(config.to_dict())
+    print(json.dumps(result, indent=2))

@@ -72,20 +72,26 @@ async def _rank_tasks(
     *,
     session_backend: str,
     openreward_env_id: str,
+    hosted_concurrency: int,
     max_tasks: int | None = None,
 ) -> list[tuple[float, dict[str, Any]]]:
     ranked: list[tuple[float, dict[str, Any]]] = []
     tasks = _load_tasks(split, max_tasks=max_tasks)
     if session_backend == "hosted":
-        async with HostedRolloutManager(env_id=openreward_env_id) as manager:
-            for task_spec in tasks:
+        semaphore = asyncio.Semaphore(max(1, hosted_concurrency))
+
+        async def _score_task(task_spec: dict[str, Any]) -> tuple[float, dict[str, Any]]:
+            async with semaphore:
                 traj = await manager.run(
                     task_spec,
                     weather_aware_policy,
                     baseline_name="weather_aware_rotation",
                 )
-                score = grade(traj.to_dict()).score
-                ranked.append((score, task_spec))
+            return grade(traj.to_dict()).score, task_spec
+
+        async with HostedRolloutManager(env_id=openreward_env_id) as manager:
+            for future in asyncio.as_completed([_score_task(task_spec) for task_spec in tasks]):
+                ranked.append(await future)
     else:
         for task_spec in tasks:
             traj = run_local_rollout(
@@ -163,26 +169,44 @@ async def _build_split(
     *,
     session_backend: str,
     openreward_env_id: str,
+    hosted_concurrency: int,
     max_tasks: int | None = None,
 ) -> dict[str, Any]:
     ranked = await _rank_tasks(
         split,
         session_backend=session_backend,
         openreward_env_id=openreward_env_id,
+        hosted_concurrency=hosted_concurrency,
         max_tasks=max_tasks,
     )
     selected_count = max(1, int(len(ranked) * top_quantile))
     selected = ranked[:selected_count]
 
     examples: list[dict[str, Any]] = []
-    for _, task_spec in selected:
-        examples.extend(
-            await _build_examples_for_task(
-                task_spec,
-                session_backend=session_backend,
-                openreward_env_id=openreward_env_id,
+    if session_backend == "hosted":
+        semaphore = asyncio.Semaphore(max(1, hosted_concurrency))
+
+        async def _build_task_examples(task_spec: dict[str, Any]) -> list[dict[str, Any]]:
+            async with semaphore:
+                return await _build_examples_for_task(
+                    task_spec,
+                    session_backend=session_backend,
+                    openreward_env_id=openreward_env_id,
+                )
+
+        for future in asyncio.as_completed(
+            [_build_task_examples(task_spec) for _, task_spec in selected]
+        ):
+            examples.extend(await future)
+    else:
+        for _, task_spec in selected:
+            examples.extend(
+                await _build_examples_for_task(
+                    task_spec,
+                    session_backend=session_backend,
+                    openreward_env_id=openreward_env_id,
+                )
             )
-        )
 
     output_path.parent.mkdir(parents=True, exist_ok=True)
     with output_path.open("w") as handle:
@@ -207,6 +231,7 @@ async def _main_async(
     max_tasks_per_split: int | None,
     session_backend: str,
     openreward_env_id: str,
+    hosted_concurrency: int,
 ) -> None:
     out_dir = Path(SFT_OUTPUT_DIR)
     out_dir.mkdir(parents=True, exist_ok=True)
@@ -218,6 +243,7 @@ async def _main_async(
             top_quantile,
             session_backend=session_backend,
             openreward_env_id=openreward_env_id,
+            hosted_concurrency=hosted_concurrency,
             max_tasks=max_tasks_per_split,
         )
         validation_summary = await _build_split(
@@ -226,6 +252,7 @@ async def _main_async(
             top_quantile,
             session_backend=session_backend,
             openreward_env_id=openreward_env_id,
+            hosted_concurrency=hosted_concurrency,
             max_tasks=max_tasks_per_split,
         )
     finally:
@@ -235,6 +262,7 @@ async def _main_async(
         "top_quantile": top_quantile,
         "session_backend": session_backend,
         "openreward_env_id": openreward_env_id,
+        "hosted_concurrency": hosted_concurrency,
         "train": train_summary,
         "validation": validation_summary,
     }
@@ -251,6 +279,7 @@ def main() -> None:
     parser.add_argument("--max-tasks-per-split", type=int, default=None)
     parser.add_argument("--session-backend", choices=["hosted", "inprocess"], default=DEFAULT_SESSION_BACKEND)
     parser.add_argument("--openreward-env-id", default=DEFAULT_OPENREWARD_ENV_ID)
+    parser.add_argument("--hosted-concurrency", type=int, default=4)
     args = parser.parse_args()
     if not 0.0 < args.top_quantile <= 1.0:
         raise ValueError("--top-quantile must be in the range (0, 1].")
@@ -260,6 +289,7 @@ def main() -> None:
             args.max_tasks_per_split,
             args.session_backend,
             args.openreward_env_id,
+            args.hosted_concurrency,
         )
     )
 

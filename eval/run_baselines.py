@@ -34,19 +34,29 @@ async def _run_hosted_baseline_on_split(
     out_dir: Path,
     openreward_env_id: str,
     grader_name: str,
+    hosted_concurrency: int,
 ) -> list:
     policy = BASELINES[baseline_name]
     results = []
-    async with HostedRolloutManager(env_id=openreward_env_id) as manager:
-        for i, task_spec in enumerate(tasks):
-            task_id = task_spec.get("task_id", f"task_{i:04d}")
-            out_path = out_dir / f"{task_id}.json"
+    semaphore = asyncio.Semaphore(max(1, hosted_concurrency))
+
+    async def _run_task(i: int, task_spec: dict) -> tuple[int, dict, Any]:
+        task_id = task_spec.get("task_id", f"task_{i:04d}")
+        out_path = out_dir / f"{task_id}.json"
+        async with semaphore:
             traj = await manager.run(
                 task_spec,
                 policy,
                 baseline_name=baseline_name,
                 save_to=out_path,
             )
+        return i, task_spec, traj
+
+    async with HostedRolloutManager(env_id=openreward_env_id) as manager:
+        pending = [_run_task(i, task_spec) for i, task_spec in enumerate(tasks)]
+        for completed, future in enumerate(asyncio.as_completed(pending), start=1):
+            i, task_spec, traj = await future
+            task_id = task_spec.get("task_id", f"task_{i:04d}")
             g = grade(traj.to_dict(), grader_name)
             result = {
                 "task_id": task_id,
@@ -55,10 +65,11 @@ async def _run_hosted_baseline_on_split(
                 **g.to_dict(),
             }
             results.append(result)
-            if (i + 1) % 5 == 0 or i == len(tasks) - 1:
+            if completed % 5 == 0 or completed == len(tasks):
                 scores = [r["score"] for r in results]
-                print(f"    {baseline_name}/{task_spec.get('split', 'unknown')} [{i+1}/{len(tasks)}]  "
+                print(f"    {baseline_name}/{task_spec.get('split', 'unknown')} [{completed}/{len(tasks)}]  "
                       f"mean_score={sum(scores)/len(scores):.3f}")
+    results.sort(key=lambda row: row["task_id"])
     return results
 
 
@@ -71,6 +82,7 @@ def run_baseline_on_split(
     save_snapshots: bool = False,
     session_backend: str = DEFAULT_SESSION_BACKEND,
     openreward_env_id: str = DEFAULT_OPENREWARD_ENV_ID,
+    hosted_concurrency: int = 4,
 ) -> list:
     task_file = TASK_FILES.get(split)
     if not task_file or not task_file.exists():
@@ -97,6 +109,7 @@ def run_baseline_on_split(
                 out_dir=out_dir,
                 openreward_env_id=openreward_env_id,
                 grader_name=grader_name,
+                hosted_concurrency=hosted_concurrency,
             )
         )
 
@@ -140,6 +153,7 @@ def main() -> None:
     parser.add_argument("--save-snapshots", action="store_true")
     parser.add_argument("--session-backend", choices=["hosted", "inprocess"], default=DEFAULT_SESSION_BACKEND)
     parser.add_argument("--openreward-env-id", default=DEFAULT_OPENREWARD_ENV_ID)
+    parser.add_argument("--hosted-concurrency", type=int, default=4)
     args = parser.parse_args()
 
     args.results_dir.mkdir(parents=True, exist_ok=True)
@@ -162,6 +176,7 @@ def main() -> None:
             save_snapshots=args.save_snapshots,
             session_backend=args.session_backend,
             openreward_env_id=args.openreward_env_id,
+            hosted_concurrency=args.hosted_concurrency,
         )
         all_results.extend(results)
 

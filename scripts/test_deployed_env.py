@@ -3,6 +3,10 @@ Test the deployed OpenReward env to confirm it's serving correctly.
 
 Uses the AsyncOpenReward pattern from the official OpenReward docs.
 
+Requires:
+    Python 3.11+
+    openreward 0.1.34+
+
 Before running, set:
     export OPENREWARD_API_KEY="or_xxxxxx..."
 
@@ -17,6 +21,27 @@ from __future__ import annotations
 import asyncio
 import os
 import sys
+from importlib.metadata import PackageNotFoundError, version
+
+
+MIN_OPENREWARD_VERSION = (0, 1, 34)
+
+
+def _version_tuple(raw: str) -> tuple[int, ...]:
+    return tuple(int(part) for part in raw.split(".") if part.isdigit())
+
+
+def _configure_ssl_cert_file() -> str | None:
+    if os.environ.get("SSL_CERT_FILE"):
+        return os.environ["SSL_CERT_FILE"]
+
+    try:
+        import certifi
+    except ImportError:
+        return None
+
+    os.environ["SSL_CERT_FILE"] = certifi.where()
+    return os.environ["SSL_CERT_FILE"]
 
 
 def _extract_text(blocks) -> str:
@@ -55,8 +80,31 @@ async def run() -> int:
         print("ERROR: OPENREWARD_API_KEY not set")
         return 1
 
+    if sys.version_info < (3, 11):
+        print("ERROR: Python 3.11+ is required for the current OpenReward SDK.")
+        print(f"Current Python: {sys.version.split()[0]}")
+        print("Python 3.10 installs openreward 0.1.33, which uses deprecated session endpoints.")
+        return 1
+
+    try:
+        sdk_version = version("openreward")
+    except PackageNotFoundError:
+        print("ERROR: openreward is not installed in this Python environment.")
+        return 1
+
+    if _version_tuple(sdk_version) < MIN_OPENREWARD_VERSION:
+        print("ERROR: openreward 0.1.34+ is required for deployed env sessions.")
+        print(f"Installed openreward: {sdk_version}")
+        return 1
+
+    ssl_cert_file = _configure_ssl_cert_file()
+
     print(f"Env identifier: {env_id}")
     print(f"API key:        {api_key[:8]}...{api_key[-4:]}  (length {len(api_key)})")
+    print(f"Python:         {sys.version.split()[0]}")
+    print(f"openreward:     {sdk_version}")
+    if ssl_cert_file:
+        print(f"SSL_CERT_FILE:  {ssl_cert_file}")
     print()
 
     from openreward import AsyncOpenReward
@@ -128,12 +176,23 @@ async def run() -> int:
                 print(f"  → if reward ≈ baseline expected, redeploy is live ✓")
 
         except Exception as session_err:
+            message = str(session_err)
             print(f"  ✗ Session creation failed: {type(session_err).__name__}")
-            print(f"     {session_err}")
+            print(f"     {message}")
             print()
-            print("This usually means the env is 'deployed' but not 'running'.")
-            print("Look in the OpenReward WebUI for a Start/Run/Activate button,")
-            print("or set min_instances >= 1 in the env's autoscaling settings.")
+
+            if "CERTIFICATE_VERIFY_FAILED" in message:
+                print("This Python install is missing CA roots for OpenReward's sessions endpoint.")
+                print("Re-run with SSL_CERT_FILE set to certifi's bundle, or run macOS' Install Certificates command.")
+            elif "matrix.openreward.ai/create_session" in message:
+                print("This usually means you're on an older OpenReward SDK/client path.")
+                print("Use Python 3.11+ with openreward 0.1.34+.")
+            elif "sessions.openreward.ai" in message and "/task" in message:
+                print("The sessions service is reachable, but the deployed env server is returning 404 for task routes.")
+                print("This usually means the deployed container is running an outdated OpenReward server SDK.")
+                print("Redeploy after updating requirements.txt to openreward 0.1.105 on Python 3.11+.")
+            else:
+                print("This usually means the env is deployed but the hosted session path is still unhealthy.")
             return 1
 
         print()

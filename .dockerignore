@@ -1,0 +1,12 @@
+.git
+.env
+*.pyc
+__pycache__/
+.pytest_cache/
+.claude/
+artifacts/
+docs/
+eval/
+tests/
+data/raw/
+*.md

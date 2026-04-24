@@ -184,11 +184,34 @@ import pathlib
 
 ROOT = pathlib.Path(__file__).parent
 
-# On the Open Reward platform, task/data files are uploaded to /orwd_data/.
-# Locally they live in data/processed/.  Auto-detect which is present.
-_ORWD = pathlib.Path("/orwd_data")
+
+def _select_data_processed_root() -> pathlib.Path:
+    local = ROOT / "data" / "processed"
+    orwd = pathlib.Path("/orwd_data")
+    required = [
+        "scenario_tasks_train.json",
+        "scenario_tasks_validation.json",
+        "scenario_tasks_test.json",
+        "quarterly_weather.json",
+        "quarterly_prices.json",
+        "climate_normals.json",
+        "recent_weather.json",
+        "current_prices.json",
+    ]
+
+    # Prefer the repo-bundled data shipped in the image. This avoids stale
+    # uploaded files in /orwd_data shadowing the current task split after deploys.
+    if all((local / name).exists() for name in required):
+        return local
+    if all((orwd / name).exists() for name in required):
+        return orwd
+    if local.exists():
+        return local
+    return orwd
+
+
 DATA_RAW = ROOT / "data" / "raw"
-DATA_PROCESSED = _ORWD if _ORWD.exists() else ROOT / "data" / "processed"
+DATA_PROCESSED = _select_data_processed_root()
 
 TASK_FILES = {
     "train":      DATA_PROCESSED / "scenario_tasks_train.json",

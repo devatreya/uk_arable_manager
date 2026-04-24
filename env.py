@@ -16,6 +16,7 @@ from config import (
     BANKRUPTCY_HARD_THRESHOLD,
     CLIMATE_NORMALS_PATH,
     CROPS,
+    DATA_PROCESSED,
     LOCAL_NORMALS,
     NUM_PLOTS,
     TASK_FILES,
@@ -113,6 +114,11 @@ class CommitPlanInput(BaseModel):
 # ── Environment ───────────────────────────────────────────────────────────────
 
 _CLIMATE_NORMALS: Dict[str, Any] = _load_climate_normals()
+_runtime_log(
+    "data_source_selected",
+    data_processed=DATA_PROCESSED,
+    train_tasks=TASK_FILES["train"],
+)
 
 
 class UKArableManager(Environment):

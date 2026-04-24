@@ -14,12 +14,12 @@ Greedy extraction looks good early and loses late. Durable rotations, restorativ
 |-------|---------|-------------|
 | ORS environment | `env.py`, `app.py` | OpenReward environment server |
 | Simulator | `sim.py`, `config.py` | Deterministic farm dynamics |
-| Baselines | `baselines/`, `eval/` | Scripted agronomy policies and offline evaluation |
-| Local rollout | `rollout_client.py`, `trajectory_logger.py` | Deterministic local rollouts and trajectory logs |
-| SFT data prep | `scripts/prepare_sft_data.py` | Top-quartile baseline replay into chat/tool traces |
-| ART rollouts | `pipeline/farm_session.py`, `pipeline/art_rollout.py` | In-process farm sessions for model rollouts |
+| Baselines | `baselines/`, `eval/` | Scripted agronomy policies, with `weather_aware_rotation` as the default training/eval baseline |
+| Hosted rollout | `rollout_client.py`, `trajectory_logger.py` | Rollouts against the deployed OpenReward environment |
+| SFT data prep | `scripts/prepare_sft_data.py` | Top-quartile hosted `weather_aware_rotation` replay into chat/tool traces |
+| ART rollouts | `pipeline/farm_session.py`, `pipeline/art_rollout.py` | Hosted OpenReward sessions for model rollouts |
 | Modal training | `pipeline/train_sft.py`, `pipeline/train_rl.py` | Qwen SFT and GRPO on `H100:2` |
-| Model eval | `pipeline/eval_compare.py` | Compare trained model against scripted baselines |
+| Model eval | `pipeline/eval_compare.py` | Compare the trained model against `weather_aware_rotation` |
 
 ## Farm Interface
 
@@ -61,20 +61,20 @@ pip install -r requirements.txt
 python scripts/fetch_weather.py
 python scripts/fetch_prices.py
 python scripts/build_tasks.py --scale medium
-python eval/run_baselines.py --split train
-python eval/run_baselines.py --split validation
+python eval/run_baselines.py --split train --session-backend hosted --openreward-env-id devatreya/uk_arable_manager
+python eval/run_baselines.py --split validation --session-backend hosted --openreward-env-id devatreya/uk_arable_manager
 ```
 
 ### 3. Build the SFT warm-start dataset
 
 ```bash
-python scripts/prepare_sft_data.py
+python scripts/prepare_sft_data.py --session-backend hosted --openreward-env-id devatreya/uk_arable_manager
 ```
 
 For a cheap smoke:
 
 ```bash
-python scripts/prepare_sft_data.py --top-quantile 0.25 --max-tasks-per-split 4
+python scripts/prepare_sft_data.py --top-quantile 0.25 --max-tasks-per-split 4 --session-backend hosted --openreward-env-id devatreya/uk_arable_manager
 ```
 
 ### 4. Configure training credentials
@@ -104,13 +104,13 @@ modal run pipeline/train_sft.py
 ### 7. Run RL on Modal
 
 ```bash
-modal run pipeline/train_rl.py
+modal run pipeline/train_rl.py --session-backend hosted --openreward-env-id devatreya/uk_arable_manager
 ```
 
 ### 8. Compare the trained model against baselines
 
 ```bash
-modal run pipeline/eval_compare.py --split validation --max-tasks 8
+modal run pipeline/eval_compare.py --split validation --max-tasks 16 --session-backend hosted --openreward-env-id devatreya/uk_arable_manager
 ```
 
 ## OpenReward Smoke Test

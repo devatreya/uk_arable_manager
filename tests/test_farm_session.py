@@ -69,3 +69,41 @@ async def test_hosted_session_prefers_metadata_over_text_parsing() -> None:
     assert hosted.episode_metrics()["quarter"] == 40
     assert hosted.episode_metrics()["finished"] is True
     assert hosted.episode_metrics()["terminal_score"] == 1.2345
+
+
+def test_hosted_session_reconciles_stale_episode_metrics_with_newer_state() -> None:
+    hosted = HostedFarmSession(
+        {
+            "task_id": "validation_0001",
+            "split": "validation",
+            "starting_cash": 150_000.0,
+        },
+        env_id="dummy",
+    )
+    hosted._cached_state = {
+        "quarter": 40,
+        "cash": 1_200_000.0,
+        "starting_cash": 150_000.0,
+        "irrigation_owned": False,
+        "ever_bankrupt": False,
+        "weather_regime": "normal",
+        "weather_history": [],
+        "plots": [],
+        "current_prices": {},
+    }
+    hosted._episode_metrics = {
+        "cash": 1_150_000.0,
+        "starting_cash": 150_000.0,
+        "mean_final_soil": 0.51,
+        "quarter": 39,
+        "ever_bankrupt": False,
+        "finished": False,
+        "terminal_score": 1.2345,
+    }
+
+    metrics = hosted.episode_metrics()
+
+    assert metrics["quarter"] == 40
+    assert metrics["cash"] == 1_200_000.0
+    assert metrics["finished"] is True
+    assert metrics["terminal_score"] == 1.2345

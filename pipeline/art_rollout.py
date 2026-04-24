@@ -25,6 +25,9 @@ if TYPE_CHECKING:
 
 _INFERENCE_CLIENT_ATTR = "op" "en" "ai_client"
 _TASK_ID_PATTERN = re.compile(r"task_id=(?P<task_id>[^ ]+)")
+_TOOL_CALL_ONLY_INSTRUCTION = (
+    "Every assistant response must be one or more tool calls. Do not answer with plain text."
+)
 
 
 @dataclass
@@ -56,14 +59,16 @@ def _user_message(task_spec: dict[str, Any]) -> str:
     return (
         f"Task {task_id} ({scenario}). Use the farm tools to inspect the state and "
         "commit the next quarterly plan. Keep repeating this quarter-by-quarter until "
-        "the episode finishes. Do not stop after a single plan."
+        "the episode finishes. Do not stop after a single plan. "
+        f"{_TOOL_CALL_ONLY_INSTRUCTION}"
     )
 
 
 def _continuation_user_message(next_quarter: int) -> str:
     return (
         f"Quarter {next_quarter}. The previous plan has been applied. Inspect the updated "
-        "farm state, then commit the next quarterly plan. Keep going until the episode finishes."
+        "farm state, then commit the next quarterly plan. Keep going until the episode finishes. "
+        f"{_TOOL_CALL_ONLY_INSTRUCTION}"
     )
 
 
@@ -216,7 +221,8 @@ async def rollout(
     )
     trajectory: Any | None = None
     total_reward = 0.0
-    commit_calls = 0
+    commit_attempts = 0
+    quarter_commits = 0
     total_tool_calls = 0
     invalid_tool_calls = 0
     episode_finished = False
@@ -243,13 +249,13 @@ async def rollout(
             reward=0.0,
         )
 
-        while total_tool_calls < max_tool_calls and commit_calls < TOTAL_QUARTERS:
+        while total_tool_calls < max_tool_calls:
             inference_client = _inference_client(model)
             completion = await inference_client.chat.completions.create(
                 model=model.get_inference_name(),
                 messages=_messages_for_inference(trajectory),
                 tools=tools,
-                tool_choice="auto",
+                tool_choice="required",
                 temperature=temperature,
                 max_completion_tokens=max_completion_tokens,
                 timeout=120,
@@ -274,14 +280,18 @@ async def rollout(
                 last_tool_name = tool_call.function.name
                 total_tool_calls += 1
                 payload = _safe_json_loads(tool_call.function.arguments)
+                before_metrics = _safe_episode_metrics(session, scenario.task_spec)
+                previous_quarter = int(before_metrics.get("quarter", quarter_commits))
                 result = await session.call_tool(tool_call.function.name, payload)
+                current_metrics = _safe_episode_metrics(session, scenario.task_spec)
+                quarter_commits = max(quarter_commits, int(current_metrics.get("quarter", quarter_commits)))
                 if not result.ok:
                     invalid_tool_calls += 1
                     total_reward -= 1.0
                 compact_text = compact_tool_result(
                     tool_call.function.name,
                     state=session.state(),
-                    episode_metrics=session.episode_metrics(),
+                    episode_metrics=current_metrics,
                     reward=float(result.reward),
                     finished=bool(result.finished),
                     payload=payload,
@@ -295,8 +305,8 @@ async def rollout(
                     }
                 )
                 if tool_call.function.name == "commit_plan":
-                    commit_calls += 1
-                    committed_quarter = True
+                    commit_attempts += 1
+                    committed_quarter = quarter_commits > previous_quarter
                 if result.finished:
                     episode_finished = True
                     termination_reason = "finished"
@@ -304,11 +314,13 @@ async def rollout(
 
             if termination_reason == "tool_budget_exhausted":
                 break
-            if episode_finished or session.episode_metrics()["finished"]:
+            latest_metrics = _safe_episode_metrics(session, scenario.task_spec)
+            quarter_commits = max(quarter_commits, int(latest_metrics.get("quarter", quarter_commits)))
+            if episode_finished or bool(latest_metrics.get("finished")):
                 termination_reason = "finished"
                 break
             if committed_quarter:
-                completed_quarter = int(session.episode_metrics()["quarter"])
+                completed_quarter = quarter_commits
                 next_quarter = completed_quarter + 1
                 trajectory.messages_and_choices.append(
                     {
@@ -335,29 +347,31 @@ async def rollout(
             "Rollout failed "
             f"task_id={scenario.task_id} split={scenario.split} "
             f"current_quarter={int(metrics.get('quarter', 0))} "
-            f"quarter_commits={commit_calls} tool_calls={total_tool_calls} "
+            f"quarter_commits={quarter_commits} commit_attempts={commit_attempts} tool_calls={total_tool_calls} "
             f"last_tool_name={last_tool_name or 'none'}: "
             f"{type(exc).__name__}: {exc}"
         )
         rollout_error = (error, exc)
     finally:
         metrics = _safe_episode_metrics(session, scenario.task_spec)
+        quarter_commits = max(quarter_commits, int(metrics.get("quarter", quarter_commits)))
         if trajectory is not None:
             trajectory.reward = round(total_reward, 6)
             trajectory.metrics.update(
                 {
                     "tool_calls": total_tool_calls,
-                    "quarter_commits": commit_calls,
+                    "quarter_commits": quarter_commits,
+                    "commit_attempts": commit_attempts,
                     "invalid_tool_calls": invalid_tool_calls,
                     "terminal_score": float(metrics["terminal_score"] or 0.0),
                     "ending_cash": float(metrics["cash"]),
                     "mean_final_soil": float(metrics["mean_final_soil"]),
                     "ever_bankrupt": bool(metrics["ever_bankrupt"]),
-                    "quarters_completed": int(metrics["quarter"]),
-                    "completion_rate": float(metrics["quarter"]) / float(TOTAL_QUARTERS),
+                    "quarters_completed": quarter_commits,
+                    "completion_rate": float(quarter_commits) / float(TOTAL_QUARTERS),
                     "finished": bool(metrics["finished"]),
-                    "completed_all_quarters": int(metrics["quarter"]) >= TOTAL_QUARTERS,
-                    "termination_reason": termination_reason or "finished",
+                    "completed_all_quarters": quarter_commits >= TOTAL_QUARTERS,
+                    "termination_reason": termination_reason or "tool_budget_exhausted",
                     "last_tool_name": last_tool_name,
                 }
             )

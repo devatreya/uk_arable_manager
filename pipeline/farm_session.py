@@ -100,6 +100,51 @@ def _episode_metrics_from_state(state: dict[str, Any], terminal_score: float | N
     }
 
 
+def _default_episode_metrics(task_spec: dict[str, Any]) -> dict[str, Any]:
+    return {
+        "cash": 0.0,
+        "starting_cash": float(task_spec.get("starting_cash", 150_000.0)),
+        "mean_final_soil": 0.55,
+        "quarter": 0,
+        "ever_bankrupt": False,
+        "finished": False,
+        "terminal_score": None,
+    }
+
+
+def _reconcile_episode_metrics(
+    task_spec: dict[str, Any],
+    *,
+    state: dict[str, Any] | None,
+    episode_metrics: dict[str, Any] | None,
+) -> dict[str, Any]:
+    if state is None and episode_metrics is None:
+        return _default_episode_metrics(task_spec)
+    if state is None:
+        return dict(episode_metrics or _default_episode_metrics(task_spec))
+
+    preserved_terminal_score = None
+    if isinstance(episode_metrics, dict):
+        preserved_terminal_score = episode_metrics.get("terminal_score")
+    state_metrics = _episode_metrics_from_state(state, terminal_score=preserved_terminal_score)
+    if not isinstance(episode_metrics, dict):
+        return state_metrics
+
+    merged = dict(episode_metrics)
+    state_quarter = int(state_metrics.get("quarter", 0))
+    episode_quarter = int(merged.get("quarter", 0))
+    if state_quarter >= episode_quarter:
+        merged["cash"] = float(state_metrics["cash"])
+        merged["starting_cash"] = float(state_metrics["starting_cash"])
+        merged["mean_final_soil"] = float(state_metrics["mean_final_soil"])
+    merged["quarter"] = max(episode_quarter, state_quarter)
+    merged["ever_bankrupt"] = bool(merged.get("ever_bankrupt", False) or state_metrics["ever_bankrupt"])
+    merged["finished"] = bool(merged.get("finished", False) or state_metrics["finished"])
+    if merged.get("terminal_score") is None and state_metrics.get("terminal_score") is not None:
+        merged["terminal_score"] = state_metrics["terminal_score"]
+    return merged
+
+
 async def _get_hosted_client() -> Any:
     global _HOSTED_CLIENT, _HOSTED_LOCK
     if _HOSTED_LOCK is None:
@@ -381,19 +426,11 @@ class HostedFarmSession:
         )
 
     def episode_metrics(self) -> dict[str, Any]:
-        if self._episode_metrics is not None:
-            return dict(self._episode_metrics)
-        if self._cached_state is not None:
-            return _episode_metrics_from_state(self._cached_state)
-        return {
-            "cash": 0.0,
-            "starting_cash": float(self.task_spec.get("starting_cash", 150_000.0)),
-            "mean_final_soil": 0.55,
-            "quarter": 0,
-            "ever_bankrupt": False,
-            "finished": False,
-            "terminal_score": None,
-        }
+        return _reconcile_episode_metrics(
+            self.task_spec,
+            state=self._cached_state,
+            episode_metrics=self._episode_metrics,
+        )
 
 
 def build_farm_session(

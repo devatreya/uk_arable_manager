@@ -107,6 +107,14 @@ class FakeFarmSession:
         }
 
 
+class FakeInvalidCommitFarmSession(FakeFarmSession):
+    async def call_tool(self, name: str, payload: dict[str, object]) -> FakeToolResult:
+        del payload
+        if name == "commit_plan":
+            return FakeToolResult(reward=0.0, finished=False)
+        return await super().call_tool(name, {})
+
+
 def _make_choice(tool_calls: list[tuple[str, dict[str, object]]]) -> Choice:
     return Choice.model_validate(
         {
@@ -136,9 +144,10 @@ class FakeCompletions:
     def __init__(self, planned_tool_calls: list[list[tuple[str, dict[str, object]]]]) -> None:
         self.planned_tool_calls = planned_tool_calls
         self.call_index = 0
+        self.requests: list[dict[str, object]] = []
 
     async def create(self, **kwargs) -> SimpleNamespace:
-        del kwargs
+        self.requests.append(dict(kwargs))
         tool_calls = self.planned_tool_calls[self.call_index]
         self.call_index += 1
         return SimpleNamespace(choices=[_make_choice(tool_calls)])
@@ -146,7 +155,8 @@ class FakeCompletions:
 
 class FakeModel:
     def __init__(self, planned_tool_calls: list[list[tuple[str, dict[str, object]]]]) -> None:
-        self._client = SimpleNamespace(chat=SimpleNamespace(completions=FakeCompletions(planned_tool_calls)))
+        self.completions = FakeCompletions(planned_tool_calls)
+        self._client = SimpleNamespace(chat=SimpleNamespace(completions=self.completions))
 
     def openai_client(self) -> SimpleNamespace:
         return self._client
@@ -196,6 +206,18 @@ def test_messages_for_inference_keeps_system_and_current_quarter_only() -> None:
         {"role": "assistant", "content": "", "tool_calls": []},
         {"role": "tool", "content": "Quarter 2 state", "tool_call_id": "t2"},
     ]
+
+
+@pytest.mark.asyncio
+async def test_rollout_requests_required_tool_choice(monkeypatch: pytest.MonkeyPatch) -> None:
+    session = FakeFarmSession()
+    monkeypatch.setattr(art_rollout, "build_farm_session", lambda *args, **kwargs: session)
+    model = FakeModel([[("read_farm_state", {})], []])
+
+    trajectory = await rollout(model, _scenario(), max_tool_calls=2)
+
+    assert model.completions.requests[0]["tool_choice"] == "required"
+    assert trajectory.metrics["termination_reason"] == "missing_tool_call"
 
 
 def test_trajectory_for_logging_strips_string_metrics() -> None:
@@ -250,6 +272,25 @@ async def test_rollout_budget_allows_full_episode_and_caps_early(monkeypatch: py
     assert limited_trajectory.metrics["last_tool_name"] == "commit_plan"
     assert limited_trajectory.metrics["terminated_early"] == 1
     assert limited_session.closed is True
+
+
+@pytest.mark.asyncio
+async def test_rollout_does_not_treat_invalid_commit_attempts_as_completed_quarters(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    session = FakeInvalidCommitFarmSession()
+    monkeypatch.setattr(art_rollout, "build_farm_session", lambda *args, **kwargs: session)
+    model = FakeModel([[("commit_plan", _commit_payload())] for _ in range(80)])
+
+    trajectory = await rollout(model, _scenario(), max_tool_calls=40)
+
+    assert trajectory.metrics["termination_reason"] == "tool_budget_exhausted"
+    assert trajectory.metrics["quarter_commits"] == 0
+    assert trajectory.metrics["quarters_completed"] == 0
+    assert trajectory.metrics["commit_attempts"] == 40
+    assert trajectory.metrics["terminal_score"] == 0.0
+    assert trajectory.metrics["terminated_early"] == 1
+    assert session.closed is True
 
 
 @pytest.mark.asyncio

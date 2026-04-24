@@ -13,6 +13,7 @@ from pydantic import BaseModel, Field
 from openreward.environments import Environment, Split, TextBlock, ToolOutput, tool
 
 from config import (
+    BANKRUPTCY_HARD_THRESHOLD,
     CLIMATE_NORMALS_PATH,
     CROPS,
     LOCAL_NORMALS,
@@ -43,6 +44,35 @@ def _load_climate_normals() -> Dict[str, Any]:
             return json.load(f)
     except (FileNotFoundError, json.JSONDecodeError):
         return {}
+
+
+def _runtime_log(event: str, **fields: Any) -> None:
+    suffix = " ".join(f"{key}={value}" for key, value in fields.items())
+    message = f"[uk_arable_manager] event={event}"
+    if suffix:
+        message = f"{message} {suffix}"
+    print(message, flush=True)
+
+
+def _state_metadata(sim: FarmSimulator) -> Dict[str, Any]:
+    state = sim.state.to_dict()
+    state["current_prices"] = sim.get_current_prices()
+    return {"state": state}
+
+
+def _episode_metrics_metadata(sim: FarmSimulator, terminal_score: Optional[float]) -> Dict[str, Any]:
+    state = sim.state
+    mean_final_soil = sum(plot.soil_health for plot in state.plots) / NUM_PLOTS
+    finished = state.quarter >= TOTAL_QUARTERS or state.cash < BANKRUPTCY_HARD_THRESHOLD
+    return {
+        "cash": float(state.cash),
+        "starting_cash": float(state.starting_cash),
+        "mean_final_soil": float(mean_final_soil),
+        "quarter": int(state.quarter),
+        "ever_bankrupt": bool(state.ever_bankrupt),
+        "finished": bool(finished),
+        "terminal_score": terminal_score,
+    }
 
 
 # ── Tool input schemas ────────────────────────────────────────────────────────
@@ -99,8 +129,19 @@ class UKArableManager(Environment):
 
     def setup(self) -> None:
         self.sim = FarmSimulator(dict(self.task_spec))
+        _runtime_log(
+            "setup",
+            task_id=self.task_spec.get("task_id", "unknown"),
+            split=self.task_spec.get("split", "train"),
+        )
 
     def teardown(self) -> None:
+        _runtime_log(
+            "teardown",
+            task_id=self.task_spec.get("task_id", "unknown"),
+            split=self.task_spec.get("split", "train"),
+            quarter=(self.sim.state.quarter if self.sim is not None else "na"),
+        )
         self.sim = None
 
     def _ensure_sim(self) -> FarmSimulator:
@@ -245,6 +286,11 @@ Greedy extraction collapses soil health; diverse rotations with restorative crop
         """Return quarter index, year, cash, irrigation ownership, and current crop per plot."""
         sim = self._ensure_sim()
         s = sim.state
+        _runtime_log(
+            "read_farm_state",
+            task_id=self.task_spec.get("task_id", "unknown"),
+            quarter=s.quarter,
+        )
         lines = [
             f"Quarter: {s.quarter + 1}/{TOTAL_QUARTERS}  Year: {s.year + 1}/10  Q-in-year: {s.quarter_in_year + 1}",
             f"Cash: £{s.cash:,.0f}  |  Starting cash: £{s.starting_cash:,.0f}",
@@ -256,13 +302,21 @@ Greedy extraction collapses soil health; diverse rotations with restorative crop
             lines.append(
                 f"  plot_{i+1}: crop={p.current_crop}  prev={p.previous_crop}  soil={p.soil_score():.3f}"
             )
-        return ToolOutput(blocks=[_tb("\n".join(lines))], reward=0.0, finished=False)
+        metadata = _state_metadata(sim)
+        metadata["tool"] = "read_farm_state"
+        return ToolOutput(blocks=[_tb("\n".join(lines))], reward=0.0, finished=False, metadata=metadata)
 
     @tool
     def read_soil_report(self, params: ReadSoilInput) -> ToolOutput:
         """Return soil sub-component readings for requested plots."""
         sim = self._ensure_sim()
         s = sim.state
+        _runtime_log(
+            "read_soil_report",
+            task_id=self.task_spec.get("task_id", "unknown"),
+            quarter=s.quarter,
+            plots=",".join(str(p) for p in params.plots),
+        )
         lines = ["SOIL REPORT"]
         for i in sorted(set(params.plots)):
             if i < 0 or i >= NUM_PLOTS:
@@ -275,7 +329,12 @@ Greedy extraction collapses soil health; diverse rotations with restorative crop
                 f"nutrients={p.reported_nutrient_balance():.3f}  "
                 f"soil_score={p.soil_score():.3f}"
             )
-        return ToolOutput(blocks=[_tb("\n".join(lines))], reward=0.0, finished=False)
+        metadata = {
+            **_state_metadata(sim),
+            "tool": "read_soil_report",
+            "plots": sorted(set(int(i) for i in params.plots if 0 <= i < NUM_PLOTS)),
+        }
+        return ToolOutput(blocks=[_tb("\n".join(lines))], reward=0.0, finished=False, metadata=metadata)
 
     @tool
     def read_weather_history(self, params: ReadWeatherInput) -> ToolOutput:
@@ -283,6 +342,12 @@ Greedy extraction collapses soil health; diverse rotations with restorative crop
         sim = self._ensure_sim()
         history = sim.state.weather_history
         lookback = params.lookback_quarters
+        _runtime_log(
+            "read_weather_history",
+            task_id=self.task_spec.get("task_id", "unknown"),
+            quarter=sim.state.quarter,
+            lookback=lookback,
+        )
         recent = history[-lookback:] if history else []
 
         lines = [f"WEATHER HISTORY (last {lookback} entries, negative quarters = pre-episode context)"]
@@ -312,13 +377,24 @@ Greedy extraction collapses soil health; diverse rotations with restorative crop
                 if k != "source":
                     lines.append(f"  {k}: {v}")
 
-        return ToolOutput(blocks=[_tb("\n".join(lines))], reward=0.0, finished=False)
+        metadata = {
+            **_state_metadata(sim),
+            "tool": "read_weather_history",
+            "lookback_quarters": int(lookback),
+            "recent_weather": [w.to_dict() for w in recent],
+        }
+        return ToolOutput(blocks=[_tb("\n".join(lines))], reward=0.0, finished=False, metadata=metadata)
 
     @tool
     def read_price_board(self) -> ToolOutput:
         """Return current-quarter crop prices and input costs."""
         sim = self._ensure_sim()
         prices = sim.get_current_prices()
+        _runtime_log(
+            "read_price_board",
+            task_id=self.task_spec.get("task_id", "unknown"),
+            quarter=sim.state.quarter,
+        )
         lines = ["PRICE BOARD (current quarter)"]
         lines.append("  Crop prices (£/acre gross revenue):")
         for crop in CROPS:
@@ -330,7 +406,12 @@ Greedy extraction collapses soil health; diverse rotations with restorative crop
                      f"high=£{prices.get('fertiliser_high', 75):.2f}")
         if not sim.state.irrigation_owned:
             lines.append(f"  Irrigation (one-time): £{prices.get('irrigation_cost', 35000):.2f}")
-        return ToolOutput(blocks=[_tb("\n".join(lines))], reward=0.0, finished=False)
+        metadata = {
+            **_state_metadata(sim),
+            "tool": "read_price_board",
+            "prices": prices,
+        }
+        return ToolOutput(blocks=[_tb("\n".join(lines))], reward=0.0, finished=False, metadata=metadata)
 
     @tool
     def commit_plan(self, params: CommitPlanInput) -> ToolOutput:
@@ -338,6 +419,12 @@ Greedy extraction collapses soil health; diverse rotations with restorative crop
         Returns updated observations, per-step reward, and finished flag."""
         sim = self._ensure_sim()
         s = sim.state
+        _runtime_log(
+            "commit_plan_start",
+            task_id=self.task_spec.get("task_id", "unknown"),
+            quarter=s.quarter,
+            capital_action=params.capital_action,
+        )
 
         if s.quarter >= TOTAL_QUARTERS:
             return ToolOutput(
@@ -419,10 +506,35 @@ Greedy extraction collapses soil health; diverse rotations with restorative crop
             lines.append(f"Mean final soil:     {mean_soil:.3f}")
             lines.append(f"Ever bankrupt:       {s.ever_bankrupt}")
 
+        metadata = {
+            **_state_metadata(sim),
+            "tool": "commit_plan",
+            "step": {
+                "reward": float(result.reward),
+                "pnl": float(result.pnl),
+                "terminal_score": result.terminal_score,
+                "finished": bool(result.finished),
+                "bankrupt": bool(result.bankrupt),
+                "plot_pnl": [float(p) for p in result.plot_pnl],
+                "weather": result.weather.to_dict(),
+                "pest_pressure": [bool(p) for p in result.pest_pressure],
+                "irrigation_purchased": bool(result.irrigation_purchased),
+            },
+            "episode_metrics": _episode_metrics_metadata(sim, result.terminal_score),
+        }
+        _runtime_log(
+            "commit_plan_end",
+            task_id=self.task_spec.get("task_id", "unknown"),
+            quarter=s.quarter,
+            finished=result.finished,
+            reward=round(float(result.reward), 6),
+            cash=round(float(s.cash), 2),
+        )
         return ToolOutput(
             blocks=[_tb("\n".join(lines))],
             reward=result.reward,
             finished=result.finished,
+            metadata=metadata,
         )
 
 

@@ -14,18 +14,33 @@ from baselines import BASELINES
 from grader import grade
 from pipeline.art_rollout import load_scenarios, rollout
 from pipeline.config import EvalJobConfig, MODAL_APP_NAME_PREFIX
+from pipeline.farm_session import close_hosted_sessions
 from pipeline.modal_common import IMAGE, RUNTIME_SECRET, VOLUMES, commit_all_volumes_async, maybe_aclose, modal_result_path, require_local_env
-from rollout_client import run_local_rollout
+from rollout_client import run_hosted_rollout, run_local_rollout
 
 app = modal.App(f"{MODAL_APP_NAME_PREFIX}-eval")
 
 
-def _summarize_baseline(split: str, task_specs: list[dict[str, Any]], baseline_name: str) -> dict[str, Any]:
+def _summarize_baseline(
+    split: str,
+    task_specs: list[dict[str, Any]],
+    baseline_name: str,
+    *,
+    session_backend: str,
+    openreward_env_id: str,
+) -> dict[str, Any]:
     policy = BASELINES[baseline_name]
-    trajectories = [
-        run_local_rollout(task_spec=task, policy=policy, baseline_name=baseline_name)
-        for task in task_specs
-    ]
+    rollout_fn = run_hosted_rollout if session_backend == "hosted" else run_local_rollout
+    trajectories = []
+    for task in task_specs:
+        kwargs: dict[str, Any] = {
+            "task_spec": task,
+            "policy": policy,
+            "baseline_name": baseline_name,
+        }
+        if rollout_fn is run_hosted_rollout:
+            kwargs["env_id"] = openreward_env_id
+        trajectories.append(rollout_fn(**kwargs))
     grades = [grade(traj.to_dict()) for traj in trajectories]
     return {
         "policy": baseline_name,
@@ -77,6 +92,8 @@ async def _run_eval_async(config: dict[str, Any]) -> dict[str, Any]:
             await rollout(
                 model,
                 scenario,
+                session_backend=cfg.session_backend,
+                openreward_env_id=cfg.openreward_env_id,
                 max_tool_calls=cfg.max_tool_calls,
                 max_completion_tokens=cfg.max_completion_tokens,
                 temperature=cfg.temperature,
@@ -85,17 +102,29 @@ async def _run_eval_async(config: dict[str, Any]) -> dict[str, Any]:
         ]
         await model.log(model_trajectories, split=f"eval_{cfg.split}")
     finally:
+        await close_hosted_sessions()
         await maybe_aclose(backend)
+
+    baseline_summaries = [
+        await asyncio.to_thread(
+            _summarize_baseline,
+            cfg.split,
+            task_specs,
+            baseline_name,
+            session_backend=cfg.session_backend,
+            openreward_env_id=cfg.openreward_env_id,
+        )
+        for baseline_name in (
+            "greedy_extractor",
+            "conservative_rotation",
+            "weather_aware_rotation",
+        )
+    ]
 
     summary = {
         "split": cfg.split,
         "num_tasks": len(task_specs),
-        "agents": [
-            _summarize_baseline(cfg.split, task_specs, "greedy_extractor"),
-            _summarize_baseline(cfg.split, task_specs, "conservative_rotation"),
-            _summarize_baseline(cfg.split, task_specs, "weather_aware_rotation"),
-            _summarize_model(cfg.model_name, model_trajectories),
-        ],
+        "agents": baseline_summaries + [_summarize_model(cfg.model_name, model_trajectories)],
     }
 
     out_path = modal_result_path("eval", f"{cfg.split}_comparison.json")
@@ -117,8 +146,24 @@ def run_eval_remote(config: dict[str, Any]) -> dict[str, Any]:
 
 
 @app.local_entrypoint()
-def main(split: str = "validation", max_tasks: int = 4) -> None:
-    require_local_env("MODAL_TOKEN_ID", "MODAL_TOKEN_SECRET", "HF_TOKEN", "WANDB_API_KEY")
-    config = EvalJobConfig(split=split, max_tasks=max_tasks)
+def main(
+    split: str = "validation",
+    max_tasks: int = 4,
+    session_backend: str = "hosted",
+    openreward_env_id: str = "",
+) -> None:
+    require_local_env(
+        "MODAL_TOKEN_ID",
+        "MODAL_TOKEN_SECRET",
+        "HF_TOKEN",
+        "WANDB_API_KEY",
+        "OPENREWARD_API_KEY",
+    )
+    config = EvalJobConfig(
+        split=split,
+        max_tasks=max_tasks,
+        session_backend=session_backend,
+        openreward_env_id=openreward_env_id or EvalJobConfig().openreward_env_id,
+    )
     result = run_eval_remote.remote(config.to_dict())
     print(json.dumps(result, indent=2))

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import os
 from dataclasses import asdict, dataclass, field
 from pathlib import Path
 from typing import Any
@@ -21,6 +22,8 @@ MODAL_PROJECT_ROOT = "/root/project"
 MODAL_ART_ROOT = "/vol/art"
 MODAL_RESULTS_ROOT = "/vol/results"
 MODAL_HF_CACHE = "/vol/hf-cache"
+DEFAULT_OPENREWARD_ENV_ID = os.environ.get("OPENREWARD_ENV_ID", "devatreya/uk_arable_manager")
+DEFAULT_SESSION_BACKEND = os.environ.get("UK_ARABLE_SESSION_BACKEND", "hosted")
 
 DEFAULT_TOP_QUANTILE = 0.25
 DEFAULT_READ_TOOL_SEQUENCE = (
@@ -71,6 +74,8 @@ class RLJobConfig:
     temperature: float = 0.8
     max_completion_tokens: int = 512
     art_path: str = MODAL_ART_ROOT
+    session_backend: str = DEFAULT_SESSION_BACKEND
+    openreward_env_id: str = DEFAULT_OPENREWARD_ENV_ID
     trainer_gpu_ids: list[int] = field(default_factory=lambda: [0])
     inference_gpu_ids: list[int] = field(default_factory=lambda: [1])
     seed: int = 23
@@ -90,6 +95,8 @@ class EvalJobConfig:
     max_completion_tokens: int = 512
     temperature: float = 0.0
     art_path: str = MODAL_ART_ROOT
+    session_backend: str = DEFAULT_SESSION_BACKEND
+    openreward_env_id: str = DEFAULT_OPENREWARD_ENV_ID
     trainer_gpu_ids: list[int] = field(default_factory=lambda: [0])
     inference_gpu_ids: list[int] = field(default_factory=lambda: [1])
 

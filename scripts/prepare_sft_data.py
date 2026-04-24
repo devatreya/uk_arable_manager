@@ -19,9 +19,17 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from baselines.weather_aware_rotation import policy as weather_aware_policy
 from config import TASK_FILES, TOTAL_QUARTERS
 from grader import grade
-from pipeline.config import DEFAULT_READ_TOOL_SEQUENCE, DEFAULT_TOP_QUANTILE, SFT_OUTPUT_DIR, SFT_TRAIN_FILE, SFT_VALIDATION_FILE
-from pipeline.farm_session import InProcessFarmSession, format_commit_plan_payload
-from rollout_client import run_local_rollout
+from pipeline.config import (
+    DEFAULT_OPENREWARD_ENV_ID,
+    DEFAULT_READ_TOOL_SEQUENCE,
+    DEFAULT_SESSION_BACKEND,
+    DEFAULT_TOP_QUANTILE,
+    SFT_OUTPUT_DIR,
+    SFT_TRAIN_FILE,
+    SFT_VALIDATION_FILE,
+)
+from pipeline.farm_session import build_farm_session, close_hosted_sessions, format_commit_plan_payload
+from rollout_client import run_hosted_rollout, run_local_rollout
 
 
 def _assistant_tool_call_message(call_id: str, tool_name: str, payload: dict[str, Any]) -> dict[str, Any]:
@@ -59,22 +67,41 @@ def _load_tasks(split: str, max_tasks: int | None = None) -> list[dict[str, Any]
     return tasks
 
 
-def _rank_tasks(split: str, max_tasks: int | None = None) -> list[tuple[float, dict[str, Any]]]:
+def _rank_tasks(
+    split: str,
+    *,
+    session_backend: str,
+    openreward_env_id: str,
+    max_tasks: int | None = None,
+) -> list[tuple[float, dict[str, Any]]]:
     ranked: list[tuple[float, dict[str, Any]]] = []
+    rollout_fn = run_hosted_rollout if session_backend == "hosted" else run_local_rollout
     for task_spec in _load_tasks(split, max_tasks=max_tasks):
-        traj = run_local_rollout(
-            task_spec=task_spec,
-            policy=weather_aware_policy,
-            baseline_name="weather_aware_rotation",
-        )
+        kwargs: dict[str, Any] = {
+            "task_spec": task_spec,
+            "policy": weather_aware_policy,
+            "baseline_name": "weather_aware_rotation",
+        }
+        if rollout_fn is run_hosted_rollout:
+            kwargs["env_id"] = openreward_env_id
+        traj = rollout_fn(**kwargs)
         score = grade(traj.to_dict()).score
         ranked.append((score, task_spec))
     ranked.sort(key=lambda item: item[0], reverse=True)
     return ranked
 
 
-async def _build_examples_for_task(task_spec: dict[str, Any]) -> list[dict[str, Any]]:
-    session = InProcessFarmSession(task_spec)
+async def _build_examples_for_task(
+    task_spec: dict[str, Any],
+    *,
+    session_backend: str,
+    openreward_env_id: str,
+) -> list[dict[str, Any]]:
+    session = build_farm_session(
+        task_spec,
+        session_backend=session_backend,
+        openreward_env_id=openreward_env_id,
+    )
     await session.open()
     tools = session.chat_tools()
     prompt = session.prompt_text()
@@ -126,15 +153,28 @@ async def _build_split(
     output_path: Path,
     top_quantile: float,
     *,
+    session_backend: str,
+    openreward_env_id: str,
     max_tasks: int | None = None,
 ) -> dict[str, Any]:
-    ranked = _rank_tasks(split, max_tasks=max_tasks)
+    ranked = _rank_tasks(
+        split,
+        session_backend=session_backend,
+        openreward_env_id=openreward_env_id,
+        max_tasks=max_tasks,
+    )
     selected_count = max(1, int(len(ranked) * top_quantile))
     selected = ranked[:selected_count]
 
     examples: list[dict[str, Any]] = []
     for _, task_spec in selected:
-        examples.extend(await _build_examples_for_task(task_spec))
+        examples.extend(
+            await _build_examples_for_task(
+                task_spec,
+                session_backend=session_backend,
+                openreward_env_id=openreward_env_id,
+            )
+        )
 
     output_path.parent.mkdir(parents=True, exist_ok=True)
     with output_path.open("w") as handle:
@@ -154,25 +194,39 @@ async def _build_split(
     }
 
 
-async def _main_async(top_quantile: float, max_tasks_per_split: int | None) -> None:
+async def _main_async(
+    top_quantile: float,
+    max_tasks_per_split: int | None,
+    session_backend: str,
+    openreward_env_id: str,
+) -> None:
     out_dir = Path(SFT_OUTPUT_DIR)
     out_dir.mkdir(parents=True, exist_ok=True)
 
-    train_summary = await _build_split(
-        "train",
-        Path(SFT_TRAIN_FILE),
-        top_quantile,
-        max_tasks=max_tasks_per_split,
-    )
-    validation_summary = await _build_split(
-        "validation",
-        Path(SFT_VALIDATION_FILE),
-        top_quantile,
-        max_tasks=max_tasks_per_split,
-    )
+    try:
+        train_summary = await _build_split(
+            "train",
+            Path(SFT_TRAIN_FILE),
+            top_quantile,
+            session_backend=session_backend,
+            openreward_env_id=openreward_env_id,
+            max_tasks=max_tasks_per_split,
+        )
+        validation_summary = await _build_split(
+            "validation",
+            Path(SFT_VALIDATION_FILE),
+            top_quantile,
+            session_backend=session_backend,
+            openreward_env_id=openreward_env_id,
+            max_tasks=max_tasks_per_split,
+        )
+    finally:
+        await close_hosted_sessions()
 
     summary = {
         "top_quantile": top_quantile,
+        "session_backend": session_backend,
+        "openreward_env_id": openreward_env_id,
         "train": train_summary,
         "validation": validation_summary,
     }
@@ -187,10 +241,19 @@ def main() -> None:
     parser = argparse.ArgumentParser(description="Prepare SFT warm-start data from scripted baselines")
     parser.add_argument("--top-quantile", type=float, default=DEFAULT_TOP_QUANTILE)
     parser.add_argument("--max-tasks-per-split", type=int, default=None)
+    parser.add_argument("--session-backend", choices=["hosted", "inprocess"], default=DEFAULT_SESSION_BACKEND)
+    parser.add_argument("--openreward-env-id", default=DEFAULT_OPENREWARD_ENV_ID)
     args = parser.parse_args()
     if not 0.0 < args.top_quantile <= 1.0:
         raise ValueError("--top-quantile must be in the range (0, 1].")
-    asyncio.run(_main_async(args.top_quantile, args.max_tasks_per_split))
+    asyncio.run(
+        _main_async(
+            args.top_quantile,
+            args.max_tasks_per_split,
+            args.session_backend,
+            args.openreward_env_id,
+        )
+    )
 
 
 if __name__ == "__main__":

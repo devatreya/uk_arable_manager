@@ -13,6 +13,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from pipeline.art_rollout import load_scenarios, rollout
 from pipeline.config import MODAL_APP_NAME_PREFIX, RLJobConfig
+from pipeline.farm_session import close_hosted_sessions
 from pipeline.modal_common import IMAGE, RUNTIME_SECRET, VOLUMES, commit_all_volumes_async, maybe_aclose, modal_result_path, require_local_env
 
 app = modal.App(f"{MODAL_APP_NAME_PREFIX}-rl")
@@ -24,6 +25,8 @@ async def _evaluate_validation(model: Any, config: RLJobConfig) -> dict[str, Any
         await rollout(
             model,
             scenario,
+            session_backend=config.session_backend,
+            openreward_env_id=config.openreward_env_id,
             max_tool_calls=config.max_tool_calls,
             max_completion_tokens=config.max_completion_tokens,
             temperature=config.temperature,
@@ -81,6 +84,8 @@ async def _run_rl_async(config: dict[str, Any]) -> dict[str, Any]:
                         rollout(
                             model,
                             scenario,
+                            session_backend=cfg.session_backend,
+                            openreward_env_id=cfg.openreward_env_id,
                             max_tool_calls=cfg.max_tool_calls,
                             max_completion_tokens=cfg.max_completion_tokens,
                             temperature=cfg.temperature,
@@ -113,6 +118,7 @@ async def _run_rl_async(config: dict[str, Any]) -> dict[str, Any]:
 
         latest_step = await model.get_step()
     finally:
+        await close_hosted_sessions()
         await maybe_aclose(backend)
 
     summary = {
@@ -147,8 +153,16 @@ def main(
     eval_every: int = 2,
     max_train_tasks: int = 16,
     max_validation_tasks: int = 4,
+    session_backend: str = "hosted",
+    openreward_env_id: str = "",
 ) -> None:
-    require_local_env("MODAL_TOKEN_ID", "MODAL_TOKEN_SECRET", "HF_TOKEN", "WANDB_API_KEY")
+    require_local_env(
+        "MODAL_TOKEN_ID",
+        "MODAL_TOKEN_SECRET",
+        "HF_TOKEN",
+        "WANDB_API_KEY",
+        "OPENREWARD_API_KEY",
+    )
     config = RLJobConfig(
         train_steps=train_steps,
         groups_per_step=groups_per_step,
@@ -156,6 +170,8 @@ def main(
         eval_every=eval_every,
         max_train_tasks=max_train_tasks,
         max_validation_tasks=max_validation_tasks,
+        session_backend=session_backend,
+        openreward_env_id=openreward_env_id or RLJobConfig().openreward_env_id,
     )
     result = run_rl_remote.remote(config.to_dict())
     print(json.dumps(result, indent=2))

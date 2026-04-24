@@ -9,7 +9,8 @@ from typing import TYPE_CHECKING, Any
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from config import TASK_FILES, TOTAL_QUARTERS
-from pipeline.farm_session import InProcessFarmSession
+from pipeline.config import DEFAULT_OPENREWARD_ENV_ID, DEFAULT_SESSION_BACKEND
+from pipeline.farm_session import build_farm_session
 
 if TYPE_CHECKING:
     import art
@@ -77,13 +78,19 @@ async def rollout(
     model: "art.Model",
     scenario: FarmScenario,
     *,
+    session_backend: str = DEFAULT_SESSION_BACKEND,
+    openreward_env_id: str = DEFAULT_OPENREWARD_ENV_ID,
     max_tool_calls: int = 160,
     max_completion_tokens: int = 512,
     temperature: float = 0.8,
 ) -> "art.Trajectory":
     import art
 
-    session = InProcessFarmSession(scenario.task_spec)
+    session = build_farm_session(
+        scenario.task_spec,
+        session_backend=session_backend,
+        openreward_env_id=openreward_env_id,
+    )
     await session.open()
     tools = session.chat_tools()
     trajectory = art.Trajectory(

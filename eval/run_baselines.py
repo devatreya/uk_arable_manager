@@ -20,7 +20,8 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from config import TASK_FILES
-from rollout_client import run_local_rollout
+from pipeline.config import DEFAULT_OPENREWARD_ENV_ID, DEFAULT_SESSION_BACKEND
+from rollout_client import run_hosted_rollout, run_local_rollout
 from baselines import BASELINES
 from grader import grade, DEFAULT_GRADER
 
@@ -32,6 +33,8 @@ def run_baseline_on_split(
     grader_name: str = DEFAULT_GRADER,
     max_tasks: int = None,
     save_snapshots: bool = False,
+    session_backend: str = DEFAULT_SESSION_BACKEND,
+    openreward_env_id: str = DEFAULT_OPENREWARD_ENV_ID,
 ) -> list:
     task_file = TASK_FILES.get(split)
     if not task_file or not task_file.exists():
@@ -50,17 +53,23 @@ def run_baseline_on_split(
     out_dir.mkdir(parents=True, exist_ok=True)
 
     results = []
+    rollout_fn = run_hosted_rollout if session_backend == "hosted" else run_local_rollout
     for i, task_spec in enumerate(tasks):
         task_id = task_spec.get("task_id", f"task_{i:04d}")
         out_path = out_dir / f"{task_id}.json"
 
-        traj = run_local_rollout(
-            task_spec=task_spec,
-            policy=policy,
-            baseline_name=baseline_name,
-            save_to=out_path,
-            save_snapshots=save_snapshots,
-        )
+        kwargs = {
+            "task_spec": task_spec,
+            "policy": policy,
+            "baseline_name": baseline_name,
+            "save_to": out_path,
+        }
+        if rollout_fn is run_local_rollout:
+            kwargs["save_snapshots"] = save_snapshots
+        else:
+            kwargs["env_id"] = openreward_env_id
+
+        traj = rollout_fn(**kwargs)
 
         g = grade(traj.to_dict(), grader_name)
         result = {
@@ -88,6 +97,8 @@ def main() -> None:
     parser.add_argument("--traj-dir", type=Path, default=Path("eval/trajectories"))
     parser.add_argument("--results-dir", type=Path, default=Path("eval/results"))
     parser.add_argument("--save-snapshots", action="store_true")
+    parser.add_argument("--session-backend", choices=["hosted", "inprocess"], default=DEFAULT_SESSION_BACKEND)
+    parser.add_argument("--openreward-env-id", default=DEFAULT_OPENREWARD_ENV_ID)
     args = parser.parse_args()
 
     args.results_dir.mkdir(parents=True, exist_ok=True)
@@ -108,6 +119,8 @@ def main() -> None:
             grader_name=args.grader,
             max_tasks=args.max_tasks,
             save_snapshots=args.save_snapshots,
+            session_backend=args.session_backend,
+            openreward_env_id=args.openreward_env_id,
         )
         all_results.extend(results)
 

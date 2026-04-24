@@ -171,6 +171,12 @@ class UKArableManager(Environment):
         tasks = _load_tasks(split)
         if not tasks:
             tasks = [_minimal_task(split, 0)]
+        _runtime_log(
+            "list_tasks",
+            split=split,
+            count=len(tasks),
+            task_file=TASK_FILES.get(split),
+        )
         return tasks
 
     def get_prompt(self) -> List[TextBlock]:

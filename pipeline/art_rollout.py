@@ -46,7 +46,15 @@ def _user_message(task_spec: dict[str, Any]) -> str:
     scenario = task_spec.get("scenario_type", "standard")
     return (
         f"Task {task_id} ({scenario}). Use the farm tools to inspect the state and "
-        "commit the next quarterly plan. Keep going until the episode finishes."
+        "commit the next quarterly plan. Keep repeating this quarter-by-quarter until "
+        "the episode finishes. Do not stop after a single plan."
+    )
+
+
+def _continuation_user_message(next_quarter: int) -> str:
+    return (
+        f"Quarter {next_quarter}. The previous plan has been applied. Inspect the updated "
+        "farm state, then commit the next quarterly plan. Keep going until the episode finishes."
     )
 
 
@@ -136,6 +144,7 @@ async def rollout(
                 total_reward -= 2.0
                 break
 
+            committed_quarter = False
             for tool_call in tool_calls:
                 total_tool_calls += 1
                 payload = _safe_json_loads(tool_call.function.arguments)
@@ -153,12 +162,21 @@ async def rollout(
                 )
                 if tool_call.function.name == "commit_plan":
                     commit_calls += 1
+                    committed_quarter = True
                 if result.finished:
                     episode_finished = True
                     break
 
             if episode_finished or session.episode_metrics()["finished"]:
                 break
+            if committed_quarter:
+                next_quarter = int(session.episode_metrics()["quarter"]) + 1
+                trajectory.messages_and_choices.append(
+                    {
+                        "role": "user",
+                        "content": _continuation_user_message(next_quarter),
+                    }
+                )
     finally:
         metrics = session.episode_metrics()
         trajectory.reward = round(total_reward, 6)

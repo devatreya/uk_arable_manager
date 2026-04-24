@@ -129,7 +129,8 @@ async def _build_examples_for_task(
                     "role": "user",
                     "content": (
                         f"Quarter {quarter + 1}. Inspect the farm using the available tools and "
-                        "then commit the next quarterly plan."
+                        "then commit the next quarterly plan. Keep managing the farm "
+                        "quarter-by-quarter until the episode finishes; do not stop after one plan."
                     ),
                 },
             ]

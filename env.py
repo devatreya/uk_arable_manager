@@ -286,6 +286,7 @@ TOOL SEQUENCE  (each quarter)
   3. read_weather_history — realised weather history + climate context
   4. read_price_board     — current crop prices, fertiliser/irrigation costs
   5. commit_plan          — submit decisions for all 4 plots → advances time by one quarter
+  Repeat this sequence every quarter until the episode finishes.
 
 Greedy extraction collapses soil health; diverse rotations with restorative crops win over 40 quarters."""
 

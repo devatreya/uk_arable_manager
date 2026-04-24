@@ -3,24 +3,24 @@
     "task_id": "test_0000",
     "seed": 30010000,
     "split": "test",
-    "scenario_type": "input_cost_shock",
+    "scenario_type": "standard",
     "real_data_mode": true,
-    "starting_cash": 137245.62,
-    "initial_weather_regime": "dry",
-    "dry_bias": 0.1271,
-    "price_volatility": 0.1245,
-    "fertiliser_cost_multiplier": 1.6455,
-    "irrigation_cost_multiplier": 1.1173,
+    "starting_cash": 142994.16,
+    "initial_weather_regime": "wet",
+    "dry_bias": 0.0,
+    "price_volatility": 0.0854,
+    "fertiliser_cost_multiplier": 0.9959,
+    "irrigation_cost_multiplier": 1.0,
     "initial_soil_by_plot": [
+      0.6182,
+      0.4915,
       0.4816,
-      0.6772,
-      0.5876,
-      0.5676
+      0.6772
     ],
     "initial_crop_by_plot": [
       "fallow",
-      "oilseed_rape",
-      "oilseed_rape",
+      "field_beans",
+      "field_beans",
       "fallow"
     ],
     "recent_weather_context": [
@@ -324,25 +324,25 @@
     "task_id": "test_0003",
     "seed": 30010003,
     "split": "test",
-    "scenario_type": "standard",
+    "scenario_type": "input_cost_shock",
     "real_data_mode": true,
-    "starting_cash": 123379.78,
+    "starting_cash": 122534.83,
     "initial_weather_regime": "normal",
-    "dry_bias": 0.0,
-    "price_volatility": 0.0982,
-    "fertiliser_cost_multiplier": 1.0002,
-    "irrigation_cost_multiplier": 1.0,
+    "dry_bias": 0.1909,
+    "price_volatility": 0.1268,
+    "fertiliser_cost_multiplier": 1.4279,
+    "irrigation_cost_multiplier": 1.199,
     "initial_soil_by_plot": [
-      0.5311,
-      0.546,
       0.5299,
-      0.6563
+      0.6563,
+      0.5851,
+      0.6162
     ],
     "initial_crop_by_plot": [
       "fallow",
       "field_beans",
-      "field_beans",
-      "fallow"
+      "fallow",
+      "wheat"
     ],
     "recent_weather_context": [
       {
@@ -538,25 +538,25 @@
     "task_id": "test_0005",
     "seed": 30010005,
     "split": "test",
-    "scenario_type": "standard",
+    "scenario_type": "input_cost_shock",
     "real_data_mode": true,
-    "starting_cash": 179174.85,
+    "starting_cash": 164381.14,
     "initial_weather_regime": "normal",
-    "dry_bias": 0.0,
-    "price_volatility": 0.0732,
-    "fertiliser_cost_multiplier": 1.0006,
-    "irrigation_cost_multiplier": 1.0,
+    "dry_bias": 0.066,
+    "price_volatility": 0.127,
+    "fertiliser_cost_multiplier": 1.7318,
+    "irrigation_cost_multiplier": 1.1562,
     "initial_soil_by_plot": [
-      0.6527,
-      0.5174,
       0.4877,
-      0.5342
+      0.5342,
+      0.5227,
+      0.5448
     ],
     "initial_crop_by_plot": [
-      "barley",
       "field_beans",
-      "oilseed_rape",
-      "field_beans"
+      "fallow",
+      "fallow",
+      "barley"
     ],
     "recent_weather_context": [
       {
@@ -770,6 +770,862 @@
       "fallow",
       "barley",
       "wheat",
+      "field_beans"
+    ],
+    "recent_weather_context": [
+      {
+        "quarter_offset": -8,
+        "year": 2024,
+        "quarter": 1,
+        "rain_mm": 218.4,
+        "temp_c": 7.08,
+        "rainfall_index": 1.6452,
+        "temperature_index": 1.3015,
+        "regime": "wet"
+      },
+      {
+        "quarter_offset": -7,
+        "year": 2024,
+        "quarter": 2,
+        "rain_mm": 200.8,
+        "temp_c": 12.78,
+        "rainfall_index": 1.2361,
+        "temperature_index": 1.0519,
+        "regime": "normal"
+      },
+      {
+        "quarter_offset": -6,
+        "year": 2024,
+        "quarter": 3,
+        "rain_mm": 242.2,
+        "temp_c": 16.96,
+        "rainfall_index": 1.407,
+        "temperature_index": 1.0235,
+        "regime": "wet"
+      },
+      {
+        "quarter_offset": -5,
+        "year": 2024,
+        "quarter": 4,
+        "rain_mm": 189.4,
+        "temp_c": 8.92,
+        "rainfall_index": 1.1539,
+        "temperature_index": 1.1122,
+        "regime": "normal"
+      },
+      {
+        "quarter_offset": -4,
+        "year": 2025,
+        "quarter": 1,
+        "rain_mm": 120.6,
+        "temp_c": 5.3,
+        "rainfall_index": 0.9085,
+        "temperature_index": 0.9743,
+        "regime": "normal"
+      },
+      {
+        "quarter_offset": -3,
+        "year": 2025,
+        "quarter": 2,
+        "rain_mm": 106.0,
+        "temp_c": 14.21,
+        "rainfall_index": 0.6525,
+        "temperature_index": 1.1695,
+        "regime": "dry"
+      },
+      {
+        "quarter_offset": -2,
+        "year": 2025,
+        "quarter": 3,
+        "rain_mm": 168.4,
+        "temp_c": 17.46,
+        "rainfall_index": 0.9783,
+        "temperature_index": 1.0537,
+        "regime": "normal"
+      },
+      {
+        "quarter_offset": -1,
+        "year": 2025,
+        "quarter": 4,
+        "rain_mm": 192.3,
+        "temp_c": 9.37,
+        "rainfall_index": 1.1716,
+        "temperature_index": 1.1683,
+        "regime": "normal"
+      }
+    ]
+  },
+  {
+    "task_id": "test_0008",
+    "seed": 30010008,
+    "split": "test",
+    "scenario_type": "recovery",
+    "real_data_mode": true,
+    "starting_cash": 122607.25,
+    "initial_weather_regime": "normal",
+    "dry_bias": 0.2644,
+    "price_volatility": 0.0746,
+    "fertiliser_cost_multiplier": 0.9659,
+    "irrigation_cost_multiplier": 1.0,
+    "initial_soil_by_plot": [
+      0.33,
+      0.2526,
+      0.276,
+      0.3603
+    ],
+    "initial_crop_by_plot": [
+      "oilseed_rape",
+      "barley",
+      "oilseed_rape",
+      "fallow"
+    ],
+    "recent_weather_context": [
+      {
+        "quarter_offset": -8,
+        "year": 2024,
+        "quarter": 1,
+        "rain_mm": 218.4,
+        "temp_c": 7.08,
+        "rainfall_index": 1.6452,
+        "temperature_index": 1.3015,
+        "regime": "wet"
+      },
+      {
+        "quarter_offset": -7,
+        "year": 2024,
+        "quarter": 2,
+        "rain_mm": 200.8,
+        "temp_c": 12.78,
+        "rainfall_index": 1.2361,
+        "temperature_index": 1.0519,
+        "regime": "normal"
+      },
+      {
+        "quarter_offset": -6,
+        "year": 2024,
+        "quarter": 3,
+        "rain_mm": 242.2,
+        "temp_c": 16.96,
+        "rainfall_index": 1.407,
+        "temperature_index": 1.0235,
+        "regime": "wet"
+      },
+      {
+        "quarter_offset": -5,
+        "year": 2024,
+        "quarter": 4,
+        "rain_mm": 189.4,
+        "temp_c": 8.92,
+        "rainfall_index": 1.1539,
+        "temperature_index": 1.1122,
+        "regime": "normal"
+      },
+      {
+        "quarter_offset": -4,
+        "year": 2025,
+        "quarter": 1,
+        "rain_mm": 120.6,
+        "temp_c": 5.3,
+        "rainfall_index": 0.9085,
+        "temperature_index": 0.9743,
+        "regime": "normal"
+      },
+      {
+        "quarter_offset": -3,
+        "year": 2025,
+        "quarter": 2,
+        "rain_mm": 106.0,
+        "temp_c": 14.21,
+        "rainfall_index": 0.6525,
+        "temperature_index": 1.1695,
+        "regime": "dry"
+      },
+      {
+        "quarter_offset": -2,
+        "year": 2025,
+        "quarter": 3,
+        "rain_mm": 168.4,
+        "temp_c": 17.46,
+        "rainfall_index": 0.9783,
+        "temperature_index": 1.0537,
+        "regime": "normal"
+      },
+      {
+        "quarter_offset": -1,
+        "year": 2025,
+        "quarter": 4,
+        "rain_mm": 192.3,
+        "temp_c": 9.37,
+        "rainfall_index": 1.1716,
+        "temperature_index": 1.1683,
+        "regime": "normal"
+      }
+    ]
+  },
+  {
+    "task_id": "test_0009",
+    "seed": 30010009,
+    "split": "test",
+    "scenario_type": "standard",
+    "real_data_mode": true,
+    "starting_cash": 169497.13,
+    "initial_weather_regime": "wet",
+    "dry_bias": 0.0,
+    "price_volatility": 0.0751,
+    "fertiliser_cost_multiplier": 1.0901,
+    "irrigation_cost_multiplier": 1.0,
+    "initial_soil_by_plot": [
+      0.4844,
+      0.5791,
+      0.5599,
+      0.5444
+    ],
+    "initial_crop_by_plot": [
+      "fallow",
+      "barley",
+      "oilseed_rape",
+      "oilseed_rape"
+    ],
+    "recent_weather_context": [
+      {
+        "quarter_offset": -8,
+        "year": 2024,
+        "quarter": 1,
+        "rain_mm": 218.4,
+        "temp_c": 7.08,
+        "rainfall_index": 1.6452,
+        "temperature_index": 1.3015,
+        "regime": "wet"
+      },
+      {
+        "quarter_offset": -7,
+        "year": 2024,
+        "quarter": 2,
+        "rain_mm": 200.8,
+        "temp_c": 12.78,
+        "rainfall_index": 1.2361,
+        "temperature_index": 1.0519,
+        "regime": "normal"
+      },
+      {
+        "quarter_offset": -6,
+        "year": 2024,
+        "quarter": 3,
+        "rain_mm": 242.2,
+        "temp_c": 16.96,
+        "rainfall_index": 1.407,
+        "temperature_index": 1.0235,
+        "regime": "wet"
+      },
+      {
+        "quarter_offset": -5,
+        "year": 2024,
+        "quarter": 4,
+        "rain_mm": 189.4,
+        "temp_c": 8.92,
+        "rainfall_index": 1.1539,
+        "temperature_index": 1.1122,
+        "regime": "normal"
+      },
+      {
+        "quarter_offset": -4,
+        "year": 2025,
+        "quarter": 1,
+        "rain_mm": 120.6,
+        "temp_c": 5.3,
+        "rainfall_index": 0.9085,
+        "temperature_index": 0.9743,
+        "regime": "normal"
+      },
+      {
+        "quarter_offset": -3,
+        "year": 2025,
+        "quarter": 2,
+        "rain_mm": 106.0,
+        "temp_c": 14.21,
+        "rainfall_index": 0.6525,
+        "temperature_index": 1.1695,
+        "regime": "dry"
+      },
+      {
+        "quarter_offset": -2,
+        "year": 2025,
+        "quarter": 3,
+        "rain_mm": 168.4,
+        "temp_c": 17.46,
+        "rainfall_index": 0.9783,
+        "temperature_index": 1.0537,
+        "regime": "normal"
+      },
+      {
+        "quarter_offset": -1,
+        "year": 2025,
+        "quarter": 4,
+        "rain_mm": 192.3,
+        "temp_c": 9.37,
+        "rainfall_index": 1.1716,
+        "temperature_index": 1.1683,
+        "regime": "normal"
+      }
+    ]
+  },
+  {
+    "task_id": "test_0010",
+    "seed": 30010010,
+    "split": "test",
+    "scenario_type": "standard",
+    "real_data_mode": true,
+    "starting_cash": 182047.37,
+    "initial_weather_regime": "normal",
+    "dry_bias": 0.0,
+    "price_volatility": 0.0972,
+    "fertiliser_cost_multiplier": 0.9724,
+    "irrigation_cost_multiplier": 1.0,
+    "initial_soil_by_plot": [
+      0.5699,
+      0.6377,
+      0.6511,
+      0.5982
+    ],
+    "initial_crop_by_plot": [
+      "oilseed_rape",
+      "field_beans",
+      "field_beans",
+      "wheat"
+    ],
+    "recent_weather_context": [
+      {
+        "quarter_offset": -8,
+        "year": 2024,
+        "quarter": 1,
+        "rain_mm": 218.4,
+        "temp_c": 7.08,
+        "rainfall_index": 1.6452,
+        "temperature_index": 1.3015,
+        "regime": "wet"
+      },
+      {
+        "quarter_offset": -7,
+        "year": 2024,
+        "quarter": 2,
+        "rain_mm": 200.8,
+        "temp_c": 12.78,
+        "rainfall_index": 1.2361,
+        "temperature_index": 1.0519,
+        "regime": "normal"
+      },
+      {
+        "quarter_offset": -6,
+        "year": 2024,
+        "quarter": 3,
+        "rain_mm": 242.2,
+        "temp_c": 16.96,
+        "rainfall_index": 1.407,
+        "temperature_index": 1.0235,
+        "regime": "wet"
+      },
+      {
+        "quarter_offset": -5,
+        "year": 2024,
+        "quarter": 4,
+        "rain_mm": 189.4,
+        "temp_c": 8.92,
+        "rainfall_index": 1.1539,
+        "temperature_index": 1.1122,
+        "regime": "normal"
+      },
+      {
+        "quarter_offset": -4,
+        "year": 2025,
+        "quarter": 1,
+        "rain_mm": 120.6,
+        "temp_c": 5.3,
+        "rainfall_index": 0.9085,
+        "temperature_index": 0.9743,
+        "regime": "normal"
+      },
+      {
+        "quarter_offset": -3,
+        "year": 2025,
+        "quarter": 2,
+        "rain_mm": 106.0,
+        "temp_c": 14.21,
+        "rainfall_index": 0.6525,
+        "temperature_index": 1.1695,
+        "regime": "dry"
+      },
+      {
+        "quarter_offset": -2,
+        "year": 2025,
+        "quarter": 3,
+        "rain_mm": 168.4,
+        "temp_c": 17.46,
+        "rainfall_index": 0.9783,
+        "temperature_index": 1.0537,
+        "regime": "normal"
+      },
+      {
+        "quarter_offset": -1,
+        "year": 2025,
+        "quarter": 4,
+        "rain_mm": 192.3,
+        "temp_c": 9.37,
+        "rainfall_index": 1.1716,
+        "temperature_index": 1.1683,
+        "regime": "normal"
+      }
+    ]
+  },
+  {
+    "task_id": "test_0011",
+    "seed": 30010011,
+    "split": "test",
+    "scenario_type": "standard",
+    "real_data_mode": true,
+    "starting_cash": 158343.0,
+    "initial_weather_regime": "normal",
+    "dry_bias": 0.0,
+    "price_volatility": 0.0925,
+    "fertiliser_cost_multiplier": 1.0743,
+    "irrigation_cost_multiplier": 1.0,
+    "initial_soil_by_plot": [
+      0.6746,
+      0.5994,
+      0.6444,
+      0.6011
+    ],
+    "initial_crop_by_plot": [
+      "field_beans",
+      "field_beans",
+      "field_beans",
+      "fallow"
+    ],
+    "recent_weather_context": [
+      {
+        "quarter_offset": -8,
+        "year": 2024,
+        "quarter": 1,
+        "rain_mm": 218.4,
+        "temp_c": 7.08,
+        "rainfall_index": 1.6452,
+        "temperature_index": 1.3015,
+        "regime": "wet"
+      },
+      {
+        "quarter_offset": -7,
+        "year": 2024,
+        "quarter": 2,
+        "rain_mm": 200.8,
+        "temp_c": 12.78,
+        "rainfall_index": 1.2361,
+        "temperature_index": 1.0519,
+        "regime": "normal"
+      },
+      {
+        "quarter_offset": -6,
+        "year": 2024,
+        "quarter": 3,
+        "rain_mm": 242.2,
+        "temp_c": 16.96,
+        "rainfall_index": 1.407,
+        "temperature_index": 1.0235,
+        "regime": "wet"
+      },
+      {
+        "quarter_offset": -5,
+        "year": 2024,
+        "quarter": 4,
+        "rain_mm": 189.4,
+        "temp_c": 8.92,
+        "rainfall_index": 1.1539,
+        "temperature_index": 1.1122,
+        "regime": "normal"
+      },
+      {
+        "quarter_offset": -4,
+        "year": 2025,
+        "quarter": 1,
+        "rain_mm": 120.6,
+        "temp_c": 5.3,
+        "rainfall_index": 0.9085,
+        "temperature_index": 0.9743,
+        "regime": "normal"
+      },
+      {
+        "quarter_offset": -3,
+        "year": 2025,
+        "quarter": 2,
+        "rain_mm": 106.0,
+        "temp_c": 14.21,
+        "rainfall_index": 0.6525,
+        "temperature_index": 1.1695,
+        "regime": "dry"
+      },
+      {
+        "quarter_offset": -2,
+        "year": 2025,
+        "quarter": 3,
+        "rain_mm": 168.4,
+        "temp_c": 17.46,
+        "rainfall_index": 0.9783,
+        "temperature_index": 1.0537,
+        "regime": "normal"
+      },
+      {
+        "quarter_offset": -1,
+        "year": 2025,
+        "quarter": 4,
+        "rain_mm": 192.3,
+        "temp_c": 9.37,
+        "rainfall_index": 1.1716,
+        "temperature_index": 1.1683,
+        "regime": "normal"
+      }
+    ]
+  },
+  {
+    "task_id": "test_0012",
+    "seed": 30010012,
+    "split": "test",
+    "scenario_type": "standard",
+    "real_data_mode": true,
+    "starting_cash": 179648.0,
+    "initial_weather_regime": "normal",
+    "dry_bias": 0.0,
+    "price_volatility": 0.0999,
+    "fertiliser_cost_multiplier": 1.0366,
+    "irrigation_cost_multiplier": 1.0,
+    "initial_soil_by_plot": [
+      0.5645,
+      0.6143,
+      0.6488,
+      0.5567
+    ],
+    "initial_crop_by_plot": [
+      "wheat",
+      "field_beans",
+      "barley",
+      "barley"
+    ],
+    "recent_weather_context": [
+      {
+        "quarter_offset": -8,
+        "year": 2024,
+        "quarter": 1,
+        "rain_mm": 218.4,
+        "temp_c": 7.08,
+        "rainfall_index": 1.6452,
+        "temperature_index": 1.3015,
+        "regime": "wet"
+      },
+      {
+        "quarter_offset": -7,
+        "year": 2024,
+        "quarter": 2,
+        "rain_mm": 200.8,
+        "temp_c": 12.78,
+        "rainfall_index": 1.2361,
+        "temperature_index": 1.0519,
+        "regime": "normal"
+      },
+      {
+        "quarter_offset": -6,
+        "year": 2024,
+        "quarter": 3,
+        "rain_mm": 242.2,
+        "temp_c": 16.96,
+        "rainfall_index": 1.407,
+        "temperature_index": 1.0235,
+        "regime": "wet"
+      },
+      {
+        "quarter_offset": -5,
+        "year": 2024,
+        "quarter": 4,
+        "rain_mm": 189.4,
+        "temp_c": 8.92,
+        "rainfall_index": 1.1539,
+        "temperature_index": 1.1122,
+        "regime": "normal"
+      },
+      {
+        "quarter_offset": -4,
+        "year": 2025,
+        "quarter": 1,
+        "rain_mm": 120.6,
+        "temp_c": 5.3,
+        "rainfall_index": 0.9085,
+        "temperature_index": 0.9743,
+        "regime": "normal"
+      },
+      {
+        "quarter_offset": -3,
+        "year": 2025,
+        "quarter": 2,
+        "rain_mm": 106.0,
+        "temp_c": 14.21,
+        "rainfall_index": 0.6525,
+        "temperature_index": 1.1695,
+        "regime": "dry"
+      },
+      {
+        "quarter_offset": -2,
+        "year": 2025,
+        "quarter": 3,
+        "rain_mm": 168.4,
+        "temp_c": 17.46,
+        "rainfall_index": 0.9783,
+        "temperature_index": 1.0537,
+        "regime": "normal"
+      },
+      {
+        "quarter_offset": -1,
+        "year": 2025,
+        "quarter": 4,
+        "rain_mm": 192.3,
+        "temp_c": 9.37,
+        "rainfall_index": 1.1716,
+        "temperature_index": 1.1683,
+        "regime": "normal"
+      }
+    ]
+  },
+  {
+    "task_id": "test_0013",
+    "seed": 30010013,
+    "split": "test",
+    "scenario_type": "standard",
+    "real_data_mode": true,
+    "starting_cash": 194239.09,
+    "initial_weather_regime": "normal",
+    "dry_bias": 0.0,
+    "price_volatility": 0.0713,
+    "fertiliser_cost_multiplier": 1.0228,
+    "irrigation_cost_multiplier": 1.0,
+    "initial_soil_by_plot": [
+      0.6571,
+      0.6048,
+      0.602,
+      0.4863
+    ],
+    "initial_crop_by_plot": [
+      "fallow",
+      "field_beans",
+      "oilseed_rape",
+      "wheat"
+    ],
+    "recent_weather_context": [
+      {
+        "quarter_offset": -8,
+        "year": 2024,
+        "quarter": 1,
+        "rain_mm": 218.4,
+        "temp_c": 7.08,
+        "rainfall_index": 1.6452,
+        "temperature_index": 1.3015,
+        "regime": "wet"
+      },
+      {
+        "quarter_offset": -7,
+        "year": 2024,
+        "quarter": 2,
+        "rain_mm": 200.8,
+        "temp_c": 12.78,
+        "rainfall_index": 1.2361,
+        "temperature_index": 1.0519,
+        "regime": "normal"
+      },
+      {
+        "quarter_offset": -6,
+        "year": 2024,
+        "quarter": 3,
+        "rain_mm": 242.2,
+        "temp_c": 16.96,
+        "rainfall_index": 1.407,
+        "temperature_index": 1.0235,
+        "regime": "wet"
+      },
+      {
+        "quarter_offset": -5,
+        "year": 2024,
+        "quarter": 4,
+        "rain_mm": 189.4,
+        "temp_c": 8.92,
+        "rainfall_index": 1.1539,
+        "temperature_index": 1.1122,
+        "regime": "normal"
+      },
+      {
+        "quarter_offset": -4,
+        "year": 2025,
+        "quarter": 1,
+        "rain_mm": 120.6,
+        "temp_c": 5.3,
+        "rainfall_index": 0.9085,
+        "temperature_index": 0.9743,
+        "regime": "normal"
+      },
+      {
+        "quarter_offset": -3,
+        "year": 2025,
+        "quarter": 2,
+        "rain_mm": 106.0,
+        "temp_c": 14.21,
+        "rainfall_index": 0.6525,
+        "temperature_index": 1.1695,
+        "regime": "dry"
+      },
+      {
+        "quarter_offset": -2,
+        "year": 2025,
+        "quarter": 3,
+        "rain_mm": 168.4,
+        "temp_c": 17.46,
+        "rainfall_index": 0.9783,
+        "temperature_index": 1.0537,
+        "regime": "normal"
+      },
+      {
+        "quarter_offset": -1,
+        "year": 2025,
+        "quarter": 4,
+        "rain_mm": 192.3,
+        "temp_c": 9.37,
+        "rainfall_index": 1.1716,
+        "temperature_index": 1.1683,
+        "regime": "normal"
+      }
+    ]
+  },
+  {
+    "task_id": "test_0014",
+    "seed": 30010014,
+    "split": "test",
+    "scenario_type": "drought_stressed",
+    "real_data_mode": true,
+    "starting_cash": 132239.32,
+    "initial_weather_regime": "dry",
+    "dry_bias": 0.3866,
+    "price_volatility": 0.0727,
+    "fertiliser_cost_multiplier": 1.0985,
+    "irrigation_cost_multiplier": 0.8902,
+    "initial_soil_by_plot": [
+      0.4145,
+      0.4171,
+      0.457,
+      0.4768
+    ],
+    "initial_crop_by_plot": [
+      "wheat",
+      "field_beans",
+      "barley",
+      "fallow"
+    ],
+    "recent_weather_context": [
+      {
+        "quarter_offset": -8,
+        "year": 2024,
+        "quarter": 1,
+        "rain_mm": 218.4,
+        "temp_c": 7.08,
+        "rainfall_index": 1.6452,
+        "temperature_index": 1.3015,
+        "regime": "wet"
+      },
+      {
+        "quarter_offset": -7,
+        "year": 2024,
+        "quarter": 2,
+        "rain_mm": 200.8,
+        "temp_c": 12.78,
+        "rainfall_index": 1.2361,
+        "temperature_index": 1.0519,
+        "regime": "normal"
+      },
+      {
+        "quarter_offset": -6,
+        "year": 2024,
+        "quarter": 3,
+        "rain_mm": 242.2,
+        "temp_c": 16.96,
+        "rainfall_index": 1.407,
+        "temperature_index": 1.0235,
+        "regime": "wet"
+      },
+      {
+        "quarter_offset": -5,
+        "year": 2024,
+        "quarter": 4,
+        "rain_mm": 189.4,
+        "temp_c": 8.92,
+        "rainfall_index": 1.1539,
+        "temperature_index": 1.1122,
+        "regime": "normal"
+      },
+      {
+        "quarter_offset": -4,
+        "year": 2025,
+        "quarter": 1,
+        "rain_mm": 120.6,
+        "temp_c": 5.3,
+        "rainfall_index": 0.9085,
+        "temperature_index": 0.9743,
+        "regime": "normal"
+      },
+      {
+        "quarter_offset": -3,
+        "year": 2025,
+        "quarter": 2,
+        "rain_mm": 106.0,
+        "temp_c": 14.21,
+        "rainfall_index": 0.6525,
+        "temperature_index": 1.1695,
+        "regime": "dry"
+      },
+      {
+        "quarter_offset": -2,
+        "year": 2025,
+        "quarter": 3,
+        "rain_mm": 168.4,
+        "temp_c": 17.46,
+        "rainfall_index": 0.9783,
+        "temperature_index": 1.0537,
+        "regime": "normal"
+      },
+      {
+        "quarter_offset": -1,
+        "year": 2025,
+        "quarter": 4,
+        "rain_mm": 192.3,
+        "temp_c": 9.37,
+        "rainfall_index": 1.1716,
+        "temperature_index": 1.1683,
+        "regime": "normal"
+      }
+    ]
+  },
+  {
+    "task_id": "test_0015",
+    "seed": 30010015,
+    "split": "test",
+    "scenario_type": "drought_stressed",
+    "real_data_mode": true,
+    "starting_cash": 164979.11,
+    "initial_weather_regime": "dry",
+    "dry_bias": 0.3122,
+    "price_volatility": 0.0989,
+    "fertiliser_cost_multiplier": 1.0148,
+    "irrigation_cost_multiplier": 1.032,
+    "initial_soil_by_plot": [
+      0.4129,
+      0.5087,
+      0.4173,
+      0.4159
+    ],
+    "initial_crop_by_plot": [
+      "barley",
+      "wheat",
+      "field_beans",
       "field_beans"
     ],
     "recent_weather_context": [

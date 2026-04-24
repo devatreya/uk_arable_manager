@@ -13,10 +13,13 @@ import asyncio
 import inspect
 import json
 import os
+import ssl
 from pathlib import Path
 from typing import Any, Callable, Dict, List, Optional
 
 from config import NUM_PLOTS, TOTAL_QUARTERS
+from hosted_state import initial_state_from_task, update_state_from_tool_output
+from pipeline.config import DEFAULT_READ_TOOL_SEQUENCE
 from sim import FarmAction, FarmSimulator, PlotAction
 from trajectory_logger import TrajectoryLogger, TrajectoryLog
 
@@ -35,16 +38,30 @@ from trajectory_logger import TrajectoryLogger, TrajectoryLog
 Policy = Callable[[Dict[str, Any]], Dict[str, Any]]
 
 DEFAULT_OPENREWARD_ENV_ID = os.environ.get("OPENREWARD_ENV_ID", "devatreya/uk_arable_manager")
+_ORIGINAL_CREATE_DEFAULT_CONTEXT = ssl.create_default_context
 
 
 def _configure_ssl_cert_file() -> None:
-    if os.environ.get("SSL_CERT_FILE"):
-        return
     try:
         import certifi
     except ImportError:
         return
-    os.environ["SSL_CERT_FILE"] = certifi.where()
+    cafile = certifi.where()
+    os.environ.setdefault("SSL_CERT_FILE", cafile)
+    os.environ.setdefault("REQUESTS_CA_BUNDLE", cafile)
+    if getattr(ssl, "_uk_arable_certifi_patched", False):
+        return
+
+    def _create_default_context(*args: Any, **kwargs: Any) -> ssl.SSLContext:
+        if "cafile" not in kwargs:
+            kwargs["cafile"] = cafile
+        return _ORIGINAL_CREATE_DEFAULT_CONTEXT(*args, **kwargs)
+
+    ssl.create_default_context = _create_default_context
+    ssl._uk_arable_certifi_patched = True
+
+
+_configure_ssl_cert_file()
 
 
 # ── Local rollout (no HTTP) ───────────────────────────────────────────────────
@@ -218,44 +235,83 @@ class HostedRollout:
         policy: Policy,
         baseline_name: Optional[str] = None,
     ) -> TrajectoryLog:
-        from openreward import OpenReward
+        return asyncio.run(self._run_async(task_spec, policy, baseline_name=baseline_name))
+
+    async def _run_async(
+        self,
+        task_spec: Dict[str, Any],
+        policy: Policy,
+        baseline_name: Optional[str] = None,
+    ) -> TrajectoryLog:
+        _configure_ssl_cert_file()
+        from openreward import AsyncOpenReward
 
         logger = TrajectoryLogger(task_spec, baseline_name=baseline_name)
         split = str(task_spec.get("split", "train"))
         task_id = str(task_spec.get("task_id", ""))
 
-        _configure_ssl_cert_file()
-        client = OpenReward(api_key=os.environ["OPENREWARD_API_KEY"])
+        client = AsyncOpenReward(api_key=os.environ["OPENREWARD_API_KEY"])
         try:
             env = client.environments.get(name=self.env_id)
-            tasks = env.list_tasks(split)
-            task = next(
-                (candidate for candidate in tasks if str(candidate.task_spec.get("task_id", "")) == task_id),
-                None,
-            )
-            if task is None:
-                raise RuntimeError(
-                    f"Task task_id={task_id!r} not found in split={split!r} for env={self.env_id!r}"
+            try:
+                task = await env.get_task(split=split, index=int(task_id.rsplit("_", 1)[-1]))
+                if str(task.task_spec.get("task_id", "")) != task_id:
+                    raise ValueError("resolved different task id")
+            except Exception:
+                tasks = await env.list_tasks(split)
+                task = next(
+                    (candidate for candidate in tasks if str(candidate.task_spec.get("task_id", "")) == task_id),
+                    None,
                 )
+                if task is None:
+                    raise RuntimeError(
+                        f"Task task_id={task_id!r} not found in split={split!r} for env={self.env_id!r}"
+                    )
 
-            with env.session(task=task) as session:
+            async with env.session(task=task) as session:
                 quarter = 0
-                final_state: Dict[str, Any] = {}
+                state = initial_state_from_task(task_spec)
+                final_state: Dict[str, Any] = dict(state)
                 terminal_score: float | None = None
                 ever_bankrupt = False
 
                 while quarter < TOTAL_QUARTERS:
-                    farm_state = session.call_tool("read_farm_state", {})
-                    obs_state = _extract_state_metadata(farm_state)
+                    for tool_name, tool_payload in DEFAULT_READ_TOOL_SEQUENCE:
+                        tool_output = await session.call_tool(tool_name, tool_payload)
+                        metadata_state = _extract_state_metadata(tool_output)
+                        if metadata_state:
+                            state = metadata_state
+                        else:
+                            parsed = update_state_from_tool_output(
+                                tool_name,
+                                _extract_text(tool_output),
+                                state,
+                                payload=tool_payload,
+                            )
+                            state = parsed["state"]
 
-                    action_dict = policy(obs_state)
+                    action_dict = policy(state)
                     commit_input = _action_to_commit_plan_input(action_dict)
-                    result = session.call_tool("commit_plan", commit_input)
+                    result = await session.call_tool("commit_plan", commit_input)
 
                     state_after = _extract_state_metadata(result)
                     episode_metrics = _extract_episode_metrics(result)
                     step_metrics = _extract_step_metrics(result)
-                    final_state = state_after or final_state
+                    if state_after:
+                        state = state_after
+                    else:
+                        parsed = update_state_from_tool_output(
+                            "commit_plan",
+                            _extract_text(result),
+                            state,
+                            payload=commit_input,
+                        )
+                        state = parsed["state"]
+                        if not step_metrics:
+                            step_metrics = dict(parsed.get("step", {}))
+                        if not episode_metrics:
+                            episode_metrics = dict(parsed.get("episode_metrics", {}))
+                    final_state = dict(state)
                     terminal_score = episode_metrics.get("terminal_score", terminal_score)
                     ever_bankrupt = bool(episode_metrics.get("ever_bankrupt", ever_bankrupt))
 
@@ -275,13 +331,12 @@ class HostedRollout:
                     quarter += 1
                     if getattr(result, "finished", False):
                         break
-
         finally:
             close = getattr(client, "close", None)
             if callable(close):
                 maybe = close()
                 if inspect.isawaitable(maybe):
-                    asyncio.run(maybe)
+                    await maybe
 
         return logger.finalise(final_state=final_state, terminal_score=terminal_score)
 

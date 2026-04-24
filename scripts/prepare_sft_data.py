@@ -67,7 +67,7 @@ def _load_tasks(split: str, max_tasks: int | None = None) -> list[dict[str, Any]
     return tasks
 
 
-def _rank_tasks(
+async def _rank_tasks(
     split: str,
     *,
     session_backend: str,
@@ -84,7 +84,9 @@ def _rank_tasks(
         }
         if rollout_fn is run_hosted_rollout:
             kwargs["env_id"] = openreward_env_id
-        traj = rollout_fn(**kwargs)
+            traj = await asyncio.to_thread(rollout_fn, **kwargs)
+        else:
+            traj = rollout_fn(**kwargs)
         score = grade(traj.to_dict()).score
         ranked.append((score, task_spec))
     ranked.sort(key=lambda item: item[0], reverse=True)
@@ -157,7 +159,7 @@ async def _build_split(
     openreward_env_id: str,
     max_tasks: int | None = None,
 ) -> dict[str, Any]:
-    ranked = _rank_tasks(
+    ranked = await _rank_tasks(
         split,
         session_backend=session_backend,
         openreward_env_id=openreward_env_id,

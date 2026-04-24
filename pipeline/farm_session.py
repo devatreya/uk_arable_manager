@@ -12,6 +12,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from config import BANKRUPTCY_HARD_THRESHOLD, NUM_PLOTS, TOTAL_QUARTERS
 from env import UKArableManager
+from hosted_state import initial_state_from_task, update_state_from_tool_output
 
 _HOSTED_CLIENT: Any | None = None
 _HOSTED_ENVIRONMENTS: dict[str, Any] = {}
@@ -295,7 +296,7 @@ class HostedFarmSession:
         self._session: Any | None = None
         self._prompt_text = ""
         self._tools: list[dict[str, Any]] = []
-        self._cached_state: dict[str, Any] | None = None
+        self._cached_state: dict[str, Any] | None = initial_state_from_task(task_spec)
         self._episode_metrics: dict[str, Any] | None = None
 
     async def open(self) -> None:
@@ -352,6 +353,18 @@ class HostedFarmSession:
 
         metadata = dict(output.metadata or {})
         self._update_from_metadata(metadata)
+        if self._cached_state is None:
+            self._cached_state = initial_state_from_task(self.task_spec)
+        parsed = update_state_from_tool_output(
+            name,
+            _blocks_to_text(list(output.blocks)),
+            self._cached_state,
+            payload=payload,
+        )
+        self._cached_state = parsed.get("state", self._cached_state)
+        episode_metrics = parsed.get("episode_metrics")
+        if isinstance(episode_metrics, dict):
+            self._episode_metrics = episode_metrics
         if self._episode_metrics is None and self._cached_state is not None:
             self._episode_metrics = _episode_metrics_from_state(self._cached_state)
 

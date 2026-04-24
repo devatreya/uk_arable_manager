@@ -111,6 +111,7 @@ async def rollout(
     commit_calls = 0
     total_tool_calls = 0
     invalid_tool_calls = 0
+    episode_finished = False
 
     try:
         while total_tool_calls < max_tool_calls and commit_calls < TOTAL_QUARTERS:
@@ -153,9 +154,10 @@ async def rollout(
                 if tool_call.function.name == "commit_plan":
                     commit_calls += 1
                 if result.finished:
+                    episode_finished = True
                     break
 
-            if session.episode_metrics()["finished"]:
+            if episode_finished or session.episode_metrics()["finished"]:
                 break
     finally:
         metrics = session.episode_metrics()

@@ -155,6 +155,8 @@ def main(
     max_validation_tasks: int = 4,
     session_backend: str = "hosted",
     openreward_env_id: str = "",
+    model_name: str = RLJobConfig.model_name,
+    project: str = RLJobConfig.project,
 ) -> None:
     require_local_env(
         "MODAL_TOKEN_ID",
@@ -164,6 +166,8 @@ def main(
         "OPENREWARD_API_KEY",
     )
     config = RLJobConfig(
+        model_name=model_name,
+        project=project,
         train_steps=train_steps,
         groups_per_step=groups_per_step,
         trajectories_per_group=trajectories_per_group,

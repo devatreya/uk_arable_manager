@@ -150,6 +150,8 @@ def main(
     max_tasks: int = 4,
     session_backend: str = "hosted",
     openreward_env_id: str = "",
+    model_name: str = EvalJobConfig.model_name,
+    project: str = EvalJobConfig.project,
 ) -> None:
     require_local_env(
         "MODAL_TOKEN_ID",
@@ -159,6 +161,8 @@ def main(
         "OPENREWARD_API_KEY",
     )
     config = EvalJobConfig(
+        model_name=model_name,
+        project=project,
         split=split,
         max_tasks=max_tasks,
         session_backend=session_backend,

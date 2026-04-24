@@ -111,9 +111,13 @@ def main(
     batch_size: int = 4,
     peak_lr: float = 2e-4,
     warmup_ratio: float = 0.1,
+    model_name: str = SFTJobConfig.model_name,
+    project: str = SFTJobConfig.project,
 ) -> None:
     require_local_env("MODAL_TOKEN_ID", "MODAL_TOKEN_SECRET", "HF_TOKEN", "WANDB_API_KEY")
     config = SFTJobConfig(
+        model_name=model_name,
+        project=project,
         dataset_path=dataset_path,
         epochs=epochs,
         batch_size=batch_size,

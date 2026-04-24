@@ -12,13 +12,27 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from baselines import BASELINES
 from grader import grade
-from pipeline.art_rollout import load_scenarios, rollout
-from pipeline.config import EvalJobConfig, MODAL_APP_NAME_PREFIX
+from pipeline.art_rollout import (
+    load_scenarios,
+    rollout,
+    summarize_rollout_batch,
+    trajectories_for_logging,
+)
+from pipeline.config import (
+    DEFAULT_MAX_COMPLETION_TOKENS,
+    DEFAULT_MAX_TOOL_CALLS,
+    EvalJobConfig,
+    MODAL_APP_NAME_PREFIX,
+)
 from pipeline.farm_session import close_hosted_sessions
 from pipeline.modal_common import IMAGE, RUNTIME_SECRET, VOLUMES, commit_all_volumes_async, maybe_aclose, modal_result_path, require_local_env
 from rollout_client import HostedRolloutManager, run_local_rollout
 
 app = modal.App(f"{MODAL_APP_NAME_PREFIX}-eval")
+
+
+def _print_rollout_summary(label: str, summary: dict[str, Any]) -> None:
+    print(f"{label}: {json.dumps(summary, sort_keys=True)}")
 
 
 async def _summarize_baseline(
@@ -113,19 +127,28 @@ async def _run_eval_async(config: dict[str, Any]) -> dict[str, Any]:
         )
         await model.register(backend)
 
-        model_trajectories = [
-            await rollout(
-                model,
-                scenario,
-                session_backend=cfg.session_backend,
-                openreward_env_id=cfg.openreward_env_id,
-                max_tool_calls=cfg.max_tool_calls,
-                max_completion_tokens=cfg.max_completion_tokens,
-                temperature=cfg.temperature,
-            )
-            for scenario in scenarios
-        ]
-        await model.log(model_trajectories, split=f"eval_{cfg.split}")
+        model_trajectories: list[Any] = []
+        for scenario in scenarios:
+            try:
+                model_trajectories.append(
+                    await rollout(
+                        model,
+                        scenario,
+                        session_backend=cfg.session_backend,
+                        openreward_env_id=cfg.openreward_env_id,
+                        max_tool_calls=cfg.max_tool_calls,
+                        max_completion_tokens=cfg.max_completion_tokens,
+                        temperature=cfg.temperature,
+                    )
+                )
+            except Exception:
+                partial_summary = summarize_rollout_batch(model_trajectories)
+                partial_summary["failed_task_ids"] = partial_summary["failed_task_ids"] + [scenario.task_id]
+                _print_rollout_summary("Eval rollout summary before failure", partial_summary)
+                raise
+        model_rollout_summary = summarize_rollout_batch(model_trajectories)
+        _print_rollout_summary("Eval rollout summary", model_rollout_summary)
+        await model.log(trajectories_for_logging(model_trajectories), split=f"eval_{cfg.split}")
     finally:
         await close_hosted_sessions()
         await maybe_aclose(backend)
@@ -144,6 +167,7 @@ async def _run_eval_async(config: dict[str, Any]) -> dict[str, Any]:
         "split": cfg.split,
         "num_tasks": len(task_specs),
         "agents": baseline_summaries + [_summarize_model(cfg.model_name, model_trajectories)],
+        "model_rollout_summary": model_rollout_summary,
     }
 
     out_path = modal_result_path("eval", f"{cfg.split}_comparison.json")
@@ -168,6 +192,8 @@ def run_eval_remote(config: dict[str, Any]) -> dict[str, Any]:
 def main(
     split: str = "validation",
     max_tasks: int = 4,
+    max_tool_calls: int = DEFAULT_MAX_TOOL_CALLS,
+    max_completion_tokens: int = DEFAULT_MAX_COMPLETION_TOKENS,
     session_backend: str = "hosted",
     openreward_env_id: str = "",
     model_name: str = EvalJobConfig.model_name,
@@ -185,6 +211,8 @@ def main(
         project=project,
         split=split,
         max_tasks=max_tasks,
+        max_tool_calls=max_tool_calls,
+        max_completion_tokens=max_completion_tokens,
         session_backend=session_backend,
         openreward_env_id=openreward_env_id or EvalJobConfig().openreward_env_id,
     )

@@ -352,19 +352,23 @@ class HostedFarmSession:
             )
 
         metadata = dict(output.metadata or {})
+        has_state_metadata = isinstance(metadata.get("state"), dict)
+        has_episode_metrics_metadata = isinstance(metadata.get("episode_metrics"), dict)
         self._update_from_metadata(metadata)
         if self._cached_state is None:
             self._cached_state = initial_state_from_task(self.task_spec)
-        parsed = update_state_from_tool_output(
-            name,
-            _blocks_to_text(list(output.blocks)),
-            self._cached_state,
-            payload=payload,
-        )
-        self._cached_state = parsed.get("state", self._cached_state)
-        episode_metrics = parsed.get("episode_metrics")
-        if isinstance(episode_metrics, dict):
-            self._episode_metrics = episode_metrics
+        if not has_state_metadata or not has_episode_metrics_metadata:
+            parsed = update_state_from_tool_output(
+                name,
+                _blocks_to_text(list(output.blocks)),
+                self._cached_state,
+                payload=payload,
+            )
+            if not has_state_metadata:
+                self._cached_state = parsed.get("state", self._cached_state)
+            episode_metrics = parsed.get("episode_metrics")
+            if not has_episode_metrics_metadata and isinstance(episode_metrics, dict):
+                self._episode_metrics = episode_metrics
         if self._episode_metrics is None and self._cached_state is not None:
             self._episode_metrics = _episode_metrics_from_state(self._cached_state)
 

@@ -11,30 +11,54 @@ import modal
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-from pipeline.art_rollout import load_scenarios, rollout
-from pipeline.config import MODAL_APP_NAME_PREFIX, RLJobConfig
+from pipeline.art_rollout import (
+    load_scenarios,
+    rollout,
+    summarize_rollout_batch,
+    summarize_trajectory_groups,
+    trajectory_groups_for_logging,
+)
+from pipeline.config import (
+    DEFAULT_MAX_COMPLETION_TOKENS,
+    DEFAULT_MAX_TOOL_CALLS,
+    MODAL_APP_NAME_PREFIX,
+    RLJobConfig,
+)
 from pipeline.farm_session import close_hosted_sessions
 from pipeline.modal_common import IMAGE, RUNTIME_SECRET, VOLUMES, commit_all_volumes_async, maybe_aclose, modal_result_path, require_local_env
 
 app = modal.App(f"{MODAL_APP_NAME_PREFIX}-rl")
 
 
+def _print_rollout_summary(label: str, summary: dict[str, Any]) -> None:
+    print(f"{label}: {json.dumps(summary, sort_keys=True)}")
+
+
 async def _evaluate_validation(model: Any, config: RLJobConfig) -> dict[str, Any]:
     scenarios = load_scenarios(config.validation_split, config.max_validation_tasks)
-    trajectories = [
-        await rollout(
-            model,
-            scenario,
-            session_backend=config.session_backend,
-            openreward_env_id=config.openreward_env_id,
-            max_tool_calls=config.max_tool_calls,
-            max_completion_tokens=config.max_completion_tokens,
-            temperature=config.temperature,
-        )
-        for scenario in scenarios
-    ]
+    trajectories: list[Any] = []
+    for scenario in scenarios:
+        try:
+            trajectories.append(
+                await rollout(
+                    model,
+                    scenario,
+                    session_backend=config.session_backend,
+                    openreward_env_id=config.openreward_env_id,
+                    max_tool_calls=config.max_tool_calls,
+                    max_completion_tokens=config.max_completion_tokens,
+                    temperature=config.temperature,
+                )
+            )
+        except Exception:
+            partial_summary = summarize_rollout_batch(trajectories)
+            partial_summary["failed_task_ids"] = partial_summary["failed_task_ids"] + [scenario.task_id]
+            _print_rollout_summary("Validation rollout summary before failure", partial_summary)
+            raise
     if not trajectories:
         return {}
+    rollout_summary = summarize_rollout_batch(trajectories)
+    _print_rollout_summary("Validation rollout summary", rollout_summary)
     terminal_scores = [float(t.metrics.get("terminal_score", 0.0)) for t in trajectories]
     rewards = [float(t.reward) for t in trajectories]
     bankruptcy_rate = sum(bool(t.metrics.get("ever_bankrupt", False)) for t in trajectories) / len(trajectories)
@@ -43,6 +67,7 @@ async def _evaluate_validation(model: Any, config: RLJobConfig) -> dict[str, Any
         "mean_terminal_score": sum(terminal_scores) / len(terminal_scores),
         "mean_total_reward": sum(rewards) / len(rewards),
         "bankruptcy_rate": bankruptcy_rate,
+        "rollout_summary": rollout_summary,
     }
 
 
@@ -73,6 +98,7 @@ async def _run_rl_async(config: dict[str, Any]) -> dict[str, Any]:
 
         rng = random.Random(cfg.seed)
         validation_history: list[dict[str, Any]] = []
+        train_rollout_history: list[dict[str, Any]] = []
         start_step = await model.get_step()
 
         for offset in range(cfg.train_steps):
@@ -97,6 +123,10 @@ async def _run_rl_async(config: dict[str, Any]) -> dict[str, Any]:
                 pbar_desc=f"train gather step {step}",
                 max_exceptions=10,
             )
+            train_rollout_summary = summarize_trajectory_groups(groups)
+            train_rollout_summary["step"] = step
+            train_rollout_history.append(dict(train_rollout_summary))
+            _print_rollout_summary(f"Train rollout summary step {step}", train_rollout_summary)
             result = await backend.train(
                 model,
                 groups,
@@ -105,13 +135,22 @@ async def _run_rl_async(config: dict[str, Any]) -> dict[str, Any]:
                 ppo=(loss_fn == "ppo"),
                 verbose=True,
             )
-            await model.log(groups, metrics=result.metrics, step=result.step, split="train")
+            await model.log(
+                trajectory_groups_for_logging(groups),
+                metrics=result.metrics,
+                step=result.step,
+                split="train",
+            )
 
             if (offset + 1) % cfg.eval_every == 0:
                 validation = await _evaluate_validation(model, cfg)
                 if validation:
+                    rollout_summary = validation.pop("rollout_summary", None)
                     validation["step"] = result.step
-                    validation_history.append(validation)
+                    if rollout_summary is not None:
+                        validation_history.append({**validation, "rollout_summary": rollout_summary})
+                    else:
+                        validation_history.append(dict(validation))
                     await model.log(metrics=validation, step=result.step, split="val")
 
             await commit_all_volumes_async()
@@ -125,6 +164,7 @@ async def _run_rl_async(config: dict[str, Any]) -> dict[str, Any]:
         "start_step": start_step,
         "final_step": latest_step,
         "train_steps_ran": cfg.train_steps,
+        "train_rollout_history": train_rollout_history,
         "validation_history": validation_history,
     }
     result_path = modal_result_path("training", "rl_result.json")
@@ -153,6 +193,8 @@ def main(
     eval_every: int = 2,
     max_train_tasks: int = 16,
     max_validation_tasks: int = 4,
+    max_tool_calls: int = DEFAULT_MAX_TOOL_CALLS,
+    max_completion_tokens: int = DEFAULT_MAX_COMPLETION_TOKENS,
     session_backend: str = "hosted",
     openreward_env_id: str = "",
     model_name: str = RLJobConfig.model_name,
@@ -174,6 +216,8 @@ def main(
         eval_every=eval_every,
         max_train_tasks=max_train_tasks,
         max_validation_tasks=max_validation_tasks,
+        max_tool_calls=max_tool_calls,
+        max_completion_tokens=max_completion_tokens,
         session_backend=session_backend,
         openreward_env_id=openreward_env_id or RLJobConfig().openreward_env_id,
     )

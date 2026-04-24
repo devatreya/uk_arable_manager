@@ -5,6 +5,8 @@ from dataclasses import asdict, dataclass, field
 from pathlib import Path
 from typing import Any
 
+from config import TOTAL_QUARTERS
+
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 
 BASE_MODEL = "Qwen/Qwen2.5-7B-Instruct"
@@ -32,6 +34,8 @@ DEFAULT_READ_TOOL_SEQUENCE = (
     ("read_weather_history", {"lookback_quarters": 4}),
     ("read_price_board", {}),
 )
+DEFAULT_MAX_TOOL_CALLS = TOTAL_QUARTERS * (len(DEFAULT_READ_TOOL_SEQUENCE) + 1) + 40
+DEFAULT_MAX_COMPLETION_TOKENS = 256
 
 
 @dataclass
@@ -68,11 +72,11 @@ class RLJobConfig:
     loss_fn: str = "cispo"
     kl_penalty_coef: float = 0.0
     eval_every: int = 2
-    max_tool_calls: int = 160
+    max_tool_calls: int = DEFAULT_MAX_TOOL_CALLS
     max_train_tasks: int | None = None
     max_validation_tasks: int = 4
     temperature: float = 0.8
-    max_completion_tokens: int = 512
+    max_completion_tokens: int = DEFAULT_MAX_COMPLETION_TOKENS
     art_path: str = MODAL_ART_ROOT
     session_backend: str = DEFAULT_SESSION_BACKEND
     openreward_env_id: str = DEFAULT_OPENREWARD_ENV_ID
@@ -91,8 +95,8 @@ class EvalJobConfig:
     base_model: str = BASE_MODEL
     split: str = "validation"
     max_tasks: int | None = None
-    max_tool_calls: int = 160
-    max_completion_tokens: int = 512
+    max_tool_calls: int = DEFAULT_MAX_TOOL_CALLS
+    max_completion_tokens: int = DEFAULT_MAX_COMPLETION_TOKENS
     temperature: float = 0.0
     art_path: str = MODAL_ART_ROOT
     engine_gpu_memory_utilization: float = 0.8

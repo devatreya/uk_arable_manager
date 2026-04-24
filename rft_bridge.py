@@ -194,6 +194,11 @@ def upload_and_create_job(
     manifest = RFTJobManifest(model=RFT_MODEL, suffix=job_suffix)
     result: Dict[str, Any] = {"dry_run": dry_run, "model": RFT_MODEL}
 
+    if "train" not in artifacts:
+        raise ValueError(
+            "No training artifact found. Build artifacts with the 'train' split before uploading."
+        )
+
     def _upload(path: Path, purpose: str) -> str:
         if dry_run:
             return f"[dry-run-file-id:{path.name}]"

@@ -22,6 +22,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import re
 import sys
 from pathlib import Path
 from typing import Any, Dict, List, Optional
@@ -41,6 +42,82 @@ ENV_NAME = "UKArableManager"
 def _extract_text(tool_output: Any) -> str:
     blocks = getattr(tool_output, "blocks", None) or []
     return "\n".join(getattr(b, "text", "") for b in blocks if hasattr(b, "text"))
+
+
+def _parse_money(text: str) -> Optional[float]:
+    cleaned = text.replace("£", "").replace(",", "").strip()
+    if not cleaned:
+        return None
+    try:
+        return float(cleaned)
+    except ValueError:
+        return None
+
+
+def _build_synthetic_final_state(
+    cash: float,
+    soil_scores: List[float],
+    ever_bankrupt: bool,
+    quarter: int,
+) -> Dict[str, Any]:
+    plots = []
+    for i, soil in enumerate(soil_scores[:4]):
+        plots.append({
+            "plot_id": i,
+            "current_crop": "unknown",
+            "previous_crop": "unknown",
+            "_organic_matter": soil,
+            "_structure": soil,
+            "_ph": soil,
+            "_nutrient_balance": soil,
+        })
+    return {
+        "quarter": quarter,
+        "cash": cash,
+        "starting_cash": None,
+        "irrigation_owned": False,
+        "ever_bankrupt": ever_bankrupt,
+        "weather_regime": "unknown",
+        "weather_history": [],
+        "plots": plots,
+        "current_prices": {},
+    }
+
+
+def _parse_commit_plan_output(text: str, completed_quarters: int) -> Dict[str, Any]:
+    cash_match = re.search(r"Cash balance:\s+£([-,0-9.]+)", text)
+    soil_matches = re.findall(r"plot_\d+:\s+([0-9.]+)", text)
+    terminal_match = re.search(r"Terminal score:\s+([0-9.]+)", text)
+    mean_soil_match = re.search(r"Mean final soil:\s+([0-9.]+)", text)
+    bankrupt_match = re.search(r"Ever bankrupt:\s+(True|False)", text, re.IGNORECASE)
+
+    cash = _parse_money(cash_match.group(1)) if cash_match else None
+    soil_scores = [float(v) for v in soil_matches[-4:]] if soil_matches else []
+    terminal_score = float(terminal_match.group(1)) if terminal_match else None
+    mean_final_soil = float(mean_soil_match.group(1)) if mean_soil_match else None
+    ever_bankrupt = False
+    if bankrupt_match:
+        ever_bankrupt = bankrupt_match.group(1).lower() == "true"
+    elif "WARNING: Cash is NEGATIVE" in text:
+        ever_bankrupt = True
+
+    final_state: Dict[str, Any] = {}
+    if cash is not None and soil_scores:
+        final_state = _build_synthetic_final_state(
+            cash=cash,
+            soil_scores=soil_scores,
+            ever_bankrupt=ever_bankrupt,
+            quarter=completed_quarters,
+        )
+
+    return {
+        "cash": cash,
+        "soil_scores": soil_scores,
+        "terminal_score": terminal_score,
+        "mean_final_soil": mean_final_soil,
+        "ever_bankrupt": ever_bankrupt,
+        "final_state": final_state,
+    }
 
 
 def run_model_on_task(
@@ -66,6 +143,8 @@ def run_model_on_task(
     total_reward = 0.0
     finished = False
     final_observation = ""
+    latest_final_state: Dict[str, Any] = {}
+    latest_terminal_score: Optional[float] = None
 
     with EnvironmentsAPI(base_url=server_url, api_key="local") as api:
         env = api.get(ENV_NAME, base_url=server_url)
@@ -150,6 +229,12 @@ def run_model_on_task(
 
                     if tool_name == "commit_plan":
                         total_reward += step_reward
+                        completed_quarters = quarter + 1
+                        parsed = _parse_commit_plan_output(text, completed_quarters)
+                        if parsed["final_state"]:
+                            latest_final_state = parsed["final_state"]
+                        if parsed["terminal_score"] is not None:
+                            latest_terminal_score = parsed["terminal_score"]
                         logger.record_step(
                             quarter=quarter,
                             action={"tool": tool_name, "input": tool_input},
@@ -161,14 +246,17 @@ def run_model_on_task(
                             bankrupt=False,
                             pest_pressure=[False] * 4,
                         )
-                        quarter += 1
                         final_observation = text
+                        quarter += 1
                         if step_finished:
                             finished = True
 
                 messages.extend(tool_results)
 
-    traj = logger.finalise(final_state={}, terminal_score=None)
+    traj = logger.finalise(
+        final_state=latest_final_state,
+        terminal_score=latest_terminal_score,
+    )
     d = traj.to_dict()
     d["model_total_reward"] = total_reward
     d["final_observation"] = final_observation
